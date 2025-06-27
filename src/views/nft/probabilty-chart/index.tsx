@@ -27,35 +27,35 @@ export default function WinningProbabiltyChart({
       const maxN = v * 3; // Maximum value of x-axis
 
       // Winning probability function
-      function calcProbability(n: number, k: number, v: number) {
+      function calcBarData(n: number, k: number, v: number) {
         return 1 - Math.exp(-n / (k * v));
       }
 
       // Steep histogram function, ensuring non-zero minimum value
-      function calcWeight(n: number) {
+      function calcLineData(n: number) {
         const alpha = 3.5; // Higher value means steeper curve
         const min = 0.001; // Minimum weight (0.1%)
         const ratio = Math.max(0, 1 - n / maxN);
         return min + (0.1 - min) * Math.pow(ratio, alpha);
       }
 
-      const probData = [];
+      const lineData = [];
       const barData = [];
 
       for (let n = 0; n <= maxN; n++) {
-        probData.push({
+        lineData.push({
           x: n,
-          y: calcProbability(n, k, v) * 100
+          y: calcLineData(n) * 100
         });
 
         if (n % 10 === 0) {
           barData.push({
             x: n,
-            y: calcWeight(n) * 100
+            y: calcBarData(n, k, v) * 100
           });
         }
       }
-
+      console.log(44, lineData);
       // Create new chart
       const ctx = chartRef.current.getContext("2d");
       if (ctx) {
@@ -64,7 +64,7 @@ export default function WinningProbabiltyChart({
             datasets: [
               {
                 type: "line",
-                data: probData,
+                data: lineData,
                 borderColor: "#000000",
                 borderWidth: 3,
                 fill: true,
@@ -227,15 +227,16 @@ export default function WinningProbabiltyChart({
                   color: "#5E6B7D"
                 },
                 beginAtZero: true,
+                max: 10,
                 ticks: {
                   callback: function (value) {
-                    return `${Number(value).toFixed(0)}%`;
+                    return `${Number(value).toFixed(1)}%`;
                   },
                   font: {
                     family: "SpaceGrotesk",
                     size: 10
                   },
-                  stepSize: 25,
+                  stepSize: 2.5,
                   color: "#5E6B7D"
                 }
               },
@@ -256,6 +257,7 @@ export default function WinningProbabiltyChart({
                   color: "#5E6B7D"
                 },
                 beginAtZero: true,
+                max: 100,
                 ticks: {
                   callback: function (value) {
                     return `${Number(value).toFixed(0)}%`;

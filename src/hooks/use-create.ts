@@ -20,7 +20,7 @@ export default function useCreate({
   const toast = useToast();
   const BettingContract = useBettingContract();
 
-  const onCreate = async (account: string) => {
+  const onCreate = async () => {
     if (!BettingContract) {
       return;
     }

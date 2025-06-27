@@ -36,7 +36,7 @@ export default function useDraw(onSuccess: (isWinner: boolean) => void) {
         value: flipFee
       });
       console.log("estimateGas", estimateGas.toString());
-      const gasLimit = estimateGas.mul(120).div(100);
+
       const tx = await BettingContract[method](...params, {
         value: flipFee,
         gasLimit: estimateGas.mul(120).div(100)

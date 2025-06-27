@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/contexts/auth";
 import Big from "big.js";
 
-const pageSize = 10;
+const pageSize = 8;
 
 export default function usePlayerHistory() {
   const [loading, setLoading] = useState(false);
@@ -45,6 +45,7 @@ export default function usePlayerHistory() {
 
   const onPageChange = (_page: number) => {
     setPage(_page);
+    setData([]);
     getCreatePoolList(_page);
   };
 

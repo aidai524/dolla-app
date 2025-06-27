@@ -13,7 +13,6 @@ export default function useApprove({
   amount,
   spender,
   isSkip,
-  isMax,
   account,
   onSuccess
 }: {

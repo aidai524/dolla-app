@@ -7,8 +7,7 @@ import { formatAddress } from "@/utils/format/address";
 import useUserRecords from "@/hooks/use-user-records";
 
 export default function Records() {
-  const { loading, records, hasMore, onQueryRecords, resetRecords } =
-    useUserRecords();
+  const { loading, records, hasMore, onQueryRecords } = useUserRecords();
 
   const { containerRef, isLoading } = useInfiniteScroll(onQueryRecords, {
     loading,

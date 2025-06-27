@@ -12,7 +12,7 @@ export default function QuickPopup({ ref }: any) {
     }
   }));
   useEffect(() => {
-    const close = (e: any) => {
+    const close = () => {
       setShowPopup(false);
     };
     document.addEventListener("click", close);

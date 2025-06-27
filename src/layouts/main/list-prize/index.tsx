@@ -1,13 +1,13 @@
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+
 import { useEffect, useState } from "react";
 
 export default function ListPrize() {
   const navigate = useNavigate();
-  const [isOpen, setIsOpen] = useState(false);
+  const [, setIsOpen] = useState(false);
 
   useEffect(() => {
-    const close = (e: any) => {
+    const close = () => {
       setIsOpen(false);
     };
     document.addEventListener("click", close);

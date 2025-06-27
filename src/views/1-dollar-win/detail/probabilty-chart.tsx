@@ -152,8 +152,9 @@ export default function WinningProbabiltyChart({ data }: { data: any }) {
       chart.update("none");
 
       chart.data.datasets.forEach((dataset, datasetIndex) => {
+        console.log(dataset);
         const meta = chart.getDatasetMeta(datasetIndex);
-        meta.data.forEach((point, i) => {
+        meta.data.forEach((point) => {
           const pos = point.getProps(["x", "y"], true);
           // @ts-ignore
           if (point.raw.x === data.sold_shares && iconRef.current) {

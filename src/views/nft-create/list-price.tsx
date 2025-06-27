@@ -77,7 +77,13 @@ export default function ListPrice({
                 </div>
               )}
               <div className="text-[#ABABAB]">
-                <div>{item.label}</div>
+                <div>
+                  {item.label} ( $
+                  {price[item.key] !== "0"
+                    ? formatNumber(price[item.key], 2, true)
+                    : "-"}
+                  )
+                </div>
                 {item.key === "highest_attribute_floor_price_usd" && (
                   <div className="mt-[6px]">
                     {price["highest_attribute_info"]?.trait_type}:{" "}
@@ -92,13 +98,13 @@ export default function ListPrice({
                   <>
                     {price[item.key] !== "0" && (
                       <div className="w-[52px] h-[17px] leading-[17px] rounded-[4px] bg-[#EBFF57] text-black text-center text-[10px] font-medium">
-                        20%
+                        +20%
                       </div>
                     )}
                     <span className="text-white">
                       $
                       {price[item.key] !== "0"
-                        ? formatNumber(price[item.key], 2, true)
+                        ? formatNumber(price[item.key] * 1.2, 2, true)
                         : "-"}
                     </span>
                   </>
@@ -117,16 +123,15 @@ export default function ListPrice({
               onSuccess={onSuccess}
             />
           )}
-          {!minted ||
-            (!token?.id && (
-              <Button
-                loading={minting || mintedLoading}
-                className="button w-full h-[40px] mt-[20px]"
-                onClick={mintNft}
-              >
-                Mint NFT
-              </Button>
-            ))}
+          {(!minted || !token?.id) && (
+            <Button
+              loading={minting || mintedLoading}
+              className="button w-full h-[40px] mt-[20px]"
+              onClick={mintNft}
+            >
+              Mint NFT
+            </Button>
+          )}
         </div>
         <div className="flex flex-col gap-[14px] w-[474px] bg-[#1A1E24] rounded-[6px] h-[328px] relative">
           <PriceChart anchorPrice={listPrice} />

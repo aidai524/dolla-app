@@ -6,7 +6,7 @@ import Button from "@/components/button";
 import { useAuth } from "@/contexts/auth";
 
 export default function Actions() {
-  const { userInfo, login, logout } = useAuth();
+  const { userInfo, login } = useAuth();
 
   return (
     <div className="flex h-[72px] items-center pr-[30px] gap-[10px] shrink-0">
