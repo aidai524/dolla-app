@@ -11,10 +11,6 @@ export default function NFTTop({ data }: any) {
     return [_type, data?.reward_token_info?.[0]];
   }, [data]);
 
-  const anchorPrice = useMemo(() => {
-    return getAnchorPrice(data);
-  }, [data]);
-
   return (
     <div className="flex justify-center gap-[52px]">
       <div className="w-[245px] h-[245px] relative">
@@ -33,7 +29,10 @@ export default function NFTTop({ data }: any) {
           <div className="h-[40px] rounded-[6px] bg-[#222A35] px-[13px] text-[14px] text-[#ADBCCF] inline-flex items-center gap-[20px]">
             <div>Anchor Price</div>
             <div className="text-right text-[20px] font-semibold leading-[100%] font-montserrat bg-gradient-to-r from-[#FFEF43] to-[#FFC42F] bg-clip-text text-transparent drop-shadow-[0_0_6px_#FFC42F]">
-              ${anchorPrice ? formatNumber(anchorPrice, 2, true) : "-"}
+              $
+              {data.anchor_price
+                ? formatNumber(data.anchor_price, 2, true)
+                : "-"}
             </div>
           </div>
         </div>

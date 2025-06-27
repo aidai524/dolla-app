@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useImperativeHandle, useMemo, useState } from "react";
 import ButtonWithAuth from "@/components/button/button-with-auth";
 import config from "./config";
 import clsx from "clsx";
@@ -8,7 +8,6 @@ import { BETTING_CONTRACT_ADDRESS, PURCHASE_TOKEN } from "@/config";
 import Big from "big.js";
 import useApprove from "@/hooks/use-approve";
 import { formatNumber } from "@/utils/format/number";
-import { getAnchorPrice } from "@/utils/pool";
 import ScratchModal from "../scratch-modal";
 
 function calcProbability(n: number, v: number) {
@@ -17,12 +16,15 @@ function calcProbability(n: number, v: number) {
 
 export default function NFTBid({
   className,
-  data
+  data,
+  selectedBid,
+  setSelectedBid
 }: {
   className?: string;
   data: any;
+  selectedBid: number;
+  setSelectedBid: any;
 }) {
-  const [active, setActive] = useState(1);
   const [showAnimation, setShowAnimation] = useState(false);
   const [isWinner, setIsWinner] = useState(false);
   const { onDraw, drawing } = useDraw((isWinner) => {
@@ -36,11 +38,11 @@ export default function NFTBid({
   const { approve, approved, approving, checking } = useApprove({
     token: PURCHASE_TOKEN,
     spender: BETTING_CONTRACT_ADDRESS,
-    amount: active.toString()
+    amount: selectedBid.toString()
   });
-  const isBalanceEnough = Big(tokenBalance || 0).gte(active);
+  const isBalanceEnough = Big(tokenBalance || 0).gte(selectedBid);
   const probailties = useMemo(() => {
-    const anchorPrice = getAnchorPrice(data);
+    const anchorPrice = data.anchor_price;
     return config.map((item) => {
       return formatNumber(
         calcProbability(
@@ -60,9 +62,10 @@ export default function NFTBid({
           <BidItem
             key={item.value}
             data={item}
-            active={item.value === active}
+            active={item.value === selectedBid}
             onSelect={(val: number) => {
-              setActive(val);
+              setSelectedBid(val);
+              setSelectedBid?.(val);
             }}
             probability={probailties[index]}
           />
@@ -77,7 +80,7 @@ export default function NFTBid({
           if (!approved) {
             approve();
           } else {
-            onDraw(data.pool_id, active);
+            onDraw(data.pool_id, selectedBid);
           }
         }}
         loading={drawing || isLoading || checking || approving}
