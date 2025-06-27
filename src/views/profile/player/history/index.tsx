@@ -6,7 +6,7 @@ import Loading from "@/components/icons/loading";
 import PoolId from "./pool-id";
 
 export default function History() {
-  const { page, loading, data, onPageChange } = usePlayerHistory();
+  const { page, loading, data, hasMore, onPageChange } = usePlayerHistory();
 
   return (
     <div className="h-[564px] w-full bg-[#1A1E24] rounded-[6px] px-[20px] py-[16px] mt-[10px]">
@@ -131,18 +131,18 @@ export default function History() {
           </div>
         )}
       </div>
-      <Pagination page={page} total={1} onPageChange={onPageChange} />
+      <Pagination page={page} hasMore={hasMore} onPageChange={onPageChange} />
     </div>
   );
 }
 
 const Pagination = ({
   page,
-  total,
+  hasMore,
   onPageChange
 }: {
   page: number;
-  total: number;
+  hasMore: boolean;
   onPageChange: (page: number) => void;
 }) => {
   return (
@@ -154,7 +154,7 @@ const Pagination = ({
         <button
           className={clsx(
             "w-[30px] h-[30px] rounded-[4px] bg-[#161A20] ml-[10px] flex items-center justify-center",
-            "button"
+            page > 1 ? "button" : "opacity-30"
           )}
           onClick={() => onPageChange(page - 1)}
         >
@@ -176,7 +176,7 @@ const Pagination = ({
         <button
           className={clsx(
             "w-[30px] h-[30px] rounded-[4px] bg-[#161A20] ml-[10px] flex items-center justify-center",
-            "button"
+            hasMore ? "button" : "opacity-30"
           )}
           onClick={() => onPageChange(page + 1)}
         >
@@ -191,7 +191,7 @@ const Pagination = ({
               d="M1 1L6 7L1 13"
               stroke="white"
               strokeWidth="1.5"
-              opacity={page === Math.ceil(total / 10) ? 0.3 : 1}
+              opacity={hasMore ? 1 : 0.3}
             />
           </svg>
         </button>

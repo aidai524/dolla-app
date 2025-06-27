@@ -10,6 +10,7 @@ export default function usePlayerHistory() {
   const [data, setData] = useState<any[]>([]);
   const [page, setPage] = useState(1);
   const { userInfo } = useAuth();
+  const [hasMore, setHasMore] = useState(true);
   const getCreatePoolList = async (_page: number) => {
     setLoading(true);
     try {
@@ -30,6 +31,7 @@ export default function usePlayerHistory() {
           };
         })
       );
+      setHasMore(response.data.data.list.length === pageSize);
     } catch (error) {
       console.log(error);
     } finally {
@@ -53,6 +55,7 @@ export default function usePlayerHistory() {
     page,
     data,
     loading,
+    hasMore,
     onPageChange
   };
 }
