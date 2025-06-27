@@ -1,0 +1,124 @@
+import clsx from "clsx";
+import { useMemo, useState } from "react";
+import { CopyBtn, ExitBtn, AddBtn } from "./action-btns";
+import Modal from "@/components/modal";
+import Recharge from "@/components/cashier/panels/recharge";
+import PriceChart from "../nft-create/price-chart";
+import PaymentsModal from "./payments-modal";
+import { useAuth } from "@/contexts/auth";
+import useCopy from "@/hooks/use-copy";
+import { TOKEN } from "@/config/btc";
+import Action from "./action";
+import useTokenBalance from "@/hooks/use-token-balance";
+import { formatNumber } from "@/utils/format/number";
+import useTokenPrice from "@/hooks/use-token-price";
+import Loading from "@/components/icons/loading";
+
+export default function BTCCreate() {
+  const [amount, setAmount] = useState(1);
+  const [chargeModalOpen, setChargeModalOpen] = useState(false);
+  const [paymentsModalOpen, setPaymentsModalOpen] = useState(false);
+  const { address, logout } = useAuth();
+  const { onCopy } = useCopy();
+  const [paymentMethod, setPaymentMethod] = useState(0);
+  const { tokenBalance, isLoading, update } = useTokenBalance(TOKEN);
+
+  const { prices } = useTokenPrice(TOKEN.address);
+
+  const pricePerBTC = useMemo(() => {
+    if (!prices || prices.length === 0) return 0;
+    const _p = prices[0].last_price;
+    return _p;
+  }, [prices]);
+
+  return (
+    <div className="w-[526px] mx-auto">
+      <div className="text-[20px] font-bold text-center py-[30px]">
+        Create BTC Market
+      </div>
+      <div className="flex items-center gap-[8px]">
+        <span className="shrink-0 text-[14px] text-[#5E6B7D]">Account</span>
+        <div className="grow h-[1px] border-b border-[#5E6B7D]/50 border-dashed" />
+        <div className="flex items-center gap-[4px]">
+          <span className="text-[14px] mr-[6px]">
+            {address ? `${address?.slice(0, 4)}...${address?.slice(-4)}` : "-"}
+          </span>
+          <CopyBtn
+            onClick={async () => {
+              onCopy(address);
+            }}
+          />
+          <ExitBtn
+            onClick={() => {
+              logout();
+            }}
+          />
+        </div>
+      </div>
+      <div className="flex items-center mt-[20px] gap-[8px]">
+        <span className="shrink-0 text-[14px] text-[#5E6B7D]">Balance</span>
+        <div className="grow h-[1px] border-b border-[#5E6B7D]/50 border-dashed" />
+        <div className="flex items-center gap-[4px]">
+          <span className="text-[14px] mr-[6px]">
+            {isLoading ? (
+              <Loading size={12} />
+            ) : (
+              `${formatNumber(tokenBalance, 2, true)} BTC`
+            )}
+          </span>
+          <AddBtn
+            onClick={() => {
+              setChargeModalOpen(true);
+            }}
+          />
+        </div>
+      </div>
+      <div className="text-[14px] text-[#5E6B7D] mt-[20px]">Amount</div>
+      <div className="mt-[6px] flex gap-[10px]">
+        {[1, 0.1, 0.01, 0.001].map((item) => (
+          <div
+            className={clsx(
+              "button w-[124px] h-[72px] rounded-[6px] bg-[#191E27] flex flex-col border items-center justify-center",
+              amount === item ? "border-[#FFC42F]" : "border-transparent"
+            )}
+            key={item}
+            onClick={() => setAmount(item)}
+          >
+            <span className={clsx("text-[18px] font-bold text-white")}>
+              {item} BTC
+            </span>
+            <span className="text-[12px] text-[#5E6B7D] mt-[6px]">
+              ~${formatNumber(item * pricePerBTC, 0, true)}
+            </span>
+          </div>
+        ))}
+      </div>
+      <div className="flex flex-col gap-[14px] w-full bg-[#1A1E24] rounded-[6px] h-[335px] relative mt-[20px]">
+        <PriceChart anchorPrice={amount * pricePerBTC} />
+      </div>
+      <Action
+        amount={amount}
+        setPaymentsModalOpen={setPaymentsModalOpen}
+        token={TOKEN}
+        paymentMethod={paymentMethod}
+        address={address}
+        anchorPrice={1}
+        tokenBalance={tokenBalance}
+        onSuccess={() => {
+          update();
+        }}
+      />
+      <Modal open={chargeModalOpen} onClose={() => setChargeModalOpen(false)}>
+        <div className="w-[316px] h-[436px] p-[15px] rounded-[6px] bg-[#232932]">
+          <div className="text-center text-white font-bold">Recharge</div>
+          <Recharge token={TOKEN} />
+        </div>
+      </Modal>
+      <PaymentsModal
+        open={paymentsModalOpen}
+        onClose={() => setPaymentsModalOpen(false)}
+        onSelectMethod={setPaymentMethod}
+      />
+    </div>
+  );
+}

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+  <rect x="1" y="1" width="30" height="30" rx="8" fill="#191817"/>
+  <rect x="0.5" y="0.5" width="31" height="31" rx="8.5" stroke="#434343" stroke-opacity="0.8"/>
+  <path d="M7.52474 23.5625C9.62477 25.5608 12.386 26.6016 15.8084 26.6849C19.2308 26.7682 22.0058 25.8621 24.1334 23.9666C26.2611 22.0712 27.3632 19.5465 27.44 16.3925C27.5184 13.1714 26.5411 10.5625 24.5082 8.56585C22.4752 6.56917 19.7476 5.52919 16.3252 5.44591C12.9028 5.36263 10.0942 6.2679 7.89949 8.16171C5.77185 10.0572 4.66885 12.6154 4.59047 15.8365C4.51372 18.9905 5.49181 21.5658 7.52474 23.5625Z" fill="#FFC42F"/>
+  <path d="M24 16C23.5 16 22.3 16.7 21.5 19.5" stroke="black" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M8 16C8.5 16 9.7 16.7 10.5 19.5" stroke="black" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M10 11.7963L12.9717 11" stroke="black" stroke-width="2" stroke-linecap="round"/>
+  <path d="M22.3608 11.7963L19.3891 11" stroke="black" stroke-width="2" stroke-linecap="round"/>
+  <path d="M16 23C16 19 16 15 16 15" stroke="black" stroke-width="3" stroke-linecap="round"/>
+  <path d="M25.1667 31H7.66675C8.08341 28.9167 10.0834 24.75 16.4167 24.75C22.7501 24.75 25.0279 28.9167 25.1667 31Z" fill="#FFC42F"/>
+</svg>

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+  <rect x="1" y="1" width="30" height="30" rx="8" fill="#191817"/>
+  <rect x="0.5" y="0.5" width="31" height="31" rx="8.5" stroke="#434343" stroke-opacity="0.8"/>
+  <path d="M7.52474 23.5625C9.62477 25.5608 12.386 26.6016 15.8084 26.6849C19.2308 26.7682 22.0058 25.8621 24.1334 23.9666C26.2611 22.0712 27.3632 19.5465 27.44 16.3925C27.5184 13.1714 26.5411 10.5625 24.5082 8.56585C22.4752 6.56917 19.7476 5.52919 16.3252 5.44591C12.9028 5.36263 10.0942 6.2679 7.89949 8.16171C5.77185 10.0572 4.66885 12.6154 4.59047 15.8365C4.51372 18.9905 5.49181 21.5658 7.52474 23.5625Z" fill="#FFC42F"/>
+  <path d="M12.0908 12L12.0908 15.0765" stroke="black" stroke-width="2" stroke-linecap="round"/>
+  <path d="M17.9995 19C15.9995 19 13.9995 19 13.9995 19" stroke="black" stroke-width="2" stroke-linecap="round"/>
+  <path d="M20.9995 14L20.9995 15" stroke="black" stroke-width="2" stroke-linecap="round"/>
+  <path d="M25.1667 31H7.66675C8.08341 28.9167 10.0834 24.75 16.4167 24.75C22.7501 24.75 25.0279 28.9167 25.1667 31Z" fill="#FFC42F"/>
+  <path d="M24 8.00001C19 7.5 10.8333 8.16671 7.5 8.50004C6.5 9.5 6 10.5 5.5 11.5L26 10.5C25.2 9.30003 24.3333 8.33334 24 8.00001Z" fill="white" stroke="black" stroke-width="0.5" stroke-linejoin="round"/>
+  <path d="M29.7679 9.5L26 10L27 11.5L29.5 12L29.7679 9.5Z" fill="white" stroke="black" stroke-width="0.5" stroke-linejoin="round"/>
+  <path d="M25 9L25.5 9.5L28.5 9L27 7L25 9Z" fill="white" stroke="black" stroke-width="0.5" stroke-linejoin="round"/>
+</svg>

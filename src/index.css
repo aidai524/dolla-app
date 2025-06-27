@@ -1,0 +1,132 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "SpaceGrotesk";
+  src: url("/fonts/SpaceGrotesk-Light.ttf");
+  font-weight: 300;
+}
+
+@font-face {
+  font-family: "SpaceGrotesk";
+  src: url("/fonts/SpaceGrotesk-Regular.ttf");
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "SpaceGrotesk";
+  src: url("/fonts/SpaceGrotesk-Medium.ttf");
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: "SpaceGrotesk";
+  src: url("/fonts/SpaceGrotesk-SemiBold.ttf");
+  font-weight: 600;
+}
+
+@font-face {
+  font-family: "SpaceGrotesk";
+  src: url("/fonts/SpaceGrotesk-Bold.ttf");
+  font-weight: 700;
+}
+
+
+
+body {
+  font-family: "SpaceGrotesk" !important;
+  background-color: #0D0F12;
+}
+
+/* Reset */
+input {
+  outline: none;
+  background: transparent;
+}
+
+.swiper-slide-shadow-left,
+.swiper-slide-shadow-right {
+  display: none;
+}
+
+/* Scrollbar */
+body::-webkit-scrollbar,
+div::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  /**/
+}
+body::-webkit-scrollbar-track,
+div::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 6px;
+}
+body::-webkit-scrollbar-thumb,
+div::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+}
+body::-webkit-scrollbar-thumb:hover,
+div::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Button */
+.button:not([disabled]) {
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.button:hover:not([disabled]) {
+  opacity: 0.9;
+}
+
+.bid-button {
+  overflow: hidden;
+  transition: all 0.3s ease;
+  position: relative;
+  box-shadow:inset 2px 2px 2px 0px rgba(255,255,255,.5),
+     7px 7px 20px 0px rgba(0,0,0,.1),
+     4px 4px 5px 0px rgba(0,0,0,.1);
+}
+.bid-button:hover {
+  text-decoration: none;
+}
+.bid-button:before {
+  position: absolute;
+  content: '';
+  display: inline-block;
+  top: -180px;
+  left: 0;
+  width: 60px;
+  height: 100%;
+  background-color: #fff;
+  animation: shiny-btn1 3s ease-in-out infinite;
+}
+.bid-button:hover{
+  opacity: .7;
+}
+.bid-button:active{
+  box-shadow:  4px 4px 6px 0 rgba(255,255,255,.3),
+              -4px -4px 6px 0 rgba(116, 125, 136, .2), 
+    inset -4px -4px 6px 0 rgba(255,255,255,.2),
+    inset 4px 4px 6px 0 rgba(0, 0, 0, .2);
+}
+
+@keyframes shiny-btn1 {
+  0% { transform: scale(0) rotate(45deg); opacity: 0; }
+  80% { transform: scale(0) rotate(45deg); opacity: 0.5; }
+  81% { transform: scale(4) rotate(45deg); opacity: 1; }
+  100% { transform: scale(50) rotate(45deg); opacity: 0; }
+}
