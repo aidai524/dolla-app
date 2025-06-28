@@ -14,7 +14,7 @@ export default function BTC() {
   const marketsRef = useRef<any>(null);
   const { data, loading } = usePoolRecommend(0);
   const [selectedMarket, setSelectedMarket] = useState<any>(null);
-
+  const [selectedBid, setSelectedBid] = useState(1);
   const pool = useMemo(() => {
     return selectedMarket || data;
   }, [selectedMarket, data]);
@@ -30,7 +30,14 @@ export default function BTC() {
       <BTCBg />
       <div className="relative z-[2] w-[928px] mx-auto">
         <BTCTop data={pool} />
-        <NFTBid className="mt-[-40px]" data={pool} />
+        <NFTBid
+          className="mt-[-40px]"
+          data={pool}
+          selectedBid={selectedBid}
+          setSelectedBid={(val: number) => {
+            setSelectedBid(val);
+          }}
+        />
         <div className="absolute top-[25px] right-0 flex items-center gap-[14px]">
           <ShareBtn data={pool} />
           <MoreMarketsBtn onClick={() => marketsRef.current?.open()} />
@@ -52,7 +59,8 @@ export default function BTC() {
         <div className="w-[566px] h-[326px]">
           <ProbabiltyChart
             anchorPrice={pool?.reward_token_price?.[0]?.last_price}
-            yourBid={pool?.user_draw_attempt || 0}
+            selectedBids={selectedBid}
+            totalBids={data?.accumulative_bids || 0}
           />
         </div>
         <div className="w-[348px] h-[326px]">

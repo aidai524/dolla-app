@@ -44,7 +44,7 @@ export default function DepositModal({
   }, [order, rewardTokenInfo]);
   const { approving, approve, approved, checking } = useApprove({
     token: order?.reward_token_info?.[0],
-    amount: amount.toString(),
+    amount: amount?.toString(),
     spender: BETTING_CONTRACT_ADDRESS,
     account
   });

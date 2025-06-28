@@ -38,7 +38,7 @@ export default function NFTBid({
   const { approve, approved, approving, checking } = useApprove({
     token: PURCHASE_TOKEN,
     spender: BETTING_CONTRACT_ADDRESS,
-    amount: selectedBid.toString()
+    amount: selectedBid?.toString()
   });
   const isBalanceEnough = Big(tokenBalance || 0).gte(selectedBid);
   const probailties = useMemo(() => {

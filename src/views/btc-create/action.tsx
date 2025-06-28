@@ -50,7 +50,7 @@ export default function Action({
 
   const { approving, approve, approved, checking } = useApprove({
     token: token,
-    amount: amount.toString(),
+    amount: amount?.toString(),
     spender: BETTING_CONTRACT_ADDRESS,
     account
   });

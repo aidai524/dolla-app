@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Chart from "chart.js/auto";
 import annotationPlugin from "chartjs-plugin-annotation";
 import Annotations from "./annotations";
@@ -6,6 +6,8 @@ import Title from "./title";
 import { motion } from "framer-motion";
 
 Chart.register(annotationPlugin);
+
+let diff = 1;
 
 export default function WinningProbabiltyChart({
   totalBids = 0,
@@ -20,6 +22,7 @@ export default function WinningProbabiltyChart({
   const chartInstance = useRef<Chart | null>(null);
   const iconRef = useRef<HTMLDivElement>(null);
   const redDotRef = useRef<HTMLDivElement>(null);
+  const [isInit, setIsInit] = useState(false);
 
   const bids = useMemo(() => {
     return totalBids + selectedBids;
@@ -248,11 +251,12 @@ export default function WinningProbabiltyChart({
 
   useEffect(() => {
     if (!chartInstance.current) return;
+    setIsInit(false);
     const chart = chartInstance.current;
 
     const k = 0.8;
     const v = anchorPrice * 1.2;
-    const maxN = v * 3;
+    const maxN = v * 2;
     function calcLineData(n: number, k: number, v: number) {
       return 1 - Math.exp(-n / (k * v));
     }
@@ -264,19 +268,21 @@ export default function WinningProbabiltyChart({
     }
     const lineData = [];
     const barData = [];
-    for (let n = 0; n <= maxN; n++) {
+
+    diff = maxN <= 100 ? 1 : Math.floor((maxN - 1) / 99);
+
+    for (let n = 0; n <= maxN; n = n + diff) {
       lineData.push({
         x: n,
         y: calcLineData(n, k, v) * 100
       });
-      if (n % 10 === 0) {
+      if (n % 5 === 0) {
         barData.push({
           x: n,
           y: calcBarData(n) * 100
         });
       }
     }
-
     chart.data.datasets[0].data = lineData;
     chart.data.datasets[1].data = barData;
 
@@ -291,25 +297,29 @@ export default function WinningProbabiltyChart({
     }
     setTimeout(() => {
       updateBidPlace();
-    }, 1000);
+      setIsInit(true);
+    }, 3000);
   }, [anchorPrice]);
 
   const updateBidPlace = () => {
     const chart = chartInstance.current;
-    if (!chart) return;
+    if (!chart || !iconRef.current || !redDotRef.current) return;
+    iconRef.current.style.left = "0px";
+    iconRef.current.style.top = "0px";
+    redDotRef.current.style.left = "0px";
+    redDotRef.current.style.top = "0px";
     chart.data.datasets.forEach((dataset, datasetIndex) => {
-      if (datasetIndex === 1) return;
+      if (dataset.type === "bar") return;
       const meta = chart.getDatasetMeta(datasetIndex);
       meta.data.forEach((point) => {
         const p = point as any;
         const pos = p.getProps(["x", "y"], true);
-
-        if (p.raw.x === bids && iconRef.current) {
+        if (Math.abs(p.raw?.x - bids) < diff && iconRef.current) {
           iconRef.current.style.left = `${pos.x + 7}px`;
           iconRef.current.style.top = `${pos.y - 26}px`;
         }
 
-        if (p.raw.x === totalBids && redDotRef.current) {
+        if (Math.abs(p.raw?.x - totalBids) < diff && redDotRef.current) {
           redDotRef.current.style.left = `${pos.x + 10}px`;
           redDotRef.current.style.top = `${pos.y}px`;
         }
@@ -318,15 +328,16 @@ export default function WinningProbabiltyChart({
     chart.update();
   };
   useEffect(() => {
-    updateBidPlace();
-  }, [bids]);
+    if (isInit) {
+      updateBidPlace();
+    }
+  }, [isInit, bids]);
 
   return (
     <div className="w-full h-full relative p-[4px_14px_14px] bg-[#1A1E24] rounded-[10px]">
       <Title />
       <Annotations />
       <canvas ref={chartRef}></canvas>
-
       <div
         ref={redDotRef}
         className="absolute z-[20]"
@@ -335,11 +346,17 @@ export default function WinningProbabiltyChart({
           height: 8,
           borderRadius: 8,
           background: "#FF3B30",
-          pointerEvents: "none"
+          pointerEvents: "none",
+          opacity: isInit ? 1 : 0
         }}
       />
-
-      <div className="absolute top-0 left-0 z-[10]" ref={iconRef}>
+      <div
+        className="absolute top-0 left-0 z-[10]"
+        ref={iconRef}
+        style={{
+          opacity: isInit && anchorPrice * 2.4 > bids ? 1 : 0
+        }}
+      >
         <div className="text-[#88A3FF] text-[10px] ml-[-10px]">Your bid</div>
         <motion.svg
           xmlns="http://www.w3.org/2000/svg"

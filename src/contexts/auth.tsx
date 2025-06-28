@@ -73,12 +73,7 @@ export const AuthProvider: React.FC<{
   );
 
   const sign = async () => {
-    if (!privyWallet?.address) {
-      login();
-      return;
-    }
-
-    if (!user) {
+    if (!privyWallet?.address || !user) {
       login();
       return;
     }

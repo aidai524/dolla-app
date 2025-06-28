@@ -10,7 +10,7 @@ import { useMemo, useState } from "react";
 
 export default function NFT() {
   const { data, loading, getPoolRecommend } = usePoolRecommend(1);
-  const [selectedBid, setSelectedBid] = useState(0);
+  const [selectedBid, setSelectedBid] = useState(1);
 
   return (
     <div className="relative w-full h-full pt-[36px]">
