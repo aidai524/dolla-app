@@ -254,11 +254,9 @@ export default function WinningProbabiltyChart({
     setIsInit(false);
     const chart = chartInstance.current;
 
-    const k = 0.8;
-    const v = anchorPrice * 1.2;
-    const maxN = v * 2;
-    function calcLineData(n: number, k: number, v: number) {
-      return 1 - ((v - 1) / v) ** n;
+    const maxN = anchorPrice * 2;
+    function calcLineData(n: number) {
+      return 1 - (1 - 1 / maxN) ** n;
     }
     function calcBarData(n: number) {
       const alpha = 3.5;
@@ -274,7 +272,7 @@ export default function WinningProbabiltyChart({
     for (let n = 0; n <= maxN; n = n + diff) {
       lineData.push({
         x: n,
-        y: calcLineData(n, k, v) * 100
+        y: calcLineData(n) * 100
       });
       if (n % 5 === 0) {
         barData.push({
