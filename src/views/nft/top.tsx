@@ -30,8 +30,8 @@ export default function NFTTop({ data }: any) {
             <div>Anchor Price</div>
             <div className="text-right text-[20px] font-semibold leading-[100%] font-montserrat bg-gradient-to-r from-[#FFEF43] to-[#FFC42F] bg-clip-text text-transparent drop-shadow-[0_0_6px_#FFC42F]">
               $
-              {data.anchor_price
-                ? formatNumber(data.anchor_price, 2, true)
+              {getAnchorPrice(data)
+                ? formatNumber(getAnchorPrice(data), 2, true)
                 : "-"}
             </div>
           </div>

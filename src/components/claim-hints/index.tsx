@@ -26,7 +26,7 @@ export default function ClaimHints({ ref }: { ref: any }) {
   const currentPool = useMemo(() => cancelPools?.[0] || {}, [cancelPools]);
 
   return (
-    cancelPools?.length && (
+    !!cancelPools?.length && (
       <div className="w-[1440px] h-[34px] bg-[#FFC42F] flex justify-center  items-center gap-[12px] text-[14px] text-black font-medium">
         <span>
           #{currentPool?.pool_id} has been cancelled, your bid and damages is

@@ -6,10 +6,6 @@ export const getPoolInfo = async (poolId: number) => {
 };
 
 export const getAnchorPrice = (pool: any) => {
-  if (
-    pool?.reward_token_price?.[0]?.last_price &&
-    pool?.reward_token_price?.[0]?.last_price !== "0"
-  )
-    return pool?.reward_token_price?.[0]?.last_price;
-  return pool?.reward_token_price?.[0]?.floor_price;
+  if (pool?.anchor_price) return pool.anchor_price * 1.2;
+  return 0;
 };
