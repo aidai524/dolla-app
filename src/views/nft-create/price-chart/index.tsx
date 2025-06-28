@@ -1,20 +1,24 @@
 import Chart from "chart.js/auto";
 import Title from "./title";
 import Annotations from "./annotations";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import annotationPlugin from "chartjs-plugin-annotation";
+import { formatNumber } from "@/utils/format/number";
 
 Chart.register(annotationPlugin);
 
+let diff = 1;
 export default function PriceChart({ anchorPrice }: { anchorPrice?: number }) {
   const chartRef = useRef<HTMLCanvasElement>(null);
   const chartInstance = useRef<Chart | null>(null);
+  const anchorDotRef = useRef<HTMLDivElement>(null);
+  const [isInit, setIsInit] = useState(false);
 
   // Function to calculate probability density data
   const calculateDensity = (anchorPrice: number) => {
     const prizeCost = anchorPrice;
     const pricePerUser = 1;
-    const maxUsers = prizeCost * 5;
+    const maxUsers = Math.floor(prizeCost * 5);
 
     const sigma = 0.6;
     const desiredMode = anchorPrice * 1.2;
@@ -29,7 +33,8 @@ export default function PriceChart({ anchorPrice }: { anchorPrice?: number }) {
 
     const rawDensity = [];
     let maxF = 0;
-    for (let n = 1; n <= maxUsers; n++) {
+    diff = maxUsers <= 100 ? 1 : Math.floor((maxUsers - 1) / 99);
+    for (let n = 0; n <= maxUsers; n = n + diff) {
       const x = n * pricePerUser;
       const f = logNormalPDF(x, mu, sigma);
       rawDensity.push({ x: x, y: f });
@@ -41,7 +46,7 @@ export default function PriceChart({ anchorPrice }: { anchorPrice?: number }) {
 
     return rawDensity.map((d) => ({
       x: d.x,
-      y: (d.y / maxF) * 99.98
+      y: (d.y / maxF) * 15
     }));
   };
 
@@ -167,6 +172,9 @@ export default function PriceChart({ anchorPrice }: { anchorPrice?: number }) {
                 size: 10
               },
               color: "#666"
+            },
+            grid: {
+              color: "rgba(0, 0, 0, 0)"
             }
           },
           y: {
@@ -239,7 +247,34 @@ export default function PriceChart({ anchorPrice }: { anchorPrice?: number }) {
 
     // Re-render chart - use 'none' mode to avoid animations
     chartInstance.current.update("none");
+
+    // Update anchor place after chart update
+    setTimeout(() => {
+      updateAnchorPlace();
+      setIsInit(true);
+    }, 100);
   }, [anchorPrice]);
+
+  const updateAnchorPlace = () => {
+    const chart = chartInstance.current;
+    if (!chart || !anchorDotRef.current || !anchorPrice) return;
+
+    anchorDotRef.current.style.left = "0px";
+    anchorDotRef.current.style.top = "0px";
+
+    const meta = chart.getDatasetMeta(0);
+    meta.data.forEach((point) => {
+      const p = point as any;
+      const pos = p.getProps(["x", "y"], true);
+      if (
+        Math.abs(p.raw?.x - anchorPrice * 1.2) < diff &&
+        anchorDotRef.current
+      ) {
+        anchorDotRef.current.style.left = `${pos.x + 15}px`;
+        anchorDotRef.current.style.top = `${pos.y - 2}px`;
+      }
+    });
+  };
 
   return (
     <div className="w-full h-full relative px-[20px] py-[10px]">
@@ -249,6 +284,26 @@ export default function PriceChart({ anchorPrice }: { anchorPrice?: number }) {
           Please set the price first
         </div>
       )}
+      <div
+        ref={anchorDotRef}
+        className="absolute z-[20] flex items-center"
+        style={{
+          opacity: isInit ? 1 : 0
+        }}
+      >
+        <div
+          style={{
+            width: 10,
+            height: 10,
+            borderRadius: 8,
+            background: "#57FF70",
+            pointerEvents: "none"
+          }}
+        />
+        <div className="text-[#57FF70] text-[16px] ml-[10px]">
+          ${formatNumber(anchorPrice, 2, true)}
+        </div>
+      </div>
       <Title />
       <Annotations
         anchorPrice={anchorPrice}

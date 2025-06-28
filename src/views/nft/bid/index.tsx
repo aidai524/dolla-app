@@ -10,8 +10,8 @@ import useApprove from "@/hooks/use-approve";
 import { formatNumber } from "@/utils/format/number";
 import ScratchModal from "../scratch-modal";
 
-function calcProbability(n: number, v: number) {
-  return (1 - Math.exp(-n / (0.8 * v))) * 100;
+function calcProbability(price: number, times: number) {
+  return (1 - (0.9 * price) ** times) * 99.99;
 }
 
 export default function NFTBid({
@@ -46,8 +46,8 @@ export default function NFTBid({
     return config.map((item) => {
       return formatNumber(
         calcProbability(
-          item.value + (data?.accumulative_bids || 0),
-          anchorPrice
+          anchorPrice,
+          item.value + (data?.accumulative_bids || 0)
         ),
         2,
         true

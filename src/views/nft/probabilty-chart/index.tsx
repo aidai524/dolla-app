@@ -258,7 +258,7 @@ export default function WinningProbabiltyChart({
     const v = anchorPrice * 1.2;
     const maxN = v * 2;
     function calcLineData(n: number, k: number, v: number) {
-      return 1 - Math.exp(-n / (k * v));
+      return 1 - ((v - 1) / v) ** n;
     }
     function calcBarData(n: number) {
       const alpha = 3.5;
