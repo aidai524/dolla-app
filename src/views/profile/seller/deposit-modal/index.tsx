@@ -57,7 +57,6 @@ export default function DepositModal({
     account
   );
 
-  console.log(order);
   return (
     <>
       <Modal onClose={onClose} open={open}>
@@ -66,7 +65,7 @@ export default function DepositModal({
             <div className="text-[18px] font-medium text-white">
               Deposit Market
             </div>
-            <button className="button">
+            <button className="button" onClick={onClose}>
               <CloseIcon />
             </button>
           </div>
