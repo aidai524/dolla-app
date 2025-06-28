@@ -1,4 +1,4 @@
-import { useImperativeHandle, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import ButtonWithAuth from "@/components/button/button-with-auth";
 import config from "./config";
 import clsx from "clsx";
@@ -11,7 +11,7 @@ import { formatNumber } from "@/utils/format/number";
 import ScratchModal from "../scratch-modal";
 
 function calcProbability(price: number, times: number) {
-  return (1 - (1 - (1 / price) * 2) ** times) * 100;
+  return (1 - (1 - 1 / (price * 1.2 * 2)) ** times) * 99.99;
 }
 
 export default function NFTBid({
