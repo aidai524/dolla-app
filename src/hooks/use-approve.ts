@@ -142,16 +142,7 @@ export default function useApprove({
       }
       setApproving(true);
 
-      let approveValue = MAX_APPROVE;
-
-      const params = [
-        spender,
-        token.type === "nft"
-          ? token.id
-          : Big(approveValue)
-              .times(10 ** token.decimals)
-              .toFixed(0)
-      ];
+      const params = [spender, token.type === "nft" ? token.id : MAX_APPROVE];
       //  const TokenContract = await getPimlicoContract({
       //    address: token.address,
       //    abi: [
