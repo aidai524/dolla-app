@@ -29,6 +29,7 @@
     "leancloud-realtime": "5.0.0-rc.8",
     "leancloud-storage": "^4.15.2",
     "lodash-es": "^4.17.21",
+    "permissionless": "^0.2.47",
     "pusher-js": "^8.4.0",
     "qrcode.react": "^4.2.0",
     "react": "^19.0.0",

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import useToast from "@/hooks/use-toast";
 import { useWallets } from "@privy-io/react-auth";
 import { useAuth } from "@/contexts/auth";
+import getContractSigner from "@/utils/wallet/get-contract-signer";
 
 export const MAX_APPROVE =
   "115792089237316195423570985008687907853269984665640564039457584007913129639935";
@@ -140,10 +141,42 @@ export default function useApprove({
         return;
       }
       setApproving(true);
+
+      let approveValue = MAX_APPROVE;
+
+      const params = [
+        spender,
+        token.type === "nft"
+          ? token.id
+          : Big(approveValue)
+              .times(10 ** token.decimals)
+              .toFixed(0)
+      ];
+      //  const TokenContract = await getPimlicoContract({
+      //    address: token.address,
+      //    abi: [
+      //      {
+      //        inputs: [
+      //          { internalType: "address", name: "spender", type: "address" },
+      //          { internalType: "uint256", name: "value", type: "uint256" }
+      //        ],
+      //        name: "approve",
+      //        outputs: [{ internalType: "bool", name: "", type: "bool" }],
+      //        stateMutability: "nonpayable",
+      //        type: "function"
+      //      }
+      //    ],
+      //    owner: ethereumProvider
+      //  });
+      // const txHash = await TokenContract.write.approve(params);
+      // console.log("txHash", txHash);
+      // setApproving(false);
+
+      const contractSigner = await getContractSigner(wallet, ethereumProvider);
+      console.log("contractSigner", contractSigner);
       const provider = new ethers.providers.Web3Provider(ethereumProvider);
-
       const signer = provider.getSigner();
-
+      console.log("signer", signer);
       const TokenContract = new Contract(
         token.address,
         [
@@ -160,32 +193,29 @@ export default function useApprove({
         ],
         signer
       );
-      let approveValue = amount;
-      // if (isMax) {
-      if (true) {
-        approveValue = Big(MAX_APPROVE)
-          .div(Big(10).pow(token.decimals))
-          .toFixed(token.decimals);
-      }
-      const params = [
-        spender,
-        token.type === "nft"
-          ? token.id
-          : Big(approveValue)
-              .times(10 ** token.decimals)
-              .toFixed(0)
-      ];
+
       let estimateGas;
       try {
         estimateGas = await TokenContract.estimateGas.approve(...params);
       } catch (err) {}
-      const tx = await TokenContract.approve(...params, {
-        gasLimit: estimateGas
-          ? Big(estimateGas.toString()).mul(1.2).toFixed(0)
-          : 5000000
-      });
-      console.log("estimateGas", estimateGas?.toString());
+      const transaction = await TokenContract.populateTransaction.approve(
+        ...params,
+        {
+          gasLimit: estimateGas
+            ? Big(estimateGas.toString()).mul(1.2).toFixed(0)
+            : 5000000
+        }
+      );
+      console.log("transaction", transaction);
+
+      // const txHash = await contractSigner.sendTransaction(transaction);
+      // console.log("txHash", txHash);
+      // setApproving(false);
+
+      const tx = await signer.sendTransaction(transaction);
+      console.log("tx", tx);
       const res = await tx.wait();
+      console.log("res", res);
       setApproving(false);
       if (res.status === 1) {
         setApproved(true);

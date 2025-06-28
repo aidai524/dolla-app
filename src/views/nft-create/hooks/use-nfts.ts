@@ -138,6 +138,7 @@ export default function useNfts() {
     collection,
     onSelectNft,
     nft,
+    setNft,
     loadingCollections,
     listPrice,
     setListPrice,

@@ -11,25 +11,28 @@ import { formatNumber } from "@/utils/format/number";
 import ScratchModal from "../scratch-modal";
 
 function calcProbability(price: number, times: number) {
-  return (1 - (0.9 * price) ** times) * 99.99;
+  return (1 - (1 - (1 / price) * 2) ** times) * 100;
 }
 
 export default function NFTBid({
   className,
   data,
   selectedBid,
-  setSelectedBid
+  setSelectedBid,
+  onDrawSuccess
 }: {
   className?: string;
   data: any;
   selectedBid: number;
   setSelectedBid: any;
+  onDrawSuccess?: () => void;
 }) {
   const [showAnimation, setShowAnimation] = useState(false);
   const [isWinner, setIsWinner] = useState(false);
   const { onDraw, drawing } = useDraw((isWinner) => {
     setShowAnimation(true);
     setIsWinner(isWinner);
+    onDrawSuccess?.();
   });
   const { tokenBalance, isLoading } = useTokenBalance({
     address: PURCHASE_TOKEN.address,
@@ -84,7 +87,11 @@ export default function NFTBid({
           }
         }}
         loading={drawing || isLoading || checking || approving}
-        disabled={!isBalanceEnough || isWinner}
+        disabled={
+          !isBalanceEnough ||
+          isWinner ||
+          (!data?.pool_id && data?.pool_id !== 0)
+        }
       >
         {isBalanceEnough
           ? !approved

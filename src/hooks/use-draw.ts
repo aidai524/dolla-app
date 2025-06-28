@@ -16,6 +16,8 @@ export default function useDraw(onSuccess: (isWinner: boolean) => void) {
     setDrawing(true);
     try {
       const poolState = await BettingContract.getPoolState(poolId);
+      const poolConfig = await BettingContract.poolConfigs(poolId);
+      console.log("poolConfig", poolId, poolConfig);
       console.log("poolState", poolState);
       if (poolState.winner !== "0x0000000000000000000000000000000000000000") {
         toast.fail({ title: "Pool is already drawn" });

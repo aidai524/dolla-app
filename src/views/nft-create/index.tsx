@@ -18,6 +18,7 @@ export default function ListNFT() {
     onSelectNft,
     fetchNfts,
     nft,
+    setNft,
     listPrice,
     setListPrice
   } = useNfts();
@@ -25,8 +26,8 @@ export default function ListNFT() {
 
   const errorTips = useMemo(() => {
     if (!chain.id) return "Select a chain";
-    if (!collection.id) return "Select a collection";
-    if (!nft.id) return "Select a NFT";
+    if (!collection?.id) return "Select a collection";
+    if (!nft?.id) return "Select a NFT";
     if (!listPrice) return "Select a list price";
     return "";
   }, [chain, collection, nft, listPrice]);
@@ -113,8 +114,11 @@ export default function ListNFT() {
         errorTips={errorTips}
         address={address}
         token={selectedToken}
-        onSuccess={() => {
+        onSuccess={(type?: string) => {
           fetchNfts();
+          if (type === "create") {
+            setNft({});
+          }
         }}
       />
     </div>

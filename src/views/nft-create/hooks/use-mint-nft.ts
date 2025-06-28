@@ -4,7 +4,10 @@ import nftAbi from "@/config/abis/nft";
 import useToast from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/auth";
 
-export default function useMintNft(nftAddress?: string) {
+export default function useMintNft(
+  nftAddress?: string,
+  onSuccess?: () => void
+) {
   const [minting, setMinting] = useState(false);
   const { wallet, address } = useAuth();
   const [minted, setMinted] = useState(false);
@@ -34,6 +37,7 @@ export default function useMintNft(nftAddress?: string) {
       console.log("tokenId", Number(tokenId));
       toast.success({ title: "Mint NFT success" });
       setMinted(true);
+      onSuccess?.();
     } catch (error) {
       console.error(error);
     } finally {

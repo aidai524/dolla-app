@@ -23,7 +23,7 @@ export default function Nfts({ nfts, onSelectNft, currentNft }: any) {
             <NFTCard
               key={item.id}
               data={item}
-              checked={item.id === currentNft.id}
+              checked={item.id === currentNft?.id}
               onSelect={() => {
                 setCurrentIndex(index);
               }}

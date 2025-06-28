@@ -43,7 +43,8 @@ export default function ListPrice({
     return prices[0];
   }, [prices]);
   const { mintNft, minting, minted, mintedLoading } = useMintNft(
-    token?.address
+    token?.address,
+    onSuccess
   );
   return (
     <div className="mt-[30px]">
@@ -120,7 +121,9 @@ export default function ListPrice({
               paymentMethod={1}
               address={address}
               anchorPrice={listPrice}
-              onSuccess={onSuccess}
+              onSuccess={() => {
+                onSuccess("create");
+              }}
             />
           )}
           {(!minted || !token?.id) && (

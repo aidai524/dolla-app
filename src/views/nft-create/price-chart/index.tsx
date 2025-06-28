@@ -300,9 +300,11 @@ export default function PriceChart({ anchorPrice }: { anchorPrice?: number }) {
             pointerEvents: "none"
           }}
         />
-        <div className="text-[#57FF70] text-[16px] ml-[10px]">
-          ${formatNumber(anchorPrice, 2, true)}
-        </div>
+        {anchorPrice && (
+          <div className="text-[#57FF70] text-[16px] ml-[10px]">
+            ${formatNumber(anchorPrice * 1.2, 2, true)}
+          </div>
+        )}
       </div>
       <Title />
       <Annotations

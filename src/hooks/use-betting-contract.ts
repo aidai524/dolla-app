@@ -4,6 +4,7 @@ import { BETTING_CONTRACT_ADDRESS } from "@/config";
 import { useWallets } from "@privy-io/react-auth";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/auth";
+import getContractSigner from "@/utils/wallet/get-contract-signer";
 
 export default function useBettingContract(account?: string) {
   const { wallets } = useWallets();
@@ -23,8 +24,8 @@ export default function useBettingContract(account?: string) {
       if (!ethereumProvider) {
         return;
       }
-      const provider = new ethers.providers.Web3Provider(ethereumProvider);
-      const signer = provider.getSigner();
+      const signer = await getContractSigner(wallet, ethereumProvider);
+
       const BettingContract = new ethers.Contract(
         BETTING_CONTRACT_ADDRESS,
         BettingContractAbi,
