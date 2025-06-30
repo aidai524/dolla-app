@@ -58,7 +58,7 @@ export default function NFT() {
           />
         </div>
         <div className="w-[348px] h-[326px]">
-          <PlayerDistribution data={mergedData} />
+          <PlayerDistribution data={mergedData} key={refresh} />
         </div>
       </div>
       {/* <div className="fixed bottom-[50px] right-[20px]">
