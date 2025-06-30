@@ -11,7 +11,7 @@ import { formatNumber } from "@/utils/format/number";
 import ScratchModal from "../scratch-modal";
 
 function calcProbability(price: number, times: number) {
-  return (1 - (1 - 1 / (price * 1.2 * 2)) ** times) * 99.99;
+  return (1 - (1 - 1 / (price * 1.2)) ** times) * 99.99;
 }
 
 export default function NFTBid({
@@ -44,17 +44,11 @@ export default function NFTBid({
     amount: selectedBid?.toString()
   });
   const isBalanceEnough = Big(tokenBalance || 0).gte(selectedBid);
+
   const probailties = useMemo(() => {
     const anchorPrice = data.anchor_price;
     return config.map((item) => {
-      return formatNumber(
-        calcProbability(
-          anchorPrice,
-          item.value + (data?.accumulative_bids || 0)
-        ),
-        2,
-        true
-      );
+      return formatNumber(calcProbability(anchorPrice, item.value), 2, true);
     });
   }, [data]);
 
