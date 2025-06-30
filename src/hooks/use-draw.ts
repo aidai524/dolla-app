@@ -21,6 +21,7 @@ export default function useDraw(onSuccess: (isWinner: boolean) => void) {
       console.log("poolState", poolState);
       if (poolState.winner !== "0x0000000000000000000000000000000000000000") {
         toast.fail({ title: "Pool is already drawn" });
+        setDrawing(false);
         return;
       }
       const flipFee = await BettingContract.getFlipFee();
@@ -48,23 +49,28 @@ export default function useDraw(onSuccess: (isWinner: boolean) => void) {
       reportHash(receipt.transactionHash, receipt.blockNumber);
       if (receipt.status === 0) {
         toast.fail({ title: "Draw failed" });
+        setDrawing(false);
         return;
       }
 
-      const afterPoolState = await BettingContract.getPoolState(poolId);
-      onSuccess(
-        afterPoolState.winner !== "0x0000000000000000000000000000000000000000"
-      );
-      toast.success({
-        title:
+      setTimeout(async () => {
+        const afterPoolState = await BettingContract.getPoolState(poolId);
+        console.log("afterPoolState", afterPoolState);
+        onSuccess(
           afterPoolState.winner !== "0x0000000000000000000000000000000000000000"
-            ? "You are the winner"
-            : "Draw success"
-      });
+        );
+        toast.success({
+          title:
+            afterPoolState.winner !==
+            "0x0000000000000000000000000000000000000000"
+              ? "You are the winner"
+              : "Draw success"
+        });
+        setDrawing(false);
+      }, 8000);
     } catch (error) {
-      console.error(error);
-    } finally {
       setDrawing(false);
+      console.error(error);
     }
   };
   return {
