@@ -4,7 +4,7 @@ import { CopyBtn, ExitBtn, AddBtn } from "./action-btns";
 import Modal from "@/components/modal";
 import Recharge from "@/components/cashier/panels/recharge";
 import PriceChart from "../nft-create/price-chart";
-import PaymentsModal from "./payments-modal";
+
 import { useAuth } from "@/contexts/auth";
 import useCopy from "@/hooks/use-copy";
 import { TOKEN } from "@/config/btc";
@@ -19,10 +19,8 @@ import useMintBtc from "./use-mint-btc";
 export default function BTCCreate() {
   const [amount, setAmount] = useState(1);
   const [chargeModalOpen, setChargeModalOpen] = useState(false);
-  const [paymentsModalOpen, setPaymentsModalOpen] = useState(false);
   const { address, logout } = useAuth();
   const { onCopy } = useCopy();
-  const [paymentMethod, setPaymentMethod] = useState(0);
   const { tokenBalance, isLoading, update } = useTokenBalance(TOKEN);
   const { mintBtc, minting } = useMintBtc(() => {
     update();
@@ -111,11 +109,9 @@ export default function BTCCreate() {
       ) : (
         <Action
           amount={amount}
-          setPaymentsModalOpen={setPaymentsModalOpen}
           token={TOKEN}
-          paymentMethod={paymentMethod}
           address={address}
-          anchorPrice={1}
+          anchorPrice={pricePerBTC * 1.2}
           tokenBalance={tokenBalance}
           onSuccess={() => {
             update();
@@ -129,11 +125,6 @@ export default function BTCCreate() {
           <Recharge token={TOKEN} />
         </div>
       </Modal>
-      <PaymentsModal
-        open={paymentsModalOpen}
-        onClose={() => setPaymentsModalOpen(false)}
-        onSelectMethod={setPaymentMethod}
-      />
     </div>
   );
 }

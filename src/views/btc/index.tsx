@@ -9,7 +9,6 @@ import ShareBtn from "./share-btn";
 import { useMemo, useRef, useState } from "react";
 import usePoolRecommend from "../../hooks/use-pool-recommend";
 import { formatNumber } from "@/utils/format/number";
-import { getAnchorPrice } from "@/utils/pool";
 
 export default function BTC() {
   const marketsRef = useRef<any>(null);
@@ -59,7 +58,7 @@ export default function BTC() {
       <div className="mt-[8px] flex gap-[14px] justify-center">
         <div className="w-[566px] h-[326px]">
           <ProbabiltyChart
-            anchorPrice={getAnchorPrice(pool)}
+            anchorPrice={pool?.anchor_price}
             selectedBids={selectedBid}
             totalBids={data?.accumulative_bids || 0}
           />

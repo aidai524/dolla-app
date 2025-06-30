@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { formatNumber } from "@/utils/format/number";
 import { useMemo } from "react";
 import Big from "big.js";
-import { getAnchorPrice } from "@/utils/pool";
 
 export default function Market({
   data,
@@ -18,7 +17,7 @@ export default function Market({
 }) {
   const progress = useMemo(() => {
     if (!data.accumulative_bids || data.anchor_price === "0") return 0;
-    return (data.accumulative_bids / getAnchorPrice(data)) * 100;
+    return (data.accumulative_bids / data.anchor_price) * 100;
   }, [data]);
   const rewardTokenInfo = useMemo(() => {
     return data.reward_token_info?.[0] || {};

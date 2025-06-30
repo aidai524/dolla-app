@@ -5,7 +5,6 @@ import { memo, useMemo } from "react";
 import { formatNumber } from "@/utils/format/number";
 import Big from "big.js";
 import { formatAddress } from "@/utils/format/address";
-import { getAnchorPrice } from "@/utils/pool";
 
 export default memo(function BTCTop({ data }: { data: any }) {
   const coins = useMemo(() => {
@@ -101,7 +100,7 @@ export const Tips = ({
     <div className={clsx("absolute w-[284px] h-[166px]", className)}>
       <div className="relative w-[234px] h-full z-[2] flex flex-col justify-center items-center">
         <div className="text-[42px] font-semibold text-transparent bg-clip-text bg-[radial-gradient(50%_50%_at_50%_50%,#FFEF43_0%,#FFC42F_100%)] [text-shadow:0px_0px_6px_#FFC42F]">
-          ${formatNumber(getAnchorPrice(data), 2, true)}
+          ${formatNumber(data.reward_usd, 2, true)}
         </div>
         <div className="text-[20px] font-bold">
           {amount} {data.reward_token_info?.[0].symbol}
