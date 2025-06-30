@@ -11,7 +11,9 @@ export default function useUserNft() {
     try {
       setLoading(true);
       const res = await axiosInstance.get(
-        `/user/nft?limit=${200}&sort_by=acquiredAt&sort_direction=desc`
+        `/user/nft?limit=${200}&sort_by=acquiredAt&sort_direction=desc&user=${
+          userInfo?.user
+        }`
       );
       setNfts(res.data.data);
     } catch (err) {

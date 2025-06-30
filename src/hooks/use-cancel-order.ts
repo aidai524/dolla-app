@@ -25,7 +25,12 @@ export default function useCancelOrder({
       const tx = await BettingContract.cancelActivity(poolId);
       const receipt = await tx.wait();
       console.log("receipt", receipt);
-      reportHash(receipt.transactionHash, receipt.blockNumber);
+      reportHash({
+        hash: receipt.transactionHash,
+        block_number: receipt.blockNumber,
+        chain: "Berachain",
+        user: receipt?.from
+      });
       if (receipt.status === 0) {
         toast.fail({ title: "Cancel order failed" });
         return;

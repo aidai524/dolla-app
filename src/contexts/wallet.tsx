@@ -39,35 +39,16 @@ export default function WalletProvider({
           requireUserPasswordOnCreate: false,
           showWalletUIs: true
         },
-        supportedChains: [
-          berachain
-          // {
-          //   id: 1399811149,
-          //   name: "Solana",
-          //   rpcUrls: {
-          //     default: {
-          //       http: ["https://api.mainnet-beta.solana.com"]
-          //     },
-          //     public: {
-          //       http: ["https://api.mainnet-beta.solana.com"]
-          //     }
-          //   },
-          //   blockExplorers: {
-          //     default: {
-          //       name: "Solana Explorer",
-          //       url: "https://explorer.solana.com"
-          //     }
-          //   },
-          //   nativeCurrency: {
-          //     name: "SOL",
-          //     symbol: "SOL",
-          //     decimals: 9
-          //   }
-          // }
-        ],
+        supportedChains: [berachain],
         mfa: {
           noPromptOnMfaRequired: false
-        }
+        },
+        solanaClusters: [
+          {
+            name: import.meta.env.VITE_SOLANA_CLUSTER_NAME,
+            rpcUrl: import.meta.env.VITE_SOLANA_RPC_URL
+          }
+        ]
       }}
     >
       {children}

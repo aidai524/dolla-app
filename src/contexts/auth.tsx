@@ -14,7 +14,8 @@ import {
   useSignMessage,
   usePrivy,
   useWallets,
-  useUser
+  useUser,
+  useSolanaWallets
 } from "@privy-io/react-auth";
 import { USE_OTHER_WALLET } from "@/config";
 import { ethers } from "ethers";
@@ -28,7 +29,7 @@ export const AuthProvider: React.FC<{
   const { user } = useUser();
 
   const { wallets } = useWallets();
-  // const { wallets: solanaWallets } = useSolanaWallets();
+  const { wallets: solanaWallets } = useSolanaWallets();
 
   const privyWallet = useMemo(() => {
     if (wallets.length === 0) return { address: "" };
@@ -80,7 +81,7 @@ export const AuthProvider: React.FC<{
 
     try {
       const time = Date.now();
-      const message = `login dolla,time:${time}`;
+      const message = `login dolla, sol_address:${solanaWallets[0]?.address},time:${time}`;
       let signature: string;
 
       // Choose different signing methods based on wallet type
@@ -107,6 +108,7 @@ export const AuthProvider: React.FC<{
 
       onLogin({
         address: privyWallet?.address,
+        solAddress: solanaWallets[0]?.address,
         signature,
         time,
         onSuccess: async () => {

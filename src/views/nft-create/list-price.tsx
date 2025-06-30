@@ -34,7 +34,15 @@ export default function ListPrice({
   onSuccess
 }: any) {
   const tokenIds = useMemo(() => {
-    return token.id ? [`${token.address}:${token.id}`] : [];
+    return token.id
+      ? [
+          {
+            chain: "Berachain",
+            address: token.address,
+            tokenIds: [token.id]
+          }
+        ]
+      : [];
   }, [token]);
   const { prices, loading: pricesLoading } = useTokenPrice(tokenIds);
   const price = useMemo(() => {
@@ -126,7 +134,7 @@ export default function ListPrice({
               }}
             />
           )}
-          {(!minted || !token?.id) && (
+          {(!minted || !token?.id) && token?.address && (
             <Button
               loading={minting || mintedLoading}
               className="button w-full h-[40px] mt-[20px]"

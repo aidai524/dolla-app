@@ -65,7 +65,12 @@ export default function useCreate({
       );
       const receipt = await tx.wait();
       console.log("receipt", receipt);
-      reportHash(receipt.transactionHash, receipt.blockNumber);
+      reportHash({
+        hash: receipt.transactionHash,
+        block_number: receipt.blockNumber,
+        chain: "Berachain",
+        user: receipt?.from
+      });
       if (receipt.status === 0) {
         toast.fail({ title: "Create pool failed" });
         throw new Error("Create pool failed");

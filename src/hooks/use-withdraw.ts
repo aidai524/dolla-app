@@ -37,7 +37,12 @@ export default function useWithdraw(onSuccess: () => void) {
           : [wallet.address, receiveAddress, tokenId];
       const tx = await Contract[method](...params);
       const receipt = await tx.wait();
-      reportHash(receipt.transactionHash, receipt.blockNumber);
+      reportHash({
+        hash: receipt.transactionHash,
+        block_number: receipt.blockNumber,
+        chain: "Berachain",
+        user: receipt?.from
+      });
       if (receipt.status === 0) {
         toast.fail({ title: "Withdraw failed" });
         return;

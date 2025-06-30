@@ -46,7 +46,12 @@ export default function useDraw(onSuccess: (isWinner: boolean) => void) {
       });
       const receipt = await tx.wait();
       console.log("receipt", receipt);
-      reportHash(receipt.transactionHash, receipt.blockNumber);
+      reportHash({
+        hash: receipt.transactionHash,
+        block_number: receipt.blockNumber,
+        chain: "Berachain",
+        user: receipt?.from
+      });
       if (receipt.status === 0) {
         toast.fail({ title: "Draw failed" });
         setDrawing(false);

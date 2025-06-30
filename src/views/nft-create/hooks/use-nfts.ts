@@ -116,10 +116,10 @@ export default function useNfts() {
   };
 
   useEffect(() => {
-    if (collection.address && wallet) {
+    if (collection?.address && wallet) {
       fetchNfts();
     }
-  }, [collection.address, wallet]);
+  }, [collection, wallet]);
 
   return {
     chains,

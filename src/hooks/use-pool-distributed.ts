@@ -1,7 +1,7 @@
 import axiosInstance from "@/libs/axios";
 import { useEffect, useState } from "react";
 
-export const usePoolDistributed = (poolId?: number) => {
+export const usePoolDistributed = (data: any) => {
   const [distributed, setDistributed] = useState({
     1: 0,
     10: 0,
@@ -14,7 +14,7 @@ export const usePoolDistributed = (poolId?: number) => {
     try {
       setLoading(true);
       const res = await axiosInstance.get(
-        `/api/v1/pool/distributed?pool_id=${poolId}`
+        `/api/v1/pool/distributed?pool_id=${data.pool_id}&chain=${data.chain}`
       );
       const _result = {
         1: 0,
@@ -42,10 +42,10 @@ export const usePoolDistributed = (poolId?: number) => {
   };
 
   useEffect(() => {
-    if (poolId) {
+    if (data?.pool_id) {
       getDistributed();
     }
-  }, [poolId]);
+  }, [data]);
 
   return { distributed, loading };
 };

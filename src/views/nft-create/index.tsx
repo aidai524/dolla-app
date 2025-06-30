@@ -35,7 +35,7 @@ export default function ListNFT() {
   const selectedToken = useMemo(() => {
     return {
       type: "nft",
-      address: collection.address,
+      address: collection?.address,
       id: nft?.id
     };
   }, [collection, nft]);

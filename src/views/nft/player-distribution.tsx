@@ -4,7 +4,7 @@ import clsx from "clsx";
 import { useMemo } from "react";
 
 export default function PlayerDistribution({ data }: { data: any }) {
-  const { distributed, loading } = usePoolDistributed(data?.pool_id);
+  const { distributed, loading } = usePoolDistributed(data);
 
   return (
     <div className="w-full h-full bg-[#1A1E24] rounded-[6px]">

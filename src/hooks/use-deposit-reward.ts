@@ -39,7 +39,12 @@ export default function useDeposit(
 
       const receipt = await tx.wait();
       console.log("Transaction receipt:", receipt);
-      reportHash(receipt.transactionHash, receipt.blockNumber);
+      reportHash({
+        hash: receipt.transactionHash,
+        block_number: receipt.blockNumber,
+        chain: "Berachain",
+        user: receipt?.from
+      });
       if (receipt.status === 0) {
         toast.fail({ title: "Deposit failed" });
         throw new Error("Deposit failed");

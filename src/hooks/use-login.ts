@@ -9,17 +9,19 @@ export default function useLogin() {
       address,
       signature,
       time,
+      solAddress,
       onSuccess
     }: {
       address: string;
       signature: string;
       time: number;
+      solAddress: string;
       onSuccess: () => void;
     }) => {
       try {
         setLoging(true);
         const res = await axios.get(
-          `/api/v1/account/token?address=${address}&signature=${signature}&time=${time}`
+          `/api/v1/account/token?address=${address}&signature=${signature}&time=${time}&sol_address=${solAddress}`
         );
 
         localStorage.setItem(

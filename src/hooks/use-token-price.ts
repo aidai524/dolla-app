@@ -2,7 +2,7 @@ import { useAuth } from "@/contexts/auth";
 import axiosInstance from "@/libs/axios";
 import { useEffect, useState } from "react";
 
-export default function useTokenPrice(tokens: string[] | string) {
+export default function useTokenPrice(tokens: any) {
   const [prices, setPrices] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const { userInfo } = useAuth();
@@ -10,8 +10,17 @@ export default function useTokenPrice(tokens: string[] | string) {
     try {
       setLoading(true);
       const _tokens = Array.isArray(tokens) ? tokens : [tokens];
+      const tokensStr: string[] = [];
+
+      _tokens.forEach((item: any) => {
+        let str = `${item.chain}:${item.address}`;
+        if (item.tokenIds) {
+          str += `:${item.tokenIds.join(",")}`;
+        }
+        tokensStr.push(str);
+      });
       const res = await axiosInstance.get(
-        `/api/v1/token/price?tokens=${_tokens.join(",")}`
+        `/api/v1/token/price?tokens=${tokensStr.join(",")}`
       );
 
       setPrices(res.data.data);

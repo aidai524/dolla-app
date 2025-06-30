@@ -25,7 +25,7 @@ export default function BTCCreate() {
   const { mintBtc, minting } = useMintBtc(() => {
     update();
   });
-  const { prices } = useTokenPrice(TOKEN.address);
+  const { prices } = useTokenPrice(TOKEN);
 
   const pricePerBTC = useMemo(() => {
     if (!prices || prices.length === 0) return 0;
