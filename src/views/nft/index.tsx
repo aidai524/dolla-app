@@ -37,7 +37,9 @@ export default function NFT() {
             setSelectedBid(val);
           }}
           onDrawSuccess={async () => {
-            await onQueryPoolInfo(data.pool_id);
+            setTimeout(async () => {
+              await onQueryPoolInfo(data.pool_id);
+            }, 2000);
             setRefresh(refresh + 1);
           }}
         />
