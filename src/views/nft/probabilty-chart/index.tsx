@@ -4,6 +4,7 @@ import annotationPlugin from "chartjs-plugin-annotation";
 import Annotations from "./annotations";
 import Title from "./title";
 import { motion } from "framer-motion";
+import { getAnchorPrice } from "@/utils/pool";
 
 Chart.register(annotationPlugin);
 
@@ -253,10 +254,11 @@ export default function WinningProbabiltyChart({
     if (!chartInstance.current) return;
     setIsInit(false);
     const chart = chartInstance.current;
-
-    const maxN = anchorPrice * 2;
+    const _anchorPrice = getAnchorPrice({ anchor_price: anchorPrice });
+    const maxN = Math.ceil(_anchorPrice * 3);
     function calcLineData(n: number) {
-      return 1 - (1 - 1 / maxN) ** n;
+      // return 1 - (1 - 1 / (anchorPrice * 1.2)) ** n;
+      return 1 - Math.exp(-n / (0.8 * _anchorPrice));
     }
     function calcBarData(n: number) {
       const alpha = 3.5;
@@ -274,13 +276,15 @@ export default function WinningProbabiltyChart({
         x: n,
         y: calcLineData(n) * 100
       });
-      if (n % 5 === 0) {
+
+      if (n % 10 === 0) {
         barData.push({
           x: n,
           y: calcBarData(n) * 100
         });
       }
     }
+
     chart.data.datasets[0].data = lineData;
     chart.data.datasets[1].data = barData;
 

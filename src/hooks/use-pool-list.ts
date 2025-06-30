@@ -40,6 +40,7 @@ export default function usePoolList() {
   useEffect(() => {
     if (userInfo?.user) {
       pageRef.current = 0;
+      setPoolList([]);
       onQueryPoolList();
     }
   }, [userInfo, sortOrder, sortField]);

@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { formatNumber } from "@/utils/format/number";
 import { useMemo } from "react";
 import Big from "big.js";
+import { getAnchorPrice } from "@/utils/pool";
 
 export default function Market({
   data,
@@ -16,8 +17,8 @@ export default function Market({
   onClick?: () => void;
 }) {
   const progress = useMemo(() => {
-    if (!data.accumulative_bids || data.value === "0") return 0;
-    return (data.accumulative_bids / data.value) * 100;
+    if (!data.accumulative_bids || data.anchor_price === "0") return 0;
+    return (data.accumulative_bids / getAnchorPrice(data)) * 100;
   }, [data]);
   const rewardTokenInfo = useMemo(() => {
     return data.reward_token_info?.[0] || {};
@@ -126,13 +127,13 @@ export default function Market({
           className="h-full absolute left-0 top-0 rounded-[6px] shadow-[0px_0px_6px_0px_#FFC42F]"
           style={{
             background:
-              progress === 100
+              progress >= 100
                 ? "linear-gradient(270deg, #FFC42F 0%, #FF43E0 54.81%, #53EABF 100%)"
                 : "radial-gradient(50% 50% at 50% 50%, #FFEF43 0%, #FFC42F 100%)",
-            width: `${progress}%`
+            width: `${Math.min(progress, 100)}%`
           }}
         >
-          {progress >= 80 && (
+          {progress >= 80 && progress < 100 && (
             <>
               <motion.div
                 className="absolute right-0 top-[-3px] w-[4px] h-[2px] bg-[#FFC42F] rounded-full rotate-45"

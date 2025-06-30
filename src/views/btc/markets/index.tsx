@@ -5,6 +5,7 @@ import Market from "./market";
 import useInfiniteScroll from "@/hooks/use-infinite-scroll";
 import usePoolList from "@/hooks/use-pool-list";
 import LoadingMore from "@/components/loading/loading-more";
+import Loading from "@/components/icons/loading";
 
 const Filters = [
   {
@@ -134,6 +135,16 @@ export default function BTCMarkets({ ref, onSelectMarket }: any) {
                   className="button"
                 />
               ))}
+              {poolList.length === 0 &&
+                (!loading ? (
+                  <div className="flex items-center justify-center h-full">
+                    <div className="text-[#ADBCCF] text-[14px]">No data</div>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center h-full">
+                    <Loading size={24} />
+                  </div>
+                ))}
               <LoadingMore
                 loading={isLoading}
                 hasMore={hasMore}
