@@ -239,19 +239,6 @@ export default [
     anonymous: false,
     inputs: [
       {
-        indexed: false,
-        internalType: "address",
-        name: "newAdmin",
-        type: "address"
-      }
-    ],
-    name: "AdminUpdated",
-    type: "event"
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
         indexed: true,
         internalType: "uint256",
         name: "poolId",
@@ -726,6 +713,61 @@ export default [
     type: "event"
   },
   {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "uint256",
+        name: "poolId",
+        type: "uint256"
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "user",
+        type: "address"
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "tokenAmount",
+        type: "uint256"
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "times",
+        type: "uint256"
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "entropyFee",
+        type: "uint256"
+      },
+      {
+        indexed: false,
+        internalType: "uint64",
+        name: "sequenceNumber",
+        type: "uint64"
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "purchaseToken",
+        type: "address"
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "drawFee",
+        type: "uint256"
+      }
+    ],
+    name: "SponsoredDrawAttempt",
+    type: "event"
+  },
+  {
     inputs: [],
     name: "K",
     outputs: [
@@ -872,19 +914,6 @@ export default [
       }
     ],
     name: "cancelActivity",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function"
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "newAdmin",
-        type: "address"
-      }
-    ],
-    name: "changeAdmin",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function"
@@ -1046,6 +1075,19 @@ export default [
         internalType: "contract IEntropy",
         name: "",
         type: "address"
+      }
+    ],
+    stateMutability: "view",
+    type: "function"
+  },
+  {
+    inputs: [],
+    name: "entropyFund",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256"
       }
     ],
     stateMutability: "view",
@@ -1530,6 +1572,29 @@ export default [
   {
     inputs: [
       {
+        internalType: "uint256",
+        name: "poolId",
+        type: "uint256"
+      },
+      {
+        internalType: "uint256",
+        name: "times",
+        type: "uint256"
+      },
+      {
+        internalType: "bytes32",
+        name: "userRandomNumber",
+        type: "bytes32"
+      }
+    ],
+    name: "sponsoredDraw",
+    outputs: [],
+    stateMutability: "payable",
+    type: "function"
+  },
+  {
+    inputs: [
+      {
         internalType: "address",
         name: "newOwner",
         type: "address"
@@ -1658,5 +1723,22 @@ export default [
     ],
     stateMutability: "view",
     type: "function"
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256"
+      }
+    ],
+    name: "withdrawEntropyFund",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function"
+  },
+  {
+    stateMutability: "payable",
+    type: "receive"
   }
 ];
