@@ -3,14 +3,12 @@ import CloseIcon from "@/components/icons/close";
 import Modal from "@/components/modal";
 import { formatNumber } from "@/utils/format/number";
 import Big from "big.js";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import useTokenBalance from "@/hooks/use-token-balance";
 import useDeposit from "@/hooks/use-deposit-reward";
 import useApprove from "@/hooks/use-approve";
 import { BETTING_CONTRACT_ADDRESS } from "@/config";
-import { useAccount } from "wagmi";
 import { useAuth } from "@/contexts/auth";
-import PaymentsModal from "@/views/btc-create/payments-modal";
 
 export default function DepositModal({
   open,
@@ -27,16 +25,10 @@ export default function DepositModal({
     return order?.reward_token_info?.[0] || {};
   }, [order]);
   const { address } = useAuth();
-  const [paymentMethod, setPaymentMethod] = useState(1);
-  const [paymentsModalOpen, setPaymentsModalOpen] = useState(false);
   const { tokenBalance, isLoading, update } = useTokenBalance(
     order?.reward_token_info?.[0]
   );
-  const { address: walletAddress } = useAccount();
-  const account = useMemo(
-    () => (paymentMethod === 2 ? walletAddress : address),
-    [paymentMethod, walletAddress, address]
-  );
+
   const amount = useMemo(() => {
     return Big(order?.reward_amount || 0)
       .div(10 ** rewardTokenInfo.decimals)
@@ -46,7 +38,7 @@ export default function DepositModal({
     token: order?.reward_token_info?.[0],
     amount: amount?.toString(),
     spender: BETTING_CONTRACT_ADDRESS,
-    account
+    account: address
   });
 
   const { depositing, onDeposit } = useDeposit(
@@ -54,7 +46,7 @@ export default function DepositModal({
     () => {
       onSuccess();
     },
-    account
+    address
   );
 
   return (
@@ -94,8 +86,7 @@ export default function DepositModal({
             <span className="text-[#5E6B7D]">Balance</span>
             <div className="grow border-b border-dashed border-[#303742] min-w-[50px]" />
             <span className="text-white font-medium text-right">
-              {formatNumber(tokenBalance, 0, true)}{" "}
-              {order?.purchase_token_info.symbol}
+              {formatNumber(tokenBalance, 0, true)} {rewardTokenInfo.symbol}{" "}
             </span>
           </div>
           <div className="flex justify-end">
@@ -103,10 +94,6 @@ export default function DepositModal({
               className="w-[86px] h-[26px] text-[12px]"
               loading={isLoading || approving || checking || depositing}
               onClick={() => {
-                if (Big(tokenBalance).lt(amount) && !order.nft_ids) {
-                  setPaymentsModalOpen(true);
-                  return;
-                }
                 if (!approved) {
                   approve();
                   return;
@@ -119,11 +106,6 @@ export default function DepositModal({
           </div>
         </div>
       </Modal>
-      <PaymentsModal
-        open={paymentsModalOpen}
-        onClose={() => setPaymentsModalOpen(false)}
-        onSelectMethod={setPaymentMethod}
-      />
     </>
   );
 }

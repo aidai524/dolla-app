@@ -30,15 +30,21 @@ export default function useCreate({
       // check token is whitelisted
       const [purchaseTokens, erc20RewardTokens, erc721RewardTokens] =
         await BettingContract.getAllWhitelistedTokens();
-      const isPurchaseTokenWhitelisted = purchaseTokens.includes(
-        PURCHASE_TOKEN.address
+      const isPurchaseTokenWhitelisted = purchaseTokens.filter(
+        (item: any) =>
+          item.toLowerCase() === PURCHASE_TOKEN.address.toLowerCase()
       );
 
       const isRewardTokenWhitelisted = (
         token.type === "nft" ? erc721RewardTokens : erc20RewardTokens
-      ).includes(token.address);
+      ).filter(
+        (item: any) => item.toLowerCase() === token.address.toLowerCase()
+      );
 
-      if (!isPurchaseTokenWhitelisted || !isRewardTokenWhitelisted) {
+      if (
+        !isPurchaseTokenWhitelisted.length ||
+        !isRewardTokenWhitelisted.length
+      ) {
         throw new Error("Token not whitelisted");
       }
 

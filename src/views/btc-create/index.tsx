@@ -13,6 +13,8 @@ import useTokenBalance from "@/hooks/use-token-balance";
 import { formatNumber } from "@/utils/format/number";
 import useTokenPrice from "@/hooks/use-token-price";
 import Loading from "@/components/icons/loading";
+import Button from "@/components/button";
+import useMintBtc from "./use-mint-btc";
 
 export default function BTCCreate() {
   const [amount, setAmount] = useState(1);
@@ -22,7 +24,9 @@ export default function BTCCreate() {
   const { onCopy } = useCopy();
   const [paymentMethod, setPaymentMethod] = useState(0);
   const { tokenBalance, isLoading, update } = useTokenBalance(TOKEN);
-
+  const { mintBtc, minting } = useMintBtc(() => {
+    update();
+  });
   const { prices } = useTokenPrice(TOKEN.address);
 
   const pricePerBTC = useMemo(() => {
@@ -96,18 +100,29 @@ export default function BTCCreate() {
       <div className="flex flex-col gap-[14px] w-full bg-[#1A1E24] rounded-[6px] h-[335px] relative mt-[20px]">
         <PriceChart anchorPrice={amount * pricePerBTC} />
       </div>
-      <Action
-        amount={amount}
-        setPaymentsModalOpen={setPaymentsModalOpen}
-        token={TOKEN}
-        paymentMethod={paymentMethod}
-        address={address}
-        anchorPrice={1}
-        tokenBalance={tokenBalance}
-        onSuccess={() => {
-          update();
-        }}
-      />
+      {Number(tokenBalance) < amount ? (
+        <Button
+          loading={minting || isLoading}
+          className="button w-full h-[40px] mt-[20px]"
+          onClick={mintBtc}
+        >
+          Mint BTC
+        </Button>
+      ) : (
+        <Action
+          amount={amount}
+          setPaymentsModalOpen={setPaymentsModalOpen}
+          token={TOKEN}
+          paymentMethod={paymentMethod}
+          address={address}
+          anchorPrice={1}
+          tokenBalance={tokenBalance}
+          onSuccess={() => {
+            update();
+          }}
+        />
+      )}
+
       <Modal open={chargeModalOpen} onClose={() => setChargeModalOpen(false)}>
         <div className="w-[316px] h-[436px] p-[15px] rounded-[6px] bg-[#232932]">
           <div className="text-center text-white font-bold">Recharge</div>
