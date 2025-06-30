@@ -4,8 +4,8 @@ import Button from "@/components/button";
 import useDeposit from "@/hooks/use-deposit-reward";
 import useApprove from "@/hooks/use-approve";
 import useCreate from "@/hooks/use-create";
-import { useAccount } from "wagmi";
 import { BETTING_CONTRACT_ADDRESS } from "@/config";
+import { useAuth } from "@/contexts/auth";
 
 export default function Action({
   amount,
@@ -19,20 +19,17 @@ export default function Action({
   onSuccess
 }: any) {
   const [step, setStep] = useState(0);
-  const { address: walletAddress } = useAccount();
+  const { address: walletAddress } = useAuth();
   //5,6
   const [poolId, setPoolId] = useState(-1);
-  const account = useMemo(
-    () => (paymentMethod === 2 ? walletAddress : address),
-    [paymentMethod, walletAddress, address]
-  );
+
   const { depositing, onDeposit } = useDeposit(
     poolId,
     () => {
       setStep(0);
       onSuccess();
     },
-    account
+    walletAddress
   );
 
   const { creating, onCreate } = useCreate({
@@ -52,7 +49,7 @@ export default function Action({
     token: token,
     amount: amount?.toString(),
     spender: BETTING_CONTRACT_ADDRESS,
-    account
+    account: walletAddress
   });
 
   useEffect(() => {
@@ -71,7 +68,11 @@ export default function Action({
     return <Button loading={loading} className="mt-[20px] w-full h-[40px]" />;
   }
   return step === 0 ? (
-    <CreateButton onCreate={onCreate} loading={creating} account={account} />
+    <CreateButton
+      onCreate={onCreate}
+      loading={creating}
+      account={walletAddress}
+    />
   ) : step === 1 ? (
     <Button
       className="mt-[20px] w-full h-[40px]"

@@ -3,8 +3,8 @@ import mock from "../mock";
 import axiosInstance from "@/libs/axios";
 import { useDebounceFn } from "ahooks";
 import nftAbi from "@/config/abis/nft";
-import { usePublicClient } from "wagmi";
 import { useAuth } from "@/contexts/auth";
+import { ethers } from "ethers";
 
 export default function useNfts() {
   const [chains, setChains] = useState<any[]>([]);
@@ -17,7 +17,6 @@ export default function useNfts() {
   const [listPrice, setListPrice] = useState<number>(0);
   const [loadingNfts, setLoadingNfts] = useState<boolean>(false);
   const { wallet } = useAuth();
-  const publicClient = usePublicClient();
 
   useEffect(() => {
     setChains(mock);
@@ -49,7 +48,7 @@ export default function useNfts() {
   const fetchNfts = async () => {
     setLoadingNfts(true);
     try {
-      if (!collection.address || !publicClient) {
+      if (!collection.address) {
         setNfts([]);
         return;
       }
@@ -59,16 +58,22 @@ export default function useNfts() {
         setNfts([]);
         return;
       }
+      const ethereumProvider = await wallet?.getEthereumProvider();
+      if (!ethereumProvider) {
+        return;
+      }
 
+      const provider = new ethers.providers.Web3Provider(ethereumProvider);
+
+      const nftCollectionContract = new ethers.Contract(
+        collection.address as `0x${string}`,
+        nftAbi as any,
+        provider
+      );
       // Method 1: Using viem's readContract for single calls
-      const balanceOfResult = await publicClient.readContract({
-        address: collection.address as `0x${string}`,
-        abi: nftAbi as any,
-        functionName: "balanceOf",
-        args: [address as `0x${string}`]
-      });
+      const balanceOfResult = await nftCollectionContract.balanceOf(address);
 
-      const balance = Number(balanceOfResult);
+      let balance = Number(balanceOfResult);
 
       if (!balance) {
         setNfts([]);
@@ -79,28 +84,15 @@ export default function useNfts() {
 
       // Method 2: Using viem's multicall for batch reading
 
-      const multicallContracts = [];
-
       // Create contracts array for multicall
-      for (let i = 0; i < balance; i++) {
-        multicallContracts.push({
-          address: collection.address as `0x${string}`,
-          abi: nftAbi as any,
-          functionName: "tokenOfOwnerByIndex",
-          args: [address as `0x${string}`, BigInt(i)]
-        });
-      }
+      const ownerResults: any[] = [];
 
-      // Execute multicall using viem's batch calls
-      const ownerResults = await Promise.all(
-        multicallContracts.map((contract) =>
-          publicClient.readContract(contract).catch((error) => ({
-            status: "error",
-            error,
-            result: null
-          }))
-        )
-      );
+      while (balance > 0) {
+        const tokenOfOwnerByIndex =
+          await nftCollectionContract.tokenOfOwnerByIndex(address, balance - 1);
+        ownerResults.push(tokenOfOwnerByIndex);
+        balance--;
+      }
 
       const _nfts = ownerResults
         .filter((nft: any) => Number(nft) > 0)

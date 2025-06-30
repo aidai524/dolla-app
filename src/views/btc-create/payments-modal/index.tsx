@@ -1,8 +1,8 @@
 import Modal from "@/components/modal";
 import Button from "@/components/button";
 import { GameIcon, WalletIcon, CexIcons } from "./icons";
-import { useAccount } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { useAuth } from "@/contexts/auth";
 
 const Items = [
   {
@@ -34,7 +34,7 @@ export default function PaymentsModal({
   onClose: () => void;
   onSelectMethod: (method: number) => void;
 }) {
-  const { address } = useAccount();
+  const { address } = useAuth();
   const { openConnectModal } = useConnectModal();
   return (
     <Modal open={open} onClose={onClose}>
