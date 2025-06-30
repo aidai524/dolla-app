@@ -4,6 +4,7 @@ import Annotations from "./annotations";
 import { useEffect, useRef, useState } from "react";
 import annotationPlugin from "chartjs-plugin-annotation";
 import { formatNumber } from "@/utils/format/number";
+import { getAnchorPrice } from "@/utils/pool";
 
 Chart.register(annotationPlugin);
 
@@ -21,7 +22,7 @@ export default function PriceChart({ anchorPrice }: { anchorPrice?: number }) {
     const maxUsers = Math.floor(prizeCost * 5);
 
     const sigma = 0.6;
-    const desiredMode = anchorPrice * 1.2;
+    const desiredMode = getAnchorPrice({ anchor_price: anchorPrice });
     const mu = Math.log(desiredMode) + sigma ** 2;
 
     function logNormalPDF(n: number, mu: number, sigma: number) {
@@ -73,7 +74,8 @@ export default function PriceChart({ anchorPrice }: { anchorPrice?: number }) {
             segment: {
               backgroundColor: (ctx) => {
                 const { p0 } = ctx;
-                return p0.parsed.x >= (anchorPrice || 0)
+                return p0.parsed.x >=
+                  (getAnchorPrice({ anchor_price: anchorPrice }) || 0)
                   ? "#57FF7033"
                   : "#FF5A974D";
               }
@@ -112,8 +114,12 @@ export default function PriceChart({ anchorPrice }: { anchorPrice?: number }) {
               },
               line2: {
                 type: "line",
-                xMin: anchorPrice ? anchorPrice * 1.2 : 0,
-                xMax: anchorPrice ? anchorPrice * 1.2 : 0,
+                xMin: anchorPrice
+                  ? getAnchorPrice({ anchor_price: anchorPrice })
+                  : 0,
+                xMax: anchorPrice
+                  ? getAnchorPrice({ anchor_price: anchorPrice })
+                  : 0,
                 borderColor: "#8C8B8B",
                 borderWidth: 1,
                 borderDash: [2, 2]
@@ -221,7 +227,7 @@ export default function PriceChart({ anchorPrice }: { anchorPrice?: number }) {
     if (!chartInstance.current || !anchorPrice) return;
 
     const density = calculateDensity(anchorPrice);
-    const desiredMode = anchorPrice * 1.2;
+    const desiredMode = getAnchorPrice({ anchor_price: anchorPrice });
 
     // Update data
     chartInstance.current.data.datasets[0].data = density;
@@ -267,7 +273,8 @@ export default function PriceChart({ anchorPrice }: { anchorPrice?: number }) {
       const p = point as any;
       const pos = p.getProps(["x", "y"], true);
       if (
-        Math.abs(p.raw?.x - anchorPrice * 1.2) < diff &&
+        Math.abs(p.raw?.x - getAnchorPrice({ anchor_price: anchorPrice })) <
+          diff &&
         anchorDotRef.current
       ) {
         anchorDotRef.current.style.left = `${pos.x + 15}px`;
@@ -302,14 +309,23 @@ export default function PriceChart({ anchorPrice }: { anchorPrice?: number }) {
         />
         {anchorPrice && (
           <div className="text-[#57FF70] text-[16px] ml-[10px]">
-            ${formatNumber(anchorPrice * 1.2, 2, true)}
+            $
+            {formatNumber(
+              getAnchorPrice({ anchor_price: anchorPrice }),
+              2,
+              true
+            )}
           </div>
         )}
       </div>
       <Title />
       <Annotations
         anchorPrice={anchorPrice}
-        expectedValue={anchorPrice ? anchorPrice * 1.2 : undefined}
+        expectedValue={
+          anchorPrice
+            ? getAnchorPrice({ anchor_price: anchorPrice })
+            : undefined
+        }
       />
     </div>
   );
