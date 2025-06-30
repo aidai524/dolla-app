@@ -9,9 +9,12 @@ import Big from "big.js";
 import useApprove from "@/hooks/use-approve";
 import { formatNumber } from "@/utils/format/number";
 import ScratchModal from "../scratch-modal";
+import { getAnchorPrice } from "@/utils/pool";
 
 function calcProbability(price: number, times: number) {
-  return (1 - (1 - 1 / price) ** times) * 99.99;
+  return (
+    (1 - (1 - 1 / getAnchorPrice({ anchor_price: price })) ** times) * 99.99
+  );
 }
 
 export default function NFTBid({

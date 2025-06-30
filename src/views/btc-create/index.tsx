@@ -111,7 +111,7 @@ export default function BTCCreate() {
           amount={amount}
           token={TOKEN}
           address={address}
-          anchorPrice={pricePerBTC * 1.2}
+          anchorPrice={amount * pricePerBTC}
           tokenBalance={tokenBalance}
           onSuccess={() => {
             update();

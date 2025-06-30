@@ -7,6 +7,7 @@ import PlayerDistribution from "./player-distribution";
 import usePoolRecommend from "../../hooks/use-pool-recommend";
 import WinnerCard from "@/components/winners/winner-card";
 import { useMemo, useState } from "react";
+import { getAnchorPrice } from "@/utils/pool";
 import usePoolInfo from "@/hooks/use-pool-info";
 
 export default function NFT() {
@@ -51,7 +52,7 @@ export default function NFT() {
       <div className="mt-[38px] flex gap-[14px] justify-center">
         <div className="w-[566px] h-[326px]">
           <ProbabiltyChart
-            anchorPrice={data?.anchor_price}
+            anchorPrice={getAnchorPrice(data)}
             selectedBids={selectedBid}
             totalBids={mergedData?.accumulative_bids || 0}
           />
