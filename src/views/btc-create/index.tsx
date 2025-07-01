@@ -28,7 +28,7 @@ export default function BTCCreate() {
   const { prices } = useTokenPrice(TOKEN);
 
   const pricePerBTC = useMemo(() => {
-    if (!prices || prices.length === 0) return 0;
+    if (!prices || prices?.length === 0) return 0;
     const _p = prices[0].last_price;
     return _p;
   }, [prices]);

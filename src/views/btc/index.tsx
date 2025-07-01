@@ -1,4 +1,3 @@
-import BTCBg from "./bg";
 import BTCTop from "./top";
 import NFTBid from "../nft/bid";
 import ProbabiltyChart from "../nft/probabilty-chart";
@@ -28,7 +27,6 @@ export default function BTC() {
           setSelectedMarket(market);
         }}
       />
-      <BTCBg />
       <div className="relative z-[2] w-[928px] mx-auto">
         <BTCTop data={pool} />
         <NFTBid

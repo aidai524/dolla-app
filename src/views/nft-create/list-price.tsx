@@ -46,7 +46,7 @@ export default function ListPrice({
   }, [token]);
   const { prices, loading: pricesLoading } = useTokenPrice(tokenIds);
   const price = useMemo(() => {
-    if (!prices.length) return {};
+    if (!prices?.length) return {};
     onSetListPrice(prices[0].floor_price);
     return prices[0];
   }, [prices]);
@@ -54,6 +54,7 @@ export default function ListPrice({
     token?.address,
     onSuccess
   );
+
   return (
     <div className="mt-[30px]">
       <div className="text-[16px] text-white">Set List Price</div>

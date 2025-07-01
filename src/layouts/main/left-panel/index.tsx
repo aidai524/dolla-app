@@ -9,7 +9,7 @@ import Winners from "../../../components/winners";
 export default function LeftPanel({ data }: { data: any }) {
   return (
     <div className="w-[268px] pl-[16px] relative h-full">
-      <img src="/logo.png" alt="logo" className="w-[95px] h-[95px] ml-[20px]" />
+      <img src="/logo.svg" alt="logo" className="w-[95px] h-[95px] ml-[20px]" />
       {/* <div className="flex gap-[8px]">
         <Boosts />
         <Airdrop />

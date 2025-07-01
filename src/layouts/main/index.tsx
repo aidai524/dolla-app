@@ -39,13 +39,11 @@ const Content = () => {
             {/* <TopWinner className="absolute top-[20px] left-[50%] translate-x-[-50%]" /> */}
             {/* <Tips purchase={homeData?.latest_purchase} /> */}
             <div className="flex items-center gap-[28px]">
-              <div className="flex items-center text-[26px] font-bold text-white gap-[2px]">
-                <span>D</span>
-                <div className="w-[15px] h-[19px] rounded-[6px] bg-[radial-gradient(50%_50%_at_50%_50%,#FFEF43_0%,#FFC42F_100%)] shadow-[0px_0px_6px_0px_#FFCD71]">
-                  <div className="w-[11px] h-[15px] ml-[2px] mt-[2px] rounded-[4px] bg-[radial-gradient(50%_50%_at_50%_50%,#FFC42F_0%,#FFEF43_100%)]" />
-                </div>
-                <span>LLA</span>
-              </div>
+              <img
+                src="/logo.svg"
+                alt="logo"
+                className="w-[101px] h-[30px] ml-[10px]"
+              />
               <Switch
                 tabs={[
                   { label: "Bid BTC", value: "btc" },

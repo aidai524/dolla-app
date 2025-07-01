@@ -25,9 +25,6 @@ export default function NFT() {
 
   return (
     <div className="relative w-full h-full pt-[36px]">
-      {data?.reward_token_info?.[0].icon && (
-        <NFTBg url={data.reward_token_info[0].icon} />
-      )}
       <div className="relative z-[2]">
         <NFTTop data={mergedData} />
         <NFTBid
