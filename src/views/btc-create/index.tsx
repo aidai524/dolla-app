@@ -4,35 +4,28 @@ import { CopyBtn, ExitBtn, AddBtn } from "./action-btns";
 import Modal from "@/components/modal";
 import Recharge from "@/components/cashier/panels/recharge";
 import PriceChart from "../nft-create/price-chart";
-
 import { useAuth } from "@/contexts/auth";
 import useCopy from "@/hooks/use-copy";
-import { TOKEN } from "@/config/btc";
-import Action from "./action";
-import useTokenBalance from "@/hooks/use-token-balance";
+import { BASE_TOKEN } from "@/config/btc";
+import useTokenBalance from "@/hooks/solana/use-token-balance";
 import { formatNumber } from "@/utils/format/number";
 import useTokenPrice from "@/hooks/use-token-price";
 import Loading from "@/components/icons/loading";
-import Button from "@/components/button";
-import useMintBtc from "./use-mint-btc";
 
 export default function BTCCreate() {
   const [amount, setAmount] = useState(1);
   const [chargeModalOpen, setChargeModalOpen] = useState(false);
   const { address, logout } = useAuth();
   const { onCopy } = useCopy();
-  const { tokenBalance, isLoading, update } = useTokenBalance(TOKEN);
-  const { mintBtc, minting } = useMintBtc(() => {
-    update();
-  });
-  const { prices } = useTokenPrice(TOKEN);
+  const { tokenBalance, isLoading, update } = useTokenBalance(BASE_TOKEN);
+
+  const { prices } = useTokenPrice(BASE_TOKEN);
 
   const pricePerBTC = useMemo(() => {
     if (!prices || prices?.length === 0) return 0;
     const _p = prices[0].last_price;
     return _p;
   }, [prices]);
-
   return (
     <div className="w-[526px] mx-auto">
       <div className="text-[20px] font-bold text-center py-[30px]">
@@ -98,31 +91,21 @@ export default function BTCCreate() {
       <div className="flex flex-col gap-[14px] w-full bg-[#1A1E24] rounded-[6px] h-[335px] relative mt-[20px]">
         <PriceChart anchorPrice={amount * pricePerBTC} />
       </div>
-      {Number(tokenBalance) < amount ? (
-        <Button
-          loading={minting || isLoading}
-          className="button w-full h-[40px] mt-[20px]"
-          onClick={mintBtc}
-        >
-          Mint BTC
-        </Button>
-      ) : (
-        <Action
-          amount={amount}
-          token={TOKEN}
-          address={address}
-          anchorPrice={amount * pricePerBTC}
-          tokenBalance={tokenBalance}
-          onSuccess={() => {
-            update();
-          }}
-        />
-      )}
+      {/* <Action
+        amount={amount}
+        token={BASE_TOKEN}
+        address={address}
+        anchorPrice={amount * pricePerBTC}
+        tokenBalance={tokenBalance}
+        onSuccess={() => {
+          update();
+        }}
+      /> */}
 
       <Modal open={chargeModalOpen} onClose={() => setChargeModalOpen(false)}>
         <div className="w-[316px] h-[436px] p-[15px] rounded-[6px] bg-[#232932]">
           <div className="text-center text-white font-bold">Recharge</div>
-          <Recharge token={TOKEN} />
+          <Recharge token={BASE_TOKEN} />
         </div>
       </Modal>
     </div>

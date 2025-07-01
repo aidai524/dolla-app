@@ -61,7 +61,7 @@ export default function useCreate({
         rewardAmount,
         token.id || token.id === 0 ? [token.id] : [], // nftIds
         drawFee,
-        Math.round(anchorPrice).toFixed(0)
+        Big(anchorPrice * 10 ** PURCHASE_TOKEN.decimals).toFixed(0)
       );
       const receipt = await tx.wait();
       console.log("receipt", receipt);

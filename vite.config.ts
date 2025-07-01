@@ -6,7 +6,26 @@ import path from "path";
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
-    alias: [{ find: "@", replacement: path.resolve(__dirname, "src") }]
+    alias: [
+      { find: "@", replacement: path.resolve(__dirname, "src") },
+      { find: "buffer", replacement: "buffer" },
+      { find: "crypto", replacement: "crypto-browserify" },
+      { find: "process", replacement: "process/browser" },
+      { find: "stream", replacement: "stream-browserify" },
+      { find: "util", replacement: "util" }
+    ]
+  },
+  define: {
+    global: "globalThis",
+    "process.env": {}
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      define: {
+        global: "globalThis"
+      }
+    },
+    include: ["buffer", "process"]
   },
   server: {
     proxy: {

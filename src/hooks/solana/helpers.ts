@@ -8,10 +8,16 @@ import {
   TOKEN_PROGRAM_ID,
   createSyncNativeInstruction
 } from "@solana/spl-token";
-import { Keypair, PublicKey, SystemProgram } from "@solana/web3.js";
+import {
+  Keypair,
+  PublicKey,
+  SystemProgram,
+  LAMPORTS_PER_SOL
+} from "@solana/web3.js";
 import * as sb from "@switchboard-xyz/on-demand";
 import * as nacl from "tweetnacl";
 import { createHash } from "crypto";
+import { Buffer } from "buffer";
 
 export function getState(program: anchor.Program) {
   const [globalBalPda, bump] = anchor.web3.PublicKey.findProgramAddressSync(
@@ -211,4 +217,39 @@ export async function getBidGasFee(
     }
   }
   return new anchor.BN(0);
+}
+
+export async function getSolanaBalance(
+  connection: any,
+  walletAddress: string
+): Promise<number> {
+  try {
+    const publicKey = new PublicKey(walletAddress);
+    const balance = await connection.getBalance(publicKey);
+    return balance / LAMPORTS_PER_SOL;
+  } catch (error) {
+    console.error("Error getting SOL balance:", error);
+    return 0;
+  }
+}
+
+export async function getTokenBalance(
+  connection: any,
+  walletAddress: string,
+  tokenMint: string,
+  decimals: number
+): Promise<number> {
+  try {
+    const walletPublicKey = new PublicKey(walletAddress);
+    const mintPublicKey = new PublicKey(tokenMint);
+    const tokenAccount = getAssociatedTokenAddressSync(
+      mintPublicKey,
+      walletPublicKey
+    );
+
+    const accountInfo = await getAccount(connection, tokenAccount);
+    return Number(accountInfo.amount) / Math.pow(10, decimals);
+  } catch (error) {
+    return 0;
+  }
 }
