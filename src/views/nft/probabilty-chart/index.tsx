@@ -4,7 +4,6 @@ import annotationPlugin from "chartjs-plugin-annotation";
 import Annotations from "./annotations";
 import Title from "./title";
 import { motion } from "framer-motion";
-import { getAnchorPrice } from "@/utils/pool";
 
 Chart.register(annotationPlugin);
 
@@ -13,11 +12,11 @@ let diff = 1;
 export default function WinningProbabiltyChart({
   totalBids = 0,
   selectedBids = 0,
-  anchorPrice = 0
+  anchorPrice = "0"
 }: {
   totalBids?: number;
   selectedBids?: number;
-  anchorPrice?: number;
+  anchorPrice?: string;
 }) {
   const chartRef = useRef<HTMLCanvasElement>(null);
   const chartInstance = useRef<Chart | null>(null);
@@ -254,8 +253,9 @@ export default function WinningProbabiltyChart({
     if (!chartInstance.current) return;
     setIsInit(false);
     const chart = chartInstance.current;
-    const _anchorPrice = getAnchorPrice({ anchor_price: anchorPrice });
-    const maxN = Math.ceil(_anchorPrice * 3);
+
+    const _anchorPrice = Number(anchorPrice);
+    const maxN = Math.ceil(_anchorPrice * 3 * 1.2);
     function calcLineData(n: number) {
       // return 1 - (1 - 1 / (anchorPrice * 1.2)) ** n;
       return 1 - Math.exp(-n / (0.8 * _anchorPrice));
@@ -277,7 +277,7 @@ export default function WinningProbabiltyChart({
         y: calcLineData(n) * 100
       });
 
-      if (n % 10 === 0) {
+      if (n % 20 === 0) {
         barData.push({
           x: n,
           y: calcBarData(n) * 100
@@ -356,7 +356,7 @@ export default function WinningProbabiltyChart({
         className="absolute top-0 left-0 z-[10]"
         ref={iconRef}
         style={{
-          opacity: isInit && anchorPrice * 2.4 > bids ? 1 : 0
+          opacity: isInit && Number(anchorPrice) * 3.6 > bids ? 1 : 0
         }}
       >
         <div className="text-[#88A3FF] text-[10px] ml-[-10px]">Your bid</div>
