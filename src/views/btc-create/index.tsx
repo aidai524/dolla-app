@@ -11,6 +11,8 @@ import useTokenBalance from "@/hooks/solana/use-token-balance";
 import { formatNumber } from "@/utils/format/number";
 import useTokenPrice from "@/hooks/use-token-price";
 import Loading from "@/components/icons/loading";
+import Button from "@/components/button";
+import useCreate from "@/hooks/solana/use-create";
 
 export default function BTCCreate() {
   const [amount, setAmount] = useState(1);
@@ -26,6 +28,22 @@ export default function BTCCreate() {
     const _p = prices[0].last_price;
     return _p;
   }, [prices]);
+
+  const { onCreate, creating } = useCreate({
+    amount,
+    anchorPrice: amount * pricePerBTC,
+    onCreateSuccess: () => {
+      update();
+    }
+  });
+
+  const errorTips = useMemo(() => {
+    if (Number(tokenBalance) < amount) {
+      return "Insufficient balance";
+    }
+    return "";
+  }, [amount, tokenBalance]);
+
   return (
     <div className="w-[526px] mx-auto">
       <div className="text-[20px] font-bold text-center py-[30px]">
@@ -101,6 +119,16 @@ export default function BTCCreate() {
           update();
         }}
       /> */}
+      <Button
+        disabled={!!errorTips}
+        className="mt-[20px] w-full h-[40px]"
+        loading={creating}
+        onClick={() => {
+          if (errorTips) return;
+        }}
+      >
+        {errorTips || "Create Market"}
+      </Button>
 
       <Modal open={chargeModalOpen} onClose={() => setChargeModalOpen(false)}>
         <div className="w-[316px] h-[436px] p-[15px] rounded-[6px] bg-[#232932]">

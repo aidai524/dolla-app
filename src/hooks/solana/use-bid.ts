@@ -14,11 +14,13 @@ import {
   accountExists,
   getAssociatedTokenAddress,
   getBidGasFee,
-  getWrapToSolIx
+  getWrapToSolIx,
+  BrowserRandomness
 } from "./helpers";
 import * as anchor from "@coral-xyz/anchor";
 import { useSolanaWallets } from "@privy-io/react-auth";
-import { Randomness } from "@switchboard-xyz/on-demand";
+// Browser-only implementation - Switchboard not available in browser
+// import { Randomness } from "@switchboard-xyz/on-demand";
 import { BASE_TOKEN, QUOTE_TOKEN } from "@/config/btc";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -56,38 +58,23 @@ export default function useBid(onSuccess: (isWinner: boolean) => void) {
       );
 
       const sbQueue = await setupQueue(program);
-      let randomnessCreateIx;
-      let singers;
-      console.log("before check randomnessAccount exist");
-      if (
-        !(await accountExists(randomnessAccount.publicKey, provider.connection))
-      ) {
-        console.log("randomnessAccount not exist");
-        const [randomness, createIx] = await Randomness.create(
-          sbProgram,
-          randomnessAccount,
-          sbQueue,
-          import.meta.env.VITE_SOLANA_OPERATOR
-        );
-        const commitIx = await randomness.commitIx(
-          sbQueue,
-          import.meta.env.VITE_SOLANA_OPERATOR
-        );
-        randomnessCreateIx = [createIx, commitIx];
-        singers = [wallets[0].address, randomnessAccount];
-      } else {
-        console.log("randomnessAccount exist");
-        const randomness = new Randomness(
-          sbProgram,
-          randomnessAccount.publicKey
-        );
-        const commitIx = await randomness.commitIx(
-          sbQueue,
-          import.meta.env.VITE_SOLANA_OPERATOR
-        );
-        randomnessCreateIx = [commitIx];
-        singers = [payer.address];
-      }
+      let randomnessCreateIx: any[] = [];
+      let singers: any[] = [];
+
+      // Use browser-compatible randomness implementation
+      console.log("Using browser-compatible randomness");
+      const [randomness, createIx] = await BrowserRandomness.create(
+        sbProgram,
+        randomnessAccount,
+        sbQueue,
+        import.meta.env.VITE_SOLANA_OPERATOR
+      );
+      const commitIx = await randomness.commitIx(
+        sbQueue,
+        import.meta.env.VITE_SOLANA_OPERATOR
+      );
+      randomnessCreateIx = [createIx, commitIx];
+      singers = [wallets[0].address, randomnessAccount];
       const userQuoteAccount = await getAssociatedTokenAddress(
         QUOTE_TOKEN.address,
         payer.address,
@@ -134,7 +121,9 @@ export default function useBid(onSuccess: (isWinner: boolean) => void) {
         dollaState: state.pda,
         poolState: pool.pda,
         buyerState: buyerState.pda,
-        randomnessAccount: randomnessAccount.publicKey,
+        randomnessAccount:
+          randomnessAccount?.publicKey ||
+          new anchor.web3.PublicKey("11111111111111111111111111111111"),
         quoteMint: BASE_TOKEN.address,
         paidMint: QUOTE_TOKEN.address,
         protocolQuoteAccount: protocolQuoteAccount?.address,

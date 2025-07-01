@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import CreateButton from "./create-button";
 import Button from "@/components/button";
 import useDeposit from "@/hooks/use-deposit-reward";

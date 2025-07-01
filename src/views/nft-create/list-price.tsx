@@ -3,7 +3,7 @@ import PriceChart from "./price-chart";
 import clsx from "clsx";
 import { formatNumber } from "@/utils/format/number";
 import { useMemo } from "react";
-import Action from "@/views/btc-create/action";
+import Action from "@/views/nft-create/action";
 import Button from "@/components/button";
 import useMintNft from "./hooks/use-mint-nft";
 import useTokenPrice from "@/hooks/use-token-price";

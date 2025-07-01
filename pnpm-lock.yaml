@@ -71,6 +71,9 @@ importers:
       howler:
         specifier: ^2.2.4
         version: 2.2.4
+      https-browserify:
+        specifier: ^1.0.0
+        version: 1.0.0
       leancloud-realtime:
         specifier: 5.0.0-rc.8
         version: 5.0.0-rc.8(bufferutil@4.0.9)(utf-8-validate@5.0.10)
@@ -110,6 +113,9 @@ importers:
       stream-browserify:
         specifier: ^3.0.0
         version: 3.0.0
+      stream-http:
+        specifier: ^3.2.0
+        version: 3.2.0
       swiper:
         specifier: ^11.2.6
         version: 11.2.6
@@ -1931,6 +1937,9 @@ packages:
     resolution: {integrity: sha512-WDtdLmJvAuNNPzByAYpRo2rF1Mmradw6gvWsQKf63476DDXmomT9zUiGypLcG4ibIM67vhAj8jJRdbmEws2Aqw==}
     engines: {node: '>=6.14.2'}
 
+  builtin-status-codes@3.0.0:
+    resolution: {integrity: sha512-HpGFw18DgFWlncDfjTa2rcQ4W88O1mC8e8yZ2AvQY5KDaktSTwo+KRf6nHK6FRI5FyRyb/5T6+TSxfP7QyGsmQ==}
+
   bytebuffer@5.0.1:
     resolution: {integrity: sha512-IuzSdmADppkZ6DlpycMkm8l9zeEq16fWtLvunEwFiYciR/BHo4E8/xs5piFquG+Za8OWmMqHF8zuRviz2LHvRQ==}
     engines: {node: '>=0.8'}
@@ -2665,6 +2674,9 @@ packages:
 
   howler@2.2.4:
     resolution: {integrity: sha512-iARIBPgcQrwtEr+tALF+rapJ8qSc+Set2GJQl7xT1MQzWaVkFebdJhR3alVlSiUf5U7nAANKuj3aWpwerocD5w==}
+
+  https-browserify@1.0.0:
+    resolution: {integrity: sha512-J+FkSdyD+0mA0N+81tMotaRMfSL9SGi+xpD3T6YApKsc3bGSXJlfXri3VyFOeYkfLRQisDk1W+jIFFKBeUBbBg==}
 
   humanize-ms@1.2.1:
     resolution: {integrity: sha512-Fl70vYtsAFb/C06PTS9dZBo7ihau+Tu/DNCk/OyHhea07S+aeMWpFFkUaXRa8fI+ScZbEI8dfSxwY7gxZ9SAVQ==}
@@ -3636,6 +3648,9 @@ packages:
 
   stream-chain@2.2.5:
     resolution: {integrity: sha512-1TJmBx6aSWqZ4tx7aTpBDXK0/e2hhcNSTV8+CbFJtDjbb+I1mZ8lHit0Grw9GRT+6JbIrrDd8esncgBi8aBXGA==}
+
+  stream-http@3.2.0:
+    resolution: {integrity: sha512-Oq1bLqisTyK3TSCXpPbT4sdeYNdmyZJv1LxpEm2vu1ZhK89kSE5YXwZc3cWk0MagGaKriBh9mCFbVGtO+vY29A==}
 
   stream-json@1.9.1:
     resolution: {integrity: sha512-uWkjJ+2Nt/LO9Z/JyKZbMusL8Dkh97uUBTv3AJQ74y07lVahLY4eEFsPsE97pxYBwr8nnjMAIch5eqI0gPShyw==}
@@ -7402,6 +7417,8 @@ snapshots:
     dependencies:
       node-gyp-build: 4.8.4
 
+  builtin-status-codes@3.0.0: {}
+
   bytebuffer@5.0.1:
     dependencies:
       long: 3.2.0
@@ -8196,6 +8213,8 @@ snapshots:
       minimalistic-crypto-utils: 1.0.1
 
   howler@2.2.4: {}
+
+  https-browserify@1.0.0: {}
 
   humanize-ms@1.2.1:
     dependencies:
@@ -9227,6 +9246,13 @@ snapshots:
       readable-stream: 3.6.2
 
   stream-chain@2.2.5: {}
+
+  stream-http@3.2.0:
+    dependencies:
+      builtin-status-codes: 3.0.0
+      inherits: 2.0.4
+      readable-stream: 3.6.2
+      xtend: 4.0.2
 
   stream-json@1.9.1:
     dependencies:

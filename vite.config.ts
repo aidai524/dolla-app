@@ -12,7 +12,9 @@ export default defineConfig({
       { find: "crypto", replacement: "crypto-browserify" },
       { find: "process", replacement: "process/browser" },
       { find: "stream", replacement: "stream-browserify" },
-      { find: "util", replacement: "util" }
+      { find: "util", replacement: "util" },
+      { find: "https", replacement: "https-browserify" },
+      { find: "http", replacement: "stream-http" }
     ]
   },
   define: {
@@ -25,7 +27,7 @@ export default defineConfig({
         global: "globalThis"
       }
     },
-    include: ["buffer", "process"]
+    include: ["buffer", "process", "https-browserify", "stream-http"]
   },
   server: {
     proxy: {

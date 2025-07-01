@@ -23,7 +23,6 @@ export default function useCreate({
   anchorPrice,
   onCreateSuccess
 }: {
-  token: any;
   amount: number;
   anchorPrice: number;
   onCreateSuccess?: (poolId: number) => void;
