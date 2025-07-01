@@ -16,7 +16,7 @@ export default function WalletProvider({
           accentColor: "#FFC42F",
           theme: "#1a1e24",
           showWalletLoginFirst: true,
-          logo: "/logo.png",
+          logo: "/logo.svg",
           walletChainType: "ethereum-and-solana",
           walletList: ["metamask"]
         },
@@ -42,13 +42,13 @@ export default function WalletProvider({
         supportedChains: [berachain],
         mfa: {
           noPromptOnMfaRequired: false
-        },
-        solanaClusters: [
-          {
-            name: import.meta.env.VITE_SOLANA_CLUSTER_NAME,
-            rpcUrl: import.meta.env.VITE_SOLANA_RPC_URL
-          }
-        ]
+        }
+        // solanaClusters: [
+        //   {
+        //     name: import.meta.env.VITE_SOLANA_CLUSTER_NAME,
+        //     rpcUrl: import.meta.env.VITE_SOLANA_RPC_URL
+        //   }
+        // ]
       }}
     >
       {children}
