@@ -1,56 +1,67 @@
 import useToast from "@/hooks/use-toast";
 import { useState } from "react";
-import { ethers } from "ethers";
 import useProgram from "./use-program";
 import reportHash from "@/utils/report-hash";
 import {
-  getNextOrderId,
   getPool,
   getState,
   getBuyState,
   loadSbProgram,
   getRandomnessAccount,
   setupQueue,
-  accountExists,
   getAssociatedTokenAddress,
   getBidGasFee,
   getWrapToSolIx,
-  BrowserRandomness
+  accountExists
 } from "./helpers";
 import * as anchor from "@coral-xyz/anchor";
 import { useSolanaWallets } from "@privy-io/react-auth";
-// Browser-only implementation - Switchboard not available in browser
-// import { Randomness } from "@switchboard-xyz/on-demand";
+import {
+  useSignTransaction,
+  useSendTransaction
+} from "@privy-io/react-auth/solana";
 import { BASE_TOKEN, QUOTE_TOKEN } from "@/config/btc";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   TOKEN_PROGRAM_ID
 } from "@solana/spl-token";
-import { Transaction, TransactionInstruction } from "@solana/web3.js";
+import {
+  PublicKey,
+  Transaction,
+  TransactionInstruction
+} from "@solana/web3.js";
+import { Randomness } from "@switchboard-xyz/on-demand";
 
 export default function useBid(onSuccess: (isWinner: boolean) => void) {
   const [bidding, setBidding] = useState(false);
   const toast = useToast();
   const { wallets } = useSolanaWallets();
   const { program, provider } = useProgram();
+  const { signTransaction } = useSignTransaction();
+  const { sendTransaction } = useSendTransaction();
 
   const onBid = async (poolId: number, times: number) => {
-    if (poolId === -1 || !wallets.length || !provider) {
+    if (!wallets.length) {
+      toast.fail({ title: "Please connect your wallet" });
+      return;
+    }
+    if (!provider) {
+      toast.fail({ title: "Provider not available" });
       return;
     }
     const payer = wallets[0];
     setBidding(true);
     try {
       const state = getState(program);
-      let nextOrderId = await getNextOrderId(program, provider, state.pda);
-      nextOrderId = new anchor.BN(nextOrderId);
-
-      const pool = await getPool(program, provider, state.pda, nextOrderId);
+      // Use the actual poolId parameter instead of hardcoded value
+      const poolIdBN = new anchor.BN(9);
+      console.log("Using poolId:", poolId, "as BN:", poolIdBN.toString());
+      const pool = await getPool(program, provider, state.pda, poolIdBN);
       const buyerState = await getBuyState(
         program,
         provider,
         pool.pda,
-        provider.publicKey
+        new PublicKey(payer.address)
       );
       const sbProgram = await loadSbProgram(provider);
       const randomnessAccount = getRandomnessAccount(
@@ -58,48 +69,65 @@ export default function useBid(onSuccess: (isWinner: boolean) => void) {
       );
 
       const sbQueue = await setupQueue(program);
-      let randomnessCreateIx: any[] = [];
-      let singers: any[] = [];
 
-      // Use browser-compatible randomness implementation
-      console.log("Using browser-compatible randomness");
-      const [randomness, createIx] = await BrowserRandomness.create(
-        sbProgram,
-        randomnessAccount,
-        sbQueue,
-        import.meta.env.VITE_SOLANA_OPERATOR
-      );
-      const commitIx = await randomness.commitIx(
-        sbQueue,
-        import.meta.env.VITE_SOLANA_OPERATOR
-      );
-      randomnessCreateIx = [createIx, commitIx];
-      singers = [wallets[0].address, randomnessAccount];
+      let randomnessCreateIx;
+
+      console.log("before check randomnessAccount exist");
+      if (
+        !(await accountExists(randomnessAccount.publicKey, provider.connection))
+      ) {
+        console.log("randomnessAccount not exist");
+        const [randomness, createIx] = await Randomness.create(
+          // @ts-ignore
+          sbProgram,
+          randomnessAccount,
+          sbQueue,
+          new PublicKey(import.meta.env.VITE_SOLANA_OPERATOR)
+        );
+        const commitIx = await randomness.commitIx(
+          sbQueue,
+          new PublicKey(import.meta.env.VITE_SOLANA_OPERATOR)
+        );
+        randomnessCreateIx = [createIx, commitIx];
+      } else {
+        console.log("randomnessAccount exist");
+        const randomness = new Randomness(
+          // @ts-ignore
+          sbProgram,
+          randomnessAccount.publicKey
+        );
+        const commitIx = await randomness.commitIx(
+          sbQueue,
+          new PublicKey(import.meta.env.VITE_SOLANA_OPERATOR)
+        );
+        randomnessCreateIx = [commitIx];
+      }
+
       const userQuoteAccount = await getAssociatedTokenAddress(
-        QUOTE_TOKEN.address,
-        payer.address,
+        new PublicKey(QUOTE_TOKEN.address),
+        new PublicKey(payer.address),
         provider
       );
-      console.log("before poolBaseAccount pool.pda:" + pool.pda.toString());
+
       const poolQuoteAccount = await getAssociatedTokenAddress(
-        QUOTE_TOKEN.address,
-        pool.pool.quoteToken,
+        new PublicKey(QUOTE_TOKEN.address),
+        new PublicKey(pool.pda.toString()),
         provider
       );
       const protocolQuoteAccount = await getAssociatedTokenAddress(
-        QUOTE_TOKEN.address,
-        provider.publicKey,
+        new PublicKey(QUOTE_TOKEN.address),
+        new PublicKey(state.pda.toString()),
         provider
       );
 
       const userPaidAccount = await getAssociatedTokenAddress(
-        QUOTE_TOKEN.address,
-        payer.address,
+        new PublicKey(QUOTE_TOKEN.address),
+        new PublicKey(payer.address),
         provider
       );
       const operatorPaidAccount = await getAssociatedTokenAddress(
-        QUOTE_TOKEN.address,
-        import.meta.env.VITE_SOLANA_OPERATOR,
+        new PublicKey(QUOTE_TOKEN.address),
+        new PublicKey(import.meta.env.VITE_SOLANA_OPERATOR),
         provider
       );
 
@@ -109,6 +137,10 @@ export default function useBid(onSuccess: (isWinner: boolean) => void) {
         QUOTE_TOKEN.address
       );
       let quoteAmount = times * 10 ** QUOTE_TOKEN.decimals;
+      if (QUOTE_TOKEN.address === BASE_TOKEN.address) {
+        quoteAmount = quoteAmount + gasFee.toNumber();
+      }
+
       let wrapTx: any[] = [];
       if (
         QUOTE_TOKEN.address.toString() ==
@@ -124,20 +156,20 @@ export default function useBid(onSuccess: (isWinner: boolean) => void) {
         randomnessAccount:
           randomnessAccount?.publicKey ||
           new anchor.web3.PublicKey("11111111111111111111111111111111"),
-        quoteMint: BASE_TOKEN.address,
-        paidMint: QUOTE_TOKEN.address,
+        quoteMint: new PublicKey(QUOTE_TOKEN.address),
+        paidMint: new PublicKey(QUOTE_TOKEN.address),
         protocolQuoteAccount: protocolQuoteAccount?.address,
         userQuoteAccount: userQuoteAccount?.address,
         poolQuoteAccount: poolQuoteAccount?.address,
         userPaidAccount: userPaidAccount?.address,
         operatorPaidAccount: operatorPaidAccount?.address,
-
         tokenProgram: TOKEN_PROGRAM_ID,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        user: payer.address,
-        operator: import.meta.env.VITE_SOLANA_OPERATOR,
+        user: new PublicKey(payer.address),
+        operator: new PublicKey(import.meta.env.VITE_SOLANA_OPERATOR),
         systemProgram: anchor.web3.SystemProgram.programId
       };
+
       const bidIx: TransactionInstruction = await program.methods
         .bid(times)
         // @ts-ignore
@@ -148,28 +180,115 @@ export default function useBid(onSuccess: (isWinner: boolean) => void) {
       for (let i = 0; i < wrapTx.length; i++) {
         tx.add(wrapTx[i]);
       }
+
+      if (userQuoteAccount?.instruction) {
+        tx.add(userQuoteAccount.instruction);
+      }
+      if (poolQuoteAccount?.instruction) {
+        tx.add(poolQuoteAccount.instruction);
+      }
+      if (protocolQuoteAccount?.instruction) {
+        tx.add(protocolQuoteAccount.instruction);
+      }
+      if (userPaidAccount?.instruction) {
+        tx.add(userPaidAccount.instruction);
+      }
+      if (operatorPaidAccount?.instruction) {
+        tx.add(operatorPaidAccount.instruction);
+      }
+      for (let i = 0; i < randomnessCreateIx.length; i++) {
+        console.log("randomnessCreateIx:" + randomnessCreateIx[i].programId);
+        tx.add(randomnessCreateIx[i]);
+      }
       tx.add(bidIx);
+      tx.feePayer = new PublicKey(import.meta.env.VITE_SOLANA_OPERATOR);
+      // Get the latest blockhash
+      const { blockhash } = await provider.connection.getLatestBlockhash();
+      tx.recentBlockhash = blockhash;
 
-      // const receipt = await tx.wait();
-      // console.log("receipt", receipt);
-      // reportHash(receipt.transactionHash, receipt.blockNumber);
-      // if (receipt.status === 0) {
-      //   toast.fail({ title: "Draw failed" });
-      //   return;
-      // }
+      await tx.partialSign(randomnessAccount);
 
-      // const afterPoolState = await BettingContract.getPoolState(poolId);
-      // onSuccess(
-      //   afterPoolState.winner !== "0x0000000000000000000000000000000000000000"
+      const simulationResult = await provider.connection.simulateTransaction(
+        tx
+      );
+      console.log("bid:", simulationResult);
+
+      const receipt = await sendTransaction({
+        transaction: tx,
+        connection: provider.connection
+      });
+      console.log("receipt:", receipt);
+      // Report hash for tracking
+      reportHash({
+        chain: "solana",
+        user: payer.address,
+        hash: receipt.signature,
+        block_number: blockhash
+      });
+
+      toast.success({ title: "Bid placed successfully!" });
+      onSuccess(false); // 调用成功回调
+      // const pb = new PublicKey("7qKtiPPkK1ZYqVFujVJjsTuGSJNXAvVhLj41HxtQDsTG");
+      // const userBaseAccount = await getAssociatedTokenAddress(
+      //   new PublicKey(BASE_TOKEN.address),
+      //   new PublicKey(payer.address),
+      //   provider
       // );
-      // toast.success({
-      //   title:
-      //     afterPoolState.winner !== "0x0000000000000000000000000000000000000000"
-      //       ? "You are the winner"
-      //       : "Draw success"
+
+      // const poolBaseAccount = await getAssociatedTokenAddress(
+      //   new PublicKey(BASE_TOKEN.address),
+      //   new PublicKey(pool.pda.toString()),
+      //   provider
+      // );
+      // let settleBidAccounts = {
+      //   dollaState: state.pda,
+      //   poolState: pool.pda,
+      //   user: new PublicKey(payer.address),
+      //   buyerState: buyerState.pda,
+      //   randomnessAccount: pb,
+      //   baseMint: new PublicKey(BASE_TOKEN.address),
+      //   quoteMint: new PublicKey(QUOTE_TOKEN.address),
+      //   userBaseAccount: userBaseAccount?.address,
+      //   poolBaseAccount: poolBaseAccount?.address,
+      //   userQuoteAccount: userQuoteAccount?.address,
+      //   poolQuoteAccount: poolQuoteAccount?.address,
+      //   tokenProgram: TOKEN_PROGRAM_ID,
+      //   associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+      //   operator: new PublicKey(import.meta.env.VITE_SOLANA_OPERATOR),
+      //   systemProgram: anchor.web3.SystemProgram.programId
+      // };
+      // console.log("userBaseAccount:", userPaidAccount?.address.toString());
+      // console.log("settleBidAccounts:", settleBidAccounts);
+      // const settleBidIx: TransactionInstruction = await program.methods
+      //   .settleBid()
+      //   .accounts(settleBidAccounts)
+      //   .instruction();
+
+      // const randomness = new Randomness(sbProgram, pb);
+      // console.log("randomness", randomness);
+      // const revealIx = await randomness.revealIx();
+      // console.log("revealIx", revealIx);
+      // const settleTx = new Transaction().add(revealIx).add(settleBidIx);
+
+      // settleTx.feePayer = new PublicKey(import.meta.env.VITE_SOLANA_OPERATOR);
+
+      // settleTx.recentBlockhash = blockhash;
+
+      // const settleSimulationResult =
+      //   await provider.connection.simulateTransaction(settleTx);
+      // console.log("settle:", settleSimulationResult);
+      // const settleReceipt = await sendTransaction({
+      //   transaction: settleTx,
+      //   connection: provider.connection
       // });
+      // console.log("settleReceipt:", settleReceipt);
     } catch (error) {
-      console.error(error);
+      console.error("Bid error:", error);
+      toast.fail({
+        title: "Bid failed",
+        description:
+          error instanceof Error ? error.message : "Unknown error occurred"
+      });
     } finally {
       setBidding(false);
     }

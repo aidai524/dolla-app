@@ -12,11 +12,11 @@ let diff = 1;
 export default function WinningProbabiltyChart({
   totalBids = 0,
   selectedBids = 0,
-  anchorPrice = "0"
+  anchorPrice = 0
 }: {
   totalBids?: number;
   selectedBids?: number;
-  anchorPrice?: string;
+  anchorPrice?: number;
 }) {
   const chartRef = useRef<HTMLCanvasElement>(null);
   const chartInstance = useRef<Chart | null>(null);

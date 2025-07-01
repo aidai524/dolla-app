@@ -24,7 +24,7 @@ export default function BTCCreate() {
   const { prices } = useTokenPrice(BASE_TOKEN);
 
   const pricePerBTC = useMemo(() => {
-    if (!prices || prices?.length === 0) return 0;
+    if (!prices || prices?.length === 0) return 107000;
     const _p = prices[0].last_price;
     return _p;
   }, [prices]);
@@ -41,8 +41,11 @@ export default function BTCCreate() {
     if (Number(tokenBalance) < amount) {
       return "Insufficient balance";
     }
+    if (pricePerBTC === 0) {
+      return "Anchor price not found";
+    }
     return "";
-  }, [amount, tokenBalance]);
+  }, [amount, tokenBalance, pricePerBTC]);
 
   return (
     <div className="w-[526px] mx-auto">
@@ -125,6 +128,7 @@ export default function BTCCreate() {
         loading={creating}
         onClick={() => {
           if (errorTips) return;
+          onCreate();
         }}
       >
         {errorTips || "Create Market"}

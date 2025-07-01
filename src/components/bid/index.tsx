@@ -1,14 +1,7 @@
-import { useMemo, useState } from "react";
-import ButtonWithAuth from "@/components/button/button-with-auth";
+import { useMemo } from "react";
 import config from "./config";
 import clsx from "clsx";
-import useDraw from "@/hooks/use-draw";
-import useTokenBalance from "@/hooks/use-token-balance";
-import { BETTING_CONTRACT_ADDRESS, PURCHASE_TOKEN } from "@/config";
-import Big from "big.js";
-import useApprove from "@/hooks/use-approve";
 import { formatNumber } from "@/utils/format/number";
-import ScratchModal from "../scratch-modal";
 import { getAnchorPrice } from "@/utils/pool";
 
 function calcProbability(price: number, times: number) {
@@ -22,32 +15,14 @@ export default function NFTBid({
   data,
   selectedBid,
   setSelectedBid,
-  onDrawSuccess
+  children
 }: {
   className?: string;
   data: any;
   selectedBid: number;
   setSelectedBid: any;
-  onDrawSuccess?: () => void;
+  children: React.ReactNode;
 }) {
-  const [showAnimation, setShowAnimation] = useState(false);
-  const [isWinner, setIsWinner] = useState(false);
-  const { onDraw, drawing } = useDraw((isWinner) => {
-    setShowAnimation(true);
-    setIsWinner(isWinner);
-    onDrawSuccess?.();
-  });
-  const { tokenBalance, isLoading } = useTokenBalance({
-    address: PURCHASE_TOKEN.address,
-    decimals: PURCHASE_TOKEN.decimals
-  });
-  const { approve, approved, approving, checking } = useApprove({
-    token: PURCHASE_TOKEN,
-    spender: BETTING_CONTRACT_ADDRESS,
-    amount: selectedBid?.toString()
-  });
-  const isBalanceEnough = Big(tokenBalance || 0).gte(selectedBid);
-
   const probailties = useMemo(() => {
     const anchorPrice = data.anchor_price;
     return config.map((item) => {
@@ -71,43 +46,8 @@ export default function NFTBid({
           />
         ))}
       </div>
-      <ButtonWithAuth
-        className={clsx(
-          "ml-[26px] w-[234px] h-[76px] text-black text-[20px] font-bold",
-          !isBalanceEnough || isWinner ? "" : "bid-button"
-        )}
-        onClick={() => {
-          if (!approved) {
-            approve();
-          } else {
-            onDraw(data.pool_id, selectedBid);
-          }
-        }}
-        loading={drawing || isLoading || checking || approving}
-        disabled={
-          !isBalanceEnough ||
-          isWinner ||
-          (!data?.pool_id && data?.pool_id !== 0)
-        }
-      >
-        {isBalanceEnough
-          ? !approved
-            ? "Approve"
-            : isWinner
-            ? "WON!"
-            : "DOLLA BID!"
-          : "Insufficient balance"}
-      </ButtonWithAuth>
-      {data.nft_ids && (
-        <ScratchModal
-          data={data}
-          open={showAnimation}
-          isWinner={isWinner}
-          onClose={() => {
-            setShowAnimation(false);
-          }}
-        />
-      )}
+
+      {children}
     </div>
   );
 }

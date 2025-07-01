@@ -1,5 +1,5 @@
 import BTCTop from "./top";
-import NFTBid from "../nft/bid";
+import BTCBid from "./bid";
 import ProbabiltyChart from "../nft/probabilty-chart";
 import PlayerDistribution from "../nft/player-distribution";
 import MoreMarketsBtn from "./markets/more-markets-btn";
@@ -29,7 +29,7 @@ export default function BTC() {
       />
       <div className="relative z-[2] w-[928px] mx-auto">
         <BTCTop data={pool} />
-        <NFTBid
+        <BTCBid
           className="mt-[-40px]"
           data={pool}
           selectedBid={selectedBid}

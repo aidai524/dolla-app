@@ -1,4 +1,4 @@
-import config from "./bid/config";
+import config from "@/components/bid/config";
 import { usePoolDistributed } from "@/hooks/use-pool-distributed";
 import clsx from "clsx";
 import { useMemo } from "react";

@@ -16,7 +16,15 @@ import {
   TOKEN_PROGRAM_ID
 } from "@solana/spl-token";
 import { useSolanaWallets } from "@privy-io/react-auth";
-import { Transaction, TransactionInstruction } from "@solana/web3.js";
+import {
+  useSignTransaction,
+  useSendTransaction
+} from "@privy-io/react-auth/solana";
+import {
+  PublicKey,
+  Transaction,
+  TransactionInstruction
+} from "@solana/web3.js";
 
 export default function useCreate({
   amount,
@@ -31,6 +39,8 @@ export default function useCreate({
   const { wallets } = useSolanaWallets();
   const toast = useToast();
   const { program, provider } = useProgram();
+  const { signTransaction } = useSignTransaction();
+  const { sendTransaction } = useSendTransaction();
   const onCreate = async () => {
     if (!wallets.length) {
       toast.fail({ title: "Please connect your wallet" });
@@ -42,36 +52,51 @@ export default function useCreate({
       const state = getState(program);
       let baseAmount = new anchor.BN(amount * 10 ** BASE_TOKEN.decimals);
       let expectedQuoteAmount = new anchor.BN(
-        anchorPrice * 10 ** QUOTE_TOKEN.decimals
+        anchorPrice * amount * 10 ** BASE_TOKEN.decimals
       );
+
       let nextOrderId = await getNextOrderId(program, provider, state.pda);
       nextOrderId = new anchor.BN(nextOrderId);
+
       const pool = await getPool(program, provider, state.pda, nextOrderId);
 
       const userBaseAccount = await getAssociatedTokenAddress(
-        BASE_TOKEN.address,
-        provider.publicKey!,
+        new PublicKey(BASE_TOKEN.address),
+        new PublicKey(payer.address),
         provider
       );
 
       const poolBaseAccount = await getAssociatedTokenAddress(
-        BASE_TOKEN.address,
-        pool.pool.baseToken,
+        new PublicKey(BASE_TOKEN.address),
+        new PublicKey(pool.pda.toString()),
         provider
       );
+
+      // Ensure all accounts are properly defined
+      if (!userBaseAccount?.address || !poolBaseAccount?.address) {
+        throw new Error("Failed to get associated token accounts");
+      }
+
+      let wrapTx: any[] = [];
+      if (
+        BASE_TOKEN.address.toString() ==
+        "So11111111111111111111111111111111111111112"
+      ) {
+        wrapTx = getWrapToSolIx(payer, userBaseAccount, expectedQuoteAmount);
+      }
 
       let createPoolAccounts = {
         dollaState: state.pda,
         poolState: pool.pda,
-        baseMint: baseAmount,
-        quoteMint: expectedQuoteAmount,
-        userBaseAccount: userBaseAccount?.address,
-        poolBaseAccount: poolBaseAccount?.address,
+        baseMint: new PublicKey(BASE_TOKEN.address),
+        quoteMint: new PublicKey(QUOTE_TOKEN.address),
+        userBaseAccount: userBaseAccount.address,
+        poolBaseAccount: poolBaseAccount.address,
         tokenProgram: TOKEN_PROGRAM_ID,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
-        user: payer.address,
+        user: new PublicKey(payer.address),
         systemProgram: anchor.web3.SystemProgram.programId,
-        operator: import.meta.env.VITE_SOLANA_OPERATOR
+        operator: new PublicKey(import.meta.env.VITE_SOLANA_OPERATOR)
       };
       const createIx: TransactionInstruction = await program.methods
         .createPool({
@@ -80,13 +105,6 @@ export default function useCreate({
         })
         .accounts(createPoolAccounts as any)
         .instruction();
-      let wrapTx: any[] = [];
-      if (
-        BASE_TOKEN.address.toString() ==
-        "So11111111111111111111111111111111111111112"
-      ) {
-        wrapTx = getWrapToSolIx(payer, userBaseAccount, expectedQuoteAmount);
-      }
 
       const tx = new Transaction();
       for (let i = 0; i < wrapTx.length; i++) {
@@ -99,16 +117,34 @@ export default function useCreate({
         tx.add(poolBaseAccount.instruction);
       }
       tx.add(createIx);
-      tx.feePayer = import.meta.env.VITE_SOLANA_OPERATOR;
-      // reportHash(receipt.transactionHash, receipt.blockNumber);
-      // if (receipt.status === 0) {
-      //   toast.fail({ title: "Create pool failed" });
-      //   throw new Error("Create pool failed");
-      // }
+      tx.feePayer = new PublicKey(import.meta.env.VITE_SOLANA_OPERATOR);
 
-      // toast.success({ title: "Create pool success" });
-      // const poolId = receipt.logs[0].topics[1];
-      // onCreateSuccess?.(Number(poolId));
+      // Get the latest blockhash
+      const { blockhash } = await provider.connection.getLatestBlockhash();
+      tx.recentBlockhash = blockhash;
+
+      // const signedTx = await signTransaction({
+      //   transaction: tx,
+      //   connection: provider.connection
+      // });
+
+      const receipt = await sendTransaction({
+        transaction: tx,
+        connection: provider.connection
+      });
+      console.log("receipt:", receipt);
+      // Report hash for tracking
+      reportHash({
+        chain: "solana",
+        user: payer.address,
+        hash: receipt.signature,
+        block_number: blockhash
+      });
+
+      // // Extract pool ID from transaction logs or use nextOrderId
+      const poolId = nextOrderId.toNumber();
+      console.log("poolId:", poolId);
+      onCreateSuccess?.(poolId);
     } catch (error) {
       console.error("Create error:", error);
       throw error;

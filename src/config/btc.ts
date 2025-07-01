@@ -10,10 +10,12 @@ export const TOKEN = {
 // btc
 export const BASE_TOKEN: Record<string, any> = {
   address: "G5aHXkUgD4NnBbTZcKf7aQP2hXGw5bTVotcUc7wS8FVV",
-  decimals: 6
+  decimals: 6,
+  chain: "solana"
 };
 // usdc
 export const QUOTE_TOKEN: Record<string, any> = {
   address: "ADo4M7ZEZwDKNP1k8dic26TBrftX6mix9sGMntkq6Tp4",
-  decimals: 6
+  decimals: 6,
+  chain: "solana"
 };

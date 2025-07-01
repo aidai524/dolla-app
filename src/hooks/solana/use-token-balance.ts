@@ -14,7 +14,7 @@ export default function useTokenBalance({ address, decimals }: any) {
 
   const getBalance = async () => {
     const wallet = wallets[0];
-    console.log("wallet", wallet);
+
     if (!wallet) return;
 
     setIsLoading(true);

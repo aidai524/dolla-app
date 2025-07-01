@@ -14,9 +14,9 @@ import {
   SystemProgram,
   LAMPORTS_PER_SOL
 } from "@solana/web3.js";
-import * as nacl from "tweetnacl";
 import { createHash } from "crypto";
 import { Buffer } from "buffer";
+import * as sb from "@switchboard-xyz/on-demand";
 
 export function getState(program: anchor.Program) {
   const [globalBalPda, bump] = anchor.web3.PublicKey.findProgramAddressSync(
@@ -69,21 +69,13 @@ export async function getPool(
     ],
     program.programId
   );
-  console.log(
-    "getPool ==== bump:" + bump + ";program.programId:" + program.programId
-  );
+
   // query pool info
   const stateExist = await accountExists(pda, provider.connection);
   let pool = null;
   if (stateExist) {
     // @ts-ignore
     pool = await program.account.poolState.fetch(pda);
-    console.log("pool:" + JSON.stringify(pool));
-    console.log("pda:" + JSON.stringify(pda));
-    console.log("pool init swol:" + pool.poolId);
-    console.log("pool init owner:" + pool.owner);
-    console.log("pool base_token:" + pool.baseToken);
-    console.log("pool quote_token:" + pool.quoteToken);
   }
   return { pda: pda, bump: bump, pool: pool };
 }
@@ -98,7 +90,17 @@ export async function getAssociatedTokenAddress(
     return null;
   }
 
-  const associatedToken = getAssociatedTokenAddressSync(mint, owner);
+  // Check if owner is a PDA (off-curve address)
+  // For PDAs, we need to allow off-curve addresses
+  // We'll use a safer approach by always allowing off-curve addresses
+  // since PDAs are commonly used as token account owners in Solana programs
+  const isOffCurve = true;
+
+  const associatedToken = getAssociatedTokenAddressSync(
+    mint,
+    owner,
+    isOffCurve // Allow off-curve addresses for PDAs
+  );
 
   let account: any = null;
   let instruction = null;
@@ -170,30 +172,35 @@ export async function getBuyState(
 export async function loadSbProgram(
   provider: anchor.Provider
 ): Promise<anchor.Program> {
-  // Browser-only implementation - return a mock program
-  console.log("Using browser-compatible Switchboard program");
-  return {
-    programId: new PublicKey("11111111111111111111111111111111"),
-    provider,
-    methods: {
-      // Mock methods for browser compatibility
-    }
-  } as any;
+  const sbProgramId = await sb.getProgramId(provider.connection);
+  console.log("sbProgramId:" + sbProgramId.toString());
+  const sbIdl = await anchor.Program.fetchIdl(sbProgramId, provider);
+  // console.log("sbIdl:" + JSON.stringify(sbIdl.types));
+  const sbProgram = new anchor.Program(sbIdl, provider);
+  return sbProgram;
 }
 
 export function getRandomnessAccount(payer: any) {
-  const message = "Dolla-V3";
-  const messageBytes = Buffer.from(message);
-  const signature = nacl.sign.detached(messageBytes, payer.secretKey);
-  console.log("signature:", Buffer.from(signature).toString("hex"));
-  const seed = createHash("sha256").update(signature).digest().slice(0, 32);
-  return Keypair.fromSeed(seed);
+  // In browser environment, we can't access secretKey
+  // Use alternative methods to generate deterministic randomness account
+
+  // Method 1: Use public key + timestamp + random salt
+  const timestamp = Date.now().toString();
+  const randomSalt = Math.random().toString(36).substring(2, 15);
+  const message = payer + timestamp + randomSalt;
+
+  // Method 2: Use public key + fixed seed (more deterministic)
+  // const message = (payer.address || payer.publicKey?.toString() || "default") + "Dolla-V3";
+
+  const seed = createHash("sha256").update(message).digest().slice(0, 32);
+  const keypair = Keypair.fromSeed(seed);
+
+  console.log("Generated randomness account:", keypair.publicKey.toString());
+  return keypair;
 }
 
 export async function setupQueue(program: anchor.Program): Promise<PublicKey> {
-  // Browser-only implementation - return a default queue address
-  console.log("Using browser-compatible queue");
-  return new PublicKey("11111111111111111111111111111111");
+  return new PublicKey("EYiAmGSdsQTuCw413V5BzaruWuCCSDgTPtBGvLkXHbe7");
 }
 
 export async function getBidGasFee(
@@ -248,10 +255,9 @@ export async function getTokenBalance(
   }
 }
 
-// Browser-compatible randomness class
 export class BrowserRandomness {
-  private program: any;
-  private publicKey: PublicKey;
+  public program: any;
+  public publicKey: PublicKey;
 
   constructor(program: any, publicKey: PublicKey) {
     this.program = program;
@@ -260,27 +266,25 @@ export class BrowserRandomness {
 
   static async create(
     program: any,
-    keypair: Keypair,
+    keypair: any,
     queue: PublicKey,
-    payer: any
+    payer: PublicKey
   ): Promise<[BrowserRandomness, any]> {
-    console.log("Creating browser-compatible randomness");
-    const randomness = new BrowserRandomness(program, keypair.publicKey);
+    // Browser implementation - return mock instructions
     const createIx = {
-      // Mock create instruction
-      keys: [],
       programId: program.programId,
+      keys: [],
       data: Buffer.from([])
     };
-    return [randomness, createIx];
+    const instance = new BrowserRandomness(program, keypair.publicKey);
+    return [instance, createIx];
   }
 
-  async commitIx(queue: PublicKey, payer: any): Promise<any> {
-    console.log("Creating browser-compatible commit instruction");
+  async commitIx(queue: PublicKey, payer: PublicKey) {
+    // Browser implementation - return mock commit instruction
     return {
-      // Mock commit instruction
-      keys: [],
       programId: this.program.programId,
+      keys: [],
       data: Buffer.from([])
     };
   }

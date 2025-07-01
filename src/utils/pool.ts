@@ -11,6 +11,6 @@ export const getAnchorPrice = (pool: any) => {
   if (pool?.anchor_price)
     return Big(pool.anchor_price * 1.2)
       .div(10 ** PURCHASE_TOKEN.decimals)
-      .toString();
-  return "0";
+      .toNumber();
+  return 0;
 };
