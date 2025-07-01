@@ -12,8 +12,6 @@ export default function Action({
   setPaymentsModalOpen,
   tokenBalance,
   token,
-  paymentMethod,
-  address,
   anchorPrice,
   loading,
   onSuccess
@@ -66,6 +64,13 @@ export default function Action({
 
   if (loading) {
     return <Button loading={loading} className="mt-[20px] w-full h-[40px]" />;
+  }
+  if (anchorPrice === 0) {
+    return (
+      <Button disabled className="mt-[20px] w-full h-[40px]">
+        Set Anchor Price
+      </Button>
+    );
   }
   return step === 0 ? (
     <CreateButton
