@@ -1,5 +1,5 @@
 export default {
-  address: "CqmfQq9HGSdhPfAk21RpGZ1st8MGLNAu43XtKFvJds1T",
+  address: "FQBUvGVq7J48y917kG146B5Uw1MHyTf1VKbo3kURBpgo",
   metadata: {
     name: "dolla",
     version: "0.1.0",
@@ -1514,6 +1514,14 @@ export default {
             type: "u64"
           },
           {
+            name: "quote_token",
+            type: "pubkey"
+          },
+          {
+            name: "sequence_number",
+            type: "u64"
+          },
+          {
             name: "gas_token",
             type: "pubkey"
           },
@@ -1556,6 +1564,10 @@ export default {
           {
             name: "last_quote_amount",
             type: "u64"
+          },
+          {
+            name: "last_sequence_num",
+            type: "u64"
           }
         ]
       }
@@ -1574,8 +1586,24 @@ export default {
             type: "u64"
           },
           {
-            name: "total_amount",
+            name: "base_amount",
             type: "u64"
+          },
+          {
+            name: "quote_amount",
+            type: "u64"
+          },
+          {
+            name: "base_token",
+            type: "pubkey"
+          },
+          {
+            name: "quote_token",
+            type: "pubkey"
+          },
+          {
+            name: "creator",
+            type: "pubkey"
           }
         ]
       }
@@ -1586,7 +1614,7 @@ export default {
         kind: "struct",
         fields: [
           {
-            name: "order_id",
+            name: "pool_id",
             type: "u32"
           },
           {
@@ -1596,6 +1624,10 @@ export default {
           {
             name: "amount",
             type: "u64"
+          },
+          {
+            name: "quote_token",
+            type: "pubkey"
           }
         ]
       }
@@ -1606,7 +1638,7 @@ export default {
         kind: "struct",
         fields: [
           {
-            name: "order_id",
+            name: "pool_id",
             type: "u32"
           },
           {
@@ -1616,6 +1648,10 @@ export default {
           {
             name: "amount",
             type: "u64"
+          },
+          {
+            name: "quote_token",
+            type: "pubkey"
           }
         ]
       }
@@ -1730,6 +1766,10 @@ export default {
           {
             name: "next_order_id",
             type: "u32"
+          },
+          {
+            name: "sequence_number",
+            type: "u64"
           },
           {
             name: "bump",
@@ -1883,6 +1923,30 @@ export default {
           },
           {
             name: "random_number",
+            type: "u64"
+          },
+          {
+            name: "bid_count",
+            type: "u32"
+          },
+          {
+            name: "sequence_number",
+            type: "u64"
+          },
+          {
+            name: "base_token",
+            type: "pubkey"
+          },
+          {
+            name: "base_amount",
+            type: "u64"
+          },
+          {
+            name: "quote_token",
+            type: "pubkey"
+          },
+          {
+            name: "sell_amount",
             type: "u64"
           }
         ]

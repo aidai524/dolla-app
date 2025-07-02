@@ -47,6 +47,7 @@ export default function useProgram() {
     );
 
     anchor.setProvider(provider);
+    // @ts-ignore
     const program = new anchor.Program(dollaAbi, provider);
 
     return {

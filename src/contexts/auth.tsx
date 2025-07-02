@@ -148,6 +148,10 @@ export const AuthProvider: React.FC<{
 
     if (!privyWallet?.address) {
       login();
+
+      timer.current = setTimeout(() => {
+        if (!privyWallet?.address) logout();
+      }, 5000);
       return;
     }
 
