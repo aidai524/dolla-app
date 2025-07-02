@@ -16,10 +16,8 @@ import {
   TOKEN_PROGRAM_ID
 } from "@solana/spl-token";
 import { useSolanaWallets } from "@privy-io/react-auth";
-import {
-  useSignTransaction,
-  useSendTransaction
-} from "@privy-io/react-auth/solana";
+import { sendSolanaTransaction } from "@/utils/transaction/send-transaction";
+
 import {
   PublicKey,
   Transaction,
@@ -39,8 +37,7 @@ export default function useCreate({
   const { wallets } = useSolanaWallets();
   const toast = useToast();
   const { program, provider } = useProgram();
-  const { signTransaction } = useSignTransaction();
-  const { sendTransaction } = useSendTransaction();
+
   const onCreate = async () => {
     if (!wallets.length) {
       toast.fail({ title: "Please connect your wallet" });
@@ -98,6 +95,7 @@ export default function useCreate({
         systemProgram: anchor.web3.SystemProgram.programId,
         operator: new PublicKey(import.meta.env.VITE_SOLANA_OPERATOR)
       };
+
       const createIx: TransactionInstruction = await program.methods
         .createPool({
           baseAmount: baseAmount,
@@ -123,27 +121,25 @@ export default function useCreate({
       const { blockhash } = await provider.connection.getLatestBlockhash();
       tx.recentBlockhash = blockhash;
 
-      // const signedTx = await signTransaction({
+      const result = await sendSolanaTransaction(tx);
+
+      // console.log(151, provider.connection);
+      // const receipt = await sendTransaction({
       //   transaction: tx,
       //   connection: provider.connection
       // });
-
-      const receipt = await sendTransaction({
-        transaction: tx,
-        connection: provider.connection
-      });
-      console.log("receipt:", receipt);
+      // console.log("receipt:", receipt);
       // Report hash for tracking
       reportHash({
         chain: "solana",
         user: payer.address,
-        hash: receipt.signature,
+        hash: result.data.data.hash,
         block_number: blockhash
       });
 
-      // // Extract pool ID from transaction logs or use nextOrderId
+      // Extract pool ID from transaction logs or use nextOrderId
       const poolId = nextOrderId.toNumber();
-      console.log("poolId:", poolId);
+
       onCreateSuccess?.(poolId);
     } catch (error) {
       console.error("Create error:", error);

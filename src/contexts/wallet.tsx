@@ -21,6 +21,7 @@ export default function WalletProvider({
     //     },
     //     apiKey: import.meta.env.VITE_SPONSOR_API_KEY as string,
     //     waas: privy(import.meta.env.VITE_PRIVY_APP_ID as string),
+    //     defaultChain: berachain,
     //     wagmi: wagmi({
     //       chains: [berachain],
     //       transports: {
@@ -30,8 +31,8 @@ export default function WalletProvider({
     //   }}
     // >
     <PrivyProvider
-      appId="cmbkf9huq00tnl80lnrjj94eg"
-      clientId="client-WY6MB5peNJNPpVa4xeGgAsE5vDHiWbbHn4W8W24fahweo"
+      appId={import.meta.env.VITE_PRIVY_APP_ID as string}
+      clientId={import.meta.env.VITE_PRIVY_CLIENT_ID as string}
       config={{
         appearance: {
           accentColor: "#FFC42F",
@@ -41,16 +42,7 @@ export default function WalletProvider({
           walletChainType: "ethereum-and-solana",
           walletList: ["metamask"]
         },
-        loginMethods: [
-          "email",
-          USE_OTHER_WALLET && "wallet"
-
-          // "google"
-          // "discord",
-          // "linkedin",
-          // "tiktok",
-          // "twitter"
-        ],
+        loginMethods: ["email", USE_OTHER_WALLET && "wallet"],
         fundingMethodConfig: {
           moonpay: {
             useSandbox: true
@@ -60,6 +52,7 @@ export default function WalletProvider({
           requireUserPasswordOnCreate: false,
           showWalletUIs: true
         },
+        defaultChain: berachain,
         supportedChains: [berachain],
         mfa: {
           noPromptOnMfaRequired: false

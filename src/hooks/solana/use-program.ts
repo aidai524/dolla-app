@@ -2,7 +2,7 @@ import dollaAbi from "@/config/abis/dolla-solana";
 import { useMemo } from "react";
 import * as anchor from "@coral-xyz/anchor";
 import { useSolanaWallets } from "@privy-io/react-auth";
-import { Connection, clusterApiUrl } from "@solana/web3.js";
+import { Connection } from "@solana/web3.js";
 
 export default function useProgram() {
   const { wallets } = useSolanaWallets();
@@ -12,7 +12,7 @@ export default function useProgram() {
     if (typeof window === "undefined" || !wallets.length) {
       // Return mock objects when not in browser or no wallet connected
       const mockProvider = {
-        connection: new Connection(clusterApiUrl("devnet")),
+        connection: new Connection(import.meta.env.VITE_SOLANA_RPC_URL),
         publicKey: null,
         signTransaction: () => Promise.resolve(),
         signAllTransactions: () => Promise.resolve([])
@@ -34,7 +34,7 @@ export default function useProgram() {
 
     // Use wallet connection for browser environment
     const wallet = wallets[0];
-    const connection = new Connection(clusterApiUrl("devnet"));
+    const connection = new Connection(import.meta.env.VITE_SOLANA_RPC_URL);
 
     const provider = new anchor.AnchorProvider(
       connection,

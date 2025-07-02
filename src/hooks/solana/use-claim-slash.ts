@@ -24,6 +24,7 @@ import {
   Transaction,
   TransactionInstruction
 } from "@solana/web3.js";
+import { sendSolanaTransaction } from "@/utils/transaction/send-transaction";
 
 export default function useClaimSlash({
   onClaimSuccess
@@ -92,16 +93,17 @@ export default function useClaimSlash({
       //   connection: provider.connection
       // });
 
-      const receipt = await sendTransaction({
-        transaction: batchTx,
-        connection: provider.connection
-      });
-      console.log("receipt:", receipt);
+      // const receipt = await sendTransaction({
+      //   transaction: batchTx,
+      //   connection: provider.connection
+      // });
+      const result = await sendSolanaTransaction(tx);
+      console.log("receipt:", result);
       // Report hash for tracking
       reportHash({
         chain: "solana",
         user: payer.address,
-        hash: receipt.signature,
+        hash: result.data.data.hash,
         block_number: blockhash
       });
 

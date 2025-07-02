@@ -12,11 +12,11 @@ importers:
         specifier: 0.30.1
         version: 0.30.1(bufferutil@4.0.9)(encoding@0.1.13)(typescript@5.7.3)(utf-8-validate@5.0.10)
       '@gelatonetwork/smartwallet':
-        specifier: ^0.0.14
-        version: 0.0.14(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(viem@2.30.6(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(zod@3.24.4))
+        specifier: ^0.0.15
+        version: 0.0.15(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(viem@2.30.6(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(zod@3.24.4))
       '@gelatonetwork/smartwallet-react-sdk':
-        specifier: ^0.0.14
-        version: 0.0.14(c876cb5c0e60d912e2fed119fcde06c8)
+        specifier: ^0.0.15
+        version: 0.0.15(1a26f9c1be28b7f7b762a1eade181bcb)
       '@privy-io/react-auth':
         specifier: ^2.13.8
         version: 2.13.8(@solana/spl-token@0.4.13(@solana/web3.js@1.98.2(bufferutil@4.0.9)(encoding@0.1.13)(typescript@5.7.3)(utf-8-validate@5.0.10))(bufferutil@4.0.9)(encoding@0.1.13)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.7.3)(utf-8-validate@5.0.10))(@solana/web3.js@1.98.2(bufferutil@4.0.9)(encoding@0.1.13)(typescript@5.7.3)(utf-8-validate@5.0.10))(@types/react@19.1.2)(bs58@6.0.0)(bufferutil@4.0.9)(permissionless@0.2.47(ox@0.6.7(typescript@5.7.3)(zod@3.24.4))(viem@2.30.6(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(zod@3.24.4)))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(typescript@5.7.3)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@3.24.4)
@@ -1417,13 +1417,13 @@ packages:
       wagmi:
         optional: true
 
-  '@gelatonetwork/smartwallet-react-sdk@0.0.14':
-    resolution: {integrity: sha512-8xCPILdXGgwQjuqH0uTHAoav2+XzZ/tyJ9Aj62fI2JuyfgvnKsAnGu0S3WFAC4xmusWqspF+JNr9WaCsPDAMMw==}
+  '@gelatonetwork/smartwallet-react-sdk@0.0.15':
+    resolution: {integrity: sha512-Mc9bFklnMotZ52i/+LDH0g+2PwekE3yvOlWmZwqYgFcTmYTIrcaap1AX0mUa7KlgJ6nGrAaQ749owP9oXDKQ7g==}
     peerDependencies:
-      '@gelatonetwork/smartwallet': 0.0.14
-      '@gelatonetwork/smartwallet-react-dynamic': 0.0.14
-      '@gelatonetwork/smartwallet-react-privy': 0.0.14
-      '@gelatonetwork/smartwallet-react-types': 0.0.14
+      '@gelatonetwork/smartwallet': 0.0.15
+      '@gelatonetwork/smartwallet-react-dynamic': 0.0.15
+      '@gelatonetwork/smartwallet-react-privy': 0.0.15
+      '@gelatonetwork/smartwallet-react-types': 0.0.15
       typescript: ^5.3
       viem: ~2.29
     peerDependenciesMeta:
@@ -1440,8 +1440,8 @@ packages:
       typescript:
         optional: true
 
-  '@gelatonetwork/smartwallet@0.0.14':
-    resolution: {integrity: sha512-fJBkHUzWWTXco3QSIlS2dIRmkmTaO+tpQPHSTVXwnkPu6++Sb94npjQ68NqMPtoeDeSccKEJV6eKBDnxxWBcKg==}
+  '@gelatonetwork/smartwallet@0.0.15':
+    resolution: {integrity: sha512-Z/NspUqHZQA5yv5UaoT6nIFTMR1Kf45XDdRhv2yGKNSbQXIdY3c5ltqfm1u754ZUj8gSYkZ/TD0OM5ReeM47Yw==}
     peerDependencies:
       typescript: ^5.3
       viem: ~2.29
@@ -8402,14 +8402,14 @@ snapshots:
 
   '@floating-ui/utils@0.2.9': {}
 
-  '@gelatonetwork/smartwallet-react-dynamic@0.0.14(969e3d647cad5b325ea9dc7327c0e670)':
+  '@gelatonetwork/smartwallet-react-dynamic@0.0.14(cf3206c940da7d705640e7aa2119c4e7)':
     dependencies:
       '@dynamic-labs/ethereum': 4.18.3(@babel/core@7.26.10)(@babel/preset-env@7.27.2(@babel/core@7.26.10))(@types/react@19.1.2)(bufferutil@4.0.9)(encoding@0.1.13)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.7.3)(utf-8-validate@5.0.10)(viem@2.30.6(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(zod@3.24.4))(zod@3.24.4)
       '@dynamic-labs/sdk-react-core': 4.18.3(@types/react@19.1.2)(react-dom@19.1.0(react@19.1.0))(react-native@0.74.0(@babel/core@7.26.10)(@babel/preset-env@7.27.2(@babel/core@7.26.10))(@types/react@19.1.2)(bufferutil@4.0.9)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10))(react@19.1.0)
       '@dynamic-labs/wagmi-connector': 4.18.3(c576f7babdea14e9a49e36baed7c2c46)
       '@dynamic-labs/wallet-connector-core': 4.18.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      '@gelatonetwork/smartwallet': 0.0.14(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(viem@2.30.6(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(zod@3.24.4))
-      '@gelatonetwork/smartwallet-react-types': 0.0.14(@gelatonetwork/smartwallet@0.0.14(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(viem@2.30.6(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(zod@3.24.4)))(@tanstack/query-core@5.74.4)(@types/react@19.1.2)(typescript@5.7.3)(use-sync-external-store@1.4.0(react@19.1.0))(viem@2.30.6(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(zod@3.24.4))
+      '@gelatonetwork/smartwallet': 0.0.15(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(viem@2.30.6(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(zod@3.24.4))
+      '@gelatonetwork/smartwallet-react-types': 0.0.14(@gelatonetwork/smartwallet@0.0.15(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(viem@2.30.6(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(zod@3.24.4)))(@tanstack/query-core@5.74.4)(@types/react@19.1.2)(typescript@5.7.3)(use-sync-external-store@1.4.0(react@19.1.0))(viem@2.30.6(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(zod@3.24.4))
       '@tanstack/react-query': 5.74.4(react@18.3.1)
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
@@ -8453,10 +8453,10 @@ snapshots:
       - utf-8-validate
       - zod
 
-  '@gelatonetwork/smartwallet-react-privy@0.0.14(845d6d6f41e4254da505be1bd7dd043e)':
+  '@gelatonetwork/smartwallet-react-privy@0.0.14(0af6b09eb9b7da5ae6e37351509ff588)':
     dependencies:
-      '@gelatonetwork/smartwallet': 0.0.14(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(viem@2.30.6(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(zod@3.24.4))
-      '@gelatonetwork/smartwallet-react-types': 0.0.14(@gelatonetwork/smartwallet@0.0.14(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(viem@2.30.6(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(zod@3.24.4)))(@tanstack/query-core@5.74.4)(@types/react@19.1.2)(typescript@5.7.3)(use-sync-external-store@1.4.0(react@19.1.0))(viem@2.30.6(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(zod@3.24.4))
+      '@gelatonetwork/smartwallet': 0.0.15(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(viem@2.30.6(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(zod@3.24.4))
+      '@gelatonetwork/smartwallet-react-types': 0.0.14(@gelatonetwork/smartwallet@0.0.15(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(viem@2.30.6(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(zod@3.24.4)))(@tanstack/query-core@5.74.4)(@types/react@19.1.2)(typescript@5.7.3)(use-sync-external-store@1.4.0(react@19.1.0))(viem@2.30.6(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(zod@3.24.4))
       '@privy-io/react-auth': 2.13.0(@solana/spl-token@0.4.13(@solana/web3.js@1.98.2(bufferutil@4.0.9)(encoding@0.1.13)(typescript@5.7.3)(utf-8-validate@5.0.10))(bufferutil@4.0.9)(encoding@0.1.13)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.7.3)(utf-8-validate@5.0.10))(@solana/web3.js@1.98.2(bufferutil@4.0.9)(encoding@0.1.13)(typescript@5.7.3)(utf-8-validate@5.0.10))(@types/react@19.1.2)(bs58@6.0.0)(bufferutil@4.0.9)(permissionless@0.2.47(ox@0.6.7(typescript@5.7.3)(zod@3.24.4))(viem@2.30.6(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(zod@3.24.4)))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.7.3)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@3.24.4)
       '@privy-io/wagmi': 1.0.3(69fb5379013eccd68603266b8c8cf412)
       '@tanstack/react-query': 5.74.4(react@18.3.1)
@@ -8499,12 +8499,12 @@ snapshots:
       - use-sync-external-store
       - utf-8-validate
 
-  '@gelatonetwork/smartwallet-react-sdk@0.0.14(c876cb5c0e60d912e2fed119fcde06c8)':
+  '@gelatonetwork/smartwallet-react-sdk@0.0.15(1a26f9c1be28b7f7b762a1eade181bcb)':
     dependencies:
-      '@gelatonetwork/smartwallet': 0.0.14(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(viem@2.30.6(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(zod@3.24.4))
-      '@gelatonetwork/smartwallet-react-dynamic': 0.0.14(969e3d647cad5b325ea9dc7327c0e670)
-      '@gelatonetwork/smartwallet-react-privy': 0.0.14(845d6d6f41e4254da505be1bd7dd043e)
-      '@gelatonetwork/smartwallet-react-types': 0.0.14(@gelatonetwork/smartwallet@0.0.14(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(viem@2.30.6(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(zod@3.24.4)))(@tanstack/query-core@5.74.4)(@types/react@19.1.2)(typescript@5.7.3)(use-sync-external-store@1.4.0(react@19.1.0))(viem@2.30.6(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(zod@3.24.4))
+      '@gelatonetwork/smartwallet': 0.0.15(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(viem@2.30.6(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(zod@3.24.4))
+      '@gelatonetwork/smartwallet-react-dynamic': 0.0.14(cf3206c940da7d705640e7aa2119c4e7)
+      '@gelatonetwork/smartwallet-react-privy': 0.0.14(0af6b09eb9b7da5ae6e37351509ff588)
+      '@gelatonetwork/smartwallet-react-types': 0.0.14(@gelatonetwork/smartwallet@0.0.15(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(viem@2.30.6(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(zod@3.24.4)))(@tanstack/query-core@5.74.4)(@types/react@19.1.2)(typescript@5.7.3)(use-sync-external-store@1.4.0(react@19.1.0))(viem@2.30.6(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(zod@3.24.4))
       react: 18.3.1
       viem: 2.30.6(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(zod@3.24.4)
       wagmi: 2.15.6(@tanstack/query-core@5.74.4)(@tanstack/react-query@5.74.4(react@19.1.0))(@types/react@19.1.2)(bufferutil@4.0.9)(encoding@0.1.13)(react@18.3.1)(typescript@5.7.3)(utf-8-validate@5.0.10)(viem@2.30.6(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(zod@3.24.4))(zod@3.24.4)
@@ -8539,9 +8539,9 @@ snapshots:
       - utf-8-validate
       - zod
 
-  '@gelatonetwork/smartwallet-react-types@0.0.14(@gelatonetwork/smartwallet@0.0.14(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(viem@2.30.6(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(zod@3.24.4)))(@tanstack/query-core@5.74.4)(@types/react@19.1.2)(typescript@5.7.3)(use-sync-external-store@1.4.0(react@19.1.0))(viem@2.30.6(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(zod@3.24.4))':
+  '@gelatonetwork/smartwallet-react-types@0.0.14(@gelatonetwork/smartwallet@0.0.15(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(viem@2.30.6(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(zod@3.24.4)))(@tanstack/query-core@5.74.4)(@types/react@19.1.2)(typescript@5.7.3)(use-sync-external-store@1.4.0(react@19.1.0))(viem@2.30.6(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(zod@3.24.4))':
     dependencies:
-      '@gelatonetwork/smartwallet': 0.0.14(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(viem@2.30.6(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(zod@3.24.4))
+      '@gelatonetwork/smartwallet': 0.0.15(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(viem@2.30.6(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(zod@3.24.4))
       '@wagmi/core': 2.17.3(@tanstack/query-core@5.74.4)(@types/react@19.1.2)(react@18.3.1)(typescript@5.7.3)(use-sync-external-store@1.4.0(react@19.1.0))(viem@2.30.6(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(zod@3.24.4))
       react: 18.3.1
       viem: 2.30.6(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(zod@3.24.4)
@@ -8553,7 +8553,7 @@ snapshots:
       - immer
       - use-sync-external-store
 
-  '@gelatonetwork/smartwallet@0.0.14(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(viem@2.30.6(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(zod@3.24.4))':
+  '@gelatonetwork/smartwallet@0.0.15(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(viem@2.30.6(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(zod@3.24.4))':
     dependencies:
       isomorphic-ws: 5.0.0(ws@8.18.2(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       viem: 2.30.6(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(zod@3.24.4)

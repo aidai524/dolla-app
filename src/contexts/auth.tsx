@@ -31,7 +31,14 @@ export const AuthProvider: React.FC<{
   const { wallets } = useWallets();
   const { wallets: solanaWallets } = useSolanaWallets();
 
+  const timer = useRef<any>(0);
+  const [logining, setLogining] = useState(false);
+  const [accountRefresher, setAccountRefresher] = useState(-1);
+  const [isLoggedOut, setIsLoggedOut] = useState(false);
+
   const privyWallet = useMemo(() => {
+    if (isLoggedOut) return { address: "" };
+
     if (wallets.length === 0) return { address: "" };
     if (wallets.length === 1) return wallets[0];
     const privyItem = wallets.find(
@@ -39,7 +46,7 @@ export const AuthProvider: React.FC<{
         item.walletClientType === (USE_OTHER_WALLET ? "metamask" : "privy")
     );
     return privyItem;
-  }, [wallets]);
+  }, [wallets, isLoggedOut]);
 
   const {
     info: userInfo,
@@ -48,9 +55,6 @@ export const AuthProvider: React.FC<{
   } = useUserInfo(privyWallet?.address);
   const { signMessage } = useSignMessage();
   const { onLogin } = useLogin();
-  const timer = useRef<any>(0);
-  const [logining, setLogining] = useState(false);
-  const [accountRefresher, setAccountRefresher] = useState(-1);
 
   const { run: updateAccount } = useDebounceFn(
     async () => {
@@ -81,15 +85,13 @@ export const AuthProvider: React.FC<{
 
     try {
       const time = Date.now();
-      const message = `login dolla, sol_address:${solanaWallets[0]?.address},time:${time}`;
+      const userId = user.id.split(":")[2];
+
+      const message = `login dolla, sol_address:${solanaWallets[0]?.address}, wallet_id:${userId}, time:${time}`;
       let signature: string;
 
       // Choose different signing methods based on wallet type
-      if (
-        privyWallet &&
-        "walletClientType" in privyWallet &&
-        privyWallet.walletClientType === "metamask"
-      ) {
+      if (privyWallet && "walletClientType" in privyWallet) {
         // Use MetaMask for signing
         const ethereumProvider = await privyWallet.getEthereumProvider();
         if (!ethereumProvider) {
@@ -111,6 +113,7 @@ export const AuthProvider: React.FC<{
         solAddress: solanaWallets[0]?.address,
         signature,
         time,
+        userId,
         onSuccess: async () => {
           await onQueryUserInfo();
           setAccountRefresher(1);
@@ -131,18 +134,38 @@ export const AuthProvider: React.FC<{
   };
 
   const login = useCallback(async () => {
+    setIsLoggedOut(false);
     privyLogin?.();
   }, [privyLogin]);
 
   const logout = useCallback(async () => {
+    setIsLoggedOut(true);
+
+    try {
+      for (const wallet of wallets) {
+        await wallet?.disconnect();
+      }
+
+      for (const wallet of solanaWallets) {
+        await wallet?.disconnect();
+      }
+    } catch (error) {
+      console.error("Error disconnecting wallets:", error);
+    }
+
     await privyLogout?.();
+
     localStorage.removeItem("_AK_TOKEN_");
     setInfo(null);
     setAccountRefresher(0);
-  }, [privyWallet?.address, privyLogout]);
+  }, [privyWallet?.address, privyLogout, wallets, solanaWallets]);
 
   useEffect(() => {
     if (!ready) {
+      return;
+    }
+
+    if (isLoggedOut) {
       return;
     }
 
@@ -164,7 +187,7 @@ export const AuthProvider: React.FC<{
     return () => {
       clearTimeout(timer.current);
     };
-  }, [privyWallet?.address, ready, user]);
+  }, [privyWallet?.address, ready, user, isLoggedOut]);
 
   useEffect(() => {
     (window as any).sign = sign;

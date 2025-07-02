@@ -31,6 +31,7 @@ import {
   TransactionInstruction
 } from "@solana/web3.js";
 import { Randomness } from "@switchboard-xyz/on-demand";
+import { sendSolanaTransaction } from "@/utils/transaction/send-transaction";
 
 export default function useBid(onSuccess: (isWinner: boolean) => void) {
   const [bidding, setBidding] = useState(false);
@@ -213,21 +214,22 @@ export default function useBid(onSuccess: (isWinner: boolean) => void) {
       );
       console.log("bid:", simulationResult);
 
-      const receipt = await sendTransaction({
-        transaction: tx,
-        connection: provider.connection
-      });
-      console.log("receipt:", receipt);
+      // const receipt = await sendTransaction({
+      //   transaction: tx,
+      //   connection: provider.connection
+      // });
+      const result = await sendSolanaTransaction(tx);
+      console.log("receipt:", result);
       // Report hash for tracking
       reportHash({
         chain: "solana",
         user: payer.address,
-        hash: receipt.signature,
+        hash: result.data.data.hash,
         block_number: blockhash
       });
 
       toast.success({ title: "Bid placed successfully!" });
-      onSuccess(false); // 调用成功回调
+      onSuccess(false);
       // const pb = new PublicKey("7qKtiPPkK1ZYqVFujVJjsTuGSJNXAvVhLj41HxtQDsTG");
       // const userBaseAccount = await getAssociatedTokenAddress(
       //   new PublicKey(BASE_TOKEN.address),
