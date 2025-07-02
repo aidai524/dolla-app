@@ -1,6 +1,12 @@
 import { PrivyProvider } from "@privy-io/react-auth";
-import { berachain } from "viem/chains";
+import { baseSepolia, berachain } from "viem/chains";
 import { USE_OTHER_WALLET } from "@/config";
+import {
+  GelatoSmartWalletContextProvider,
+  privy,
+  wagmi
+} from "@gelatonetwork/smartwallet-react-sdk";
+import { http } from "wagmi";
 
 export default function WalletProvider({
   children
@@ -8,6 +14,21 @@ export default function WalletProvider({
   children: React.ReactNode;
 }) {
   return (
+    // <GelatoSmartWalletContextProvider
+    //   settings={{
+    //     scw: {
+    //       type: "gelato"
+    //     },
+    //     apiKey: import.meta.env.VITE_SPONSOR_API_KEY as string,
+    //     waas: privy(import.meta.env.VITE_PRIVY_APP_ID as string),
+    //     wagmi: wagmi({
+    //       chains: [berachain],
+    //       transports: {
+    //         [berachain.id]: http()
+    //       }
+    //     })
+    //   }}
+    // >
     <PrivyProvider
       appId="cmbkf9huq00tnl80lnrjj94eg"
       clientId="client-WY6MB5peNJNPpVa4xeGgAsE5vDHiWbbHn4W8W24fahweo"
@@ -53,5 +74,6 @@ export default function WalletProvider({
     >
       {children}
     </PrivyProvider>
+    // </GelatoSmartWalletContextProvider>
   );
 }

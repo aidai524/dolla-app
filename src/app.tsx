@@ -4,6 +4,7 @@ import {
   Navigate
 } from "react-router-dom";
 import { Suspense, lazy } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Loading from "./components/loading";
 import MainLayout from "./layouts/main";
 import WalletProvider from "./contexts/wallet";
@@ -74,26 +75,37 @@ const router = createBrowserRouter([
   }
 ]);
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5,
+      retry: 1
+    }
+  }
+});
+
 function App() {
   return (
-    <Suspense fallback={<Loading />}>
-      <WalletProvider>
-        <AuthProvider>
-          <RouterProvider router={router} />
-        </AuthProvider>
-      </WalletProvider>
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={true}
-        theme="light"
-        toastStyle={{ backgroundColor: "transparent", boxShadow: "none" }}
-        newestOnTop
-        rtl={false}
-        pauseOnFocusLoss
-        closeButton={false}
-      />
-    </Suspense>
+    <QueryClientProvider client={queryClient}>
+      <Suspense fallback={<Loading />}>
+        <WalletProvider>
+          <AuthProvider>
+            <RouterProvider router={router} />
+          </AuthProvider>
+        </WalletProvider>
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={true}
+          theme="light"
+          toastStyle={{ backgroundColor: "transparent", boxShadow: "none" }}
+          newestOnTop
+          rtl={false}
+          pauseOnFocusLoss
+          closeButton={false}
+        />
+      </Suspense>
+    </QueryClientProvider>
   );
 }
 
