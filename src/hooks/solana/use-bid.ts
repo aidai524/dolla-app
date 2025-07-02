@@ -54,7 +54,7 @@ export default function useBid(onSuccess: (isWinner: boolean) => void) {
     try {
       const state = getState(program);
       // Use the actual poolId parameter instead of hardcoded value
-      const poolIdBN = new anchor.BN(9);
+      const poolIdBN = new anchor.BN(poolId);
       console.log("Using poolId:", poolId, "as BN:", poolIdBN.toString());
       const pool = await getPool(program, provider, state.pda, poolIdBN);
       const buyerState = await getBuyState(
