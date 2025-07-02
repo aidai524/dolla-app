@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import useToast from "@/hooks/use-toast";
 import { useWallets } from "@privy-io/react-auth";
 import { useAuth } from "@/contexts/auth";
-import getContractSigner from "@/utils/wallet/get-contract-signer";
 
 export const MAX_APPROVE =
   "115792089237316195423570985008687907853269984665640564039457584007913129639935";
@@ -163,8 +162,6 @@ export default function useApprove({
       // console.log("txHash", txHash);
       // setApproving(false);
 
-      const contractSigner = await getContractSigner(wallet, ethereumProvider);
-      console.log("contractSigner", contractSigner);
       const provider = new ethers.providers.Web3Provider(ethereumProvider);
       const signer = provider.getSigner();
       console.log("signer", signer);
