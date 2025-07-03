@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BASE_TOKEN, QUOTE_TOKEN } from "@/config/btc";
+import { QUOTE_TOKEN } from "@/config/btc";
 import useToast from "@/hooks/use-toast";
 import reportHash from "@/utils/report-hash";
 import * as anchor from "@coral-xyz/anchor";
@@ -97,7 +97,7 @@ export default function useClaimSlash({
       //   transaction: batchTx,
       //   connection: provider.connection
       // });
-      const result = await sendSolanaTransaction(tx);
+      const result = await sendSolanaTransaction(tx, "claimSlashFunds");
       console.log("receipt:", result);
       // Report hash for tracking
       reportHash({

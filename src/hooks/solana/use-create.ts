@@ -121,7 +121,7 @@ export default function useCreate({
       const { blockhash } = await provider.connection.getLatestBlockhash();
       tx.recentBlockhash = blockhash;
 
-      const result = await sendSolanaTransaction(tx);
+      const result = await sendSolanaTransaction(tx, "createPool");
 
       // console.log(151, provider.connection);
       // const receipt = await sendTransaction({

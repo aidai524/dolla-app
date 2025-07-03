@@ -6,7 +6,6 @@ import * as anchor from "@coral-xyz/anchor";
 import useProgram from "./use-program";
 import {
   getState,
-  getNextOrderId,
   getPool,
   getAssociatedTokenAddress,
   getWrapToSolIx
@@ -116,7 +115,7 @@ export default function useCancel({
       //   connection: provider.connection
       // });
 
-      const result = await sendSolanaTransaction(tx);
+      const result = await sendSolanaTransaction(tx, "cancelPool");
       console.log("receipt:", result);
       // Report hash for tracking
       reportHash({

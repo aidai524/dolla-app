@@ -7,19 +7,13 @@ import {
   getState,
   getBuyState,
   loadSbProgram,
-  getRandomnessAccount,
   setupQueue,
   getAssociatedTokenAddress,
   getBidGasFee,
-  getWrapToSolIx,
-  accountExists
+  getWrapToSolIx
 } from "./helpers";
 import * as anchor from "@coral-xyz/anchor";
 import { useSolanaWallets } from "@privy-io/react-auth";
-import {
-  useSignTransaction,
-  useSendTransaction
-} from "@privy-io/react-auth/solana";
 import { BASE_TOKEN, QUOTE_TOKEN } from "@/config/btc";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -32,14 +26,13 @@ import {
 } from "@solana/web3.js";
 import { Randomness } from "@switchboard-xyz/on-demand";
 import { sendSolanaTransaction } from "@/utils/transaction/send-transaction";
+import axiosInstance from "@/libs/axios";
 
 export default function useBid(onSuccess: (isWinner: boolean) => void) {
   const [bidding, setBidding] = useState(false);
   const toast = useToast();
   const { wallets } = useSolanaWallets();
   const { program, provider } = useProgram();
-  const { signTransaction } = useSignTransaction();
-  const { sendTransaction } = useSendTransaction();
 
   const onBid = async (poolId: number, times: number) => {
     if (!wallets.length) {
@@ -65,44 +58,31 @@ export default function useBid(onSuccess: (isWinner: boolean) => void) {
         new PublicKey(payer.address)
       );
       const sbProgram = await loadSbProgram(provider);
-      const randomnessAccount = getRandomnessAccount(
-        import.meta.env.VITE_SOLANA_OPERATOR
+      const randomnessAccountResult = await axiosInstance.get(
+        `/api/v1/paygas/sol/randomnessaccount`
       );
+
+      const randomnessAccount = randomnessAccountResult.data.data;
+      console.log("randomnessAccount", randomnessAccount);
+      if (!randomnessAccount) {
+        toast.fail({ title: "Randomness account not found" });
+        return;
+      }
 
       const sbQueue = await setupQueue(program);
 
       let randomnessCreateIx;
 
-      console.log("before check randomnessAccount exist");
-      if (
-        !(await accountExists(randomnessAccount.publicKey, provider.connection))
-      ) {
-        console.log("randomnessAccount not exist");
-        const [randomness, createIx] = await Randomness.create(
-          // @ts-ignore
-          sbProgram,
-          randomnessAccount,
-          sbQueue,
-          new PublicKey(import.meta.env.VITE_SOLANA_OPERATOR)
-        );
-        const commitIx = await randomness.commitIx(
-          sbQueue,
-          new PublicKey(import.meta.env.VITE_SOLANA_OPERATOR)
-        );
-        randomnessCreateIx = [createIx, commitIx];
-      } else {
-        console.log("randomnessAccount exist");
-        const randomness = new Randomness(
-          // @ts-ignore
-          sbProgram,
-          randomnessAccount.publicKey
-        );
-        const commitIx = await randomness.commitIx(
-          sbQueue,
-          new PublicKey(import.meta.env.VITE_SOLANA_OPERATOR)
-        );
-        randomnessCreateIx = [commitIx];
-      }
+      const randomness = new Randomness(
+        // @ts-ignore
+        sbProgram,
+        new PublicKey(randomnessAccount)
+      );
+      const commitIx = await randomness.commitIx(
+        sbQueue,
+        new PublicKey(import.meta.env.VITE_SOLANA_OPERATOR)
+      );
+      randomnessCreateIx = [commitIx];
 
       const userQuoteAccount = await getAssociatedTokenAddress(
         new PublicKey(QUOTE_TOKEN.address),
@@ -154,9 +134,7 @@ export default function useBid(onSuccess: (isWinner: boolean) => void) {
         dollaState: state.pda,
         poolState: pool.pda,
         buyerState: buyerState.pda,
-        randomnessAccount:
-          randomnessAccount?.publicKey ||
-          new anchor.web3.PublicKey("11111111111111111111111111111111"),
+        randomnessAccount: new PublicKey(randomnessAccount),
         quoteMint: new PublicKey(QUOTE_TOKEN.address),
         paidMint: new PublicKey(QUOTE_TOKEN.address),
         protocolQuoteAccount: protocolQuoteAccount?.address,
@@ -203,11 +181,10 @@ export default function useBid(onSuccess: (isWinner: boolean) => void) {
       }
       tx.add(bidIx);
       tx.feePayer = new PublicKey(import.meta.env.VITE_SOLANA_OPERATOR);
+
       // Get the latest blockhash
       const { blockhash } = await provider.connection.getLatestBlockhash();
       tx.recentBlockhash = blockhash;
-
-      await tx.partialSign(randomnessAccount);
 
       const simulationResult = await provider.connection.simulateTransaction(
         tx
@@ -218,7 +195,7 @@ export default function useBid(onSuccess: (isWinner: boolean) => void) {
       //   transaction: tx,
       //   connection: provider.connection
       // });
-      const result = await sendSolanaTransaction(tx);
+      const result = await sendSolanaTransaction(tx, "bid");
       console.log("receipt:", result);
       // Report hash for tracking
       reportHash({

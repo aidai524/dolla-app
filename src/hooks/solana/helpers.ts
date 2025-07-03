@@ -176,7 +176,7 @@ export async function loadSbProgram(
   console.log("sbProgramId:" + sbProgramId.toString());
   const sbIdl = await anchor.Program.fetchIdl(sbProgramId, provider);
   // console.log("sbIdl:" + JSON.stringify(sbIdl.types));
-  const sbProgram = new anchor.Program(sbIdl, provider);
+  const sbProgram = new anchor.Program(sbIdl!, provider);
   return sbProgram;
 }
 
