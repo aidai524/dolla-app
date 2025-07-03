@@ -14,22 +14,6 @@ export default function WalletProvider({
   children: React.ReactNode;
 }) {
   return (
-    // <GelatoSmartWalletContextProvider
-    //   settings={{
-    //     scw: {
-    //       type: "gelato"
-    //     },
-    //     apiKey: import.meta.env.VITE_SPONSOR_API_KEY as string,
-    //     waas: privy(import.meta.env.VITE_PRIVY_APP_ID as string),
-    //     defaultChain: berachain,
-    //     wagmi: wagmi({
-    //       chains: [berachain],
-    //       transports: {
-    //         [berachain.id]: http()
-    //       }
-    //     })
-    //   }}
-    // >
     <PrivyProvider
       appId={import.meta.env.VITE_PRIVY_APP_ID as string}
       clientId={import.meta.env.VITE_PRIVY_CLIENT_ID as string}
@@ -42,7 +26,7 @@ export default function WalletProvider({
           walletChainType: "ethereum-and-solana",
           walletList: ["metamask"]
         },
-        loginMethods: ["email", USE_OTHER_WALLET && "wallet"],
+        loginMethods: USE_OTHER_WALLET ? ["email", "wallet"] : ["email"],
         fundingMethodConfig: {
           moonpay: {
             useSandbox: true
@@ -65,8 +49,25 @@ export default function WalletProvider({
         ]
       }}
     >
-      {children}
+      <GelatoSmartWalletContextProvider
+        settings={{
+          scw: {
+            type: "gelato"
+          },
+          apiKey: import.meta.env.VITE_SPONSOR_API_KEY as string,
+          waas: privy(import.meta.env.VITE_PRIVY_APP_ID as string),
+          defaultChain: berachain,
+          supportedChains: [berachain],
+          wagmi: wagmi({
+            chains: [berachain],
+            transports: {
+              [berachain.id]: http()
+            }
+          })
+        }}
+      >
+        {children}
+      </GelatoSmartWalletContextProvider>
     </PrivyProvider>
-    // </GelatoSmartWalletContextProvider>
   );
 }

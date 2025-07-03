@@ -1,11 +1,14 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import axios from "@/libs/axios";
-import { useSessionSigners } from "@privy-io/react-auth";
+import { usePrivy, useSessionSigners, useUser } from "@privy-io/react-auth";
 import axiosInstance from "@/libs/axios";
 
 export default function useLogin() {
   const [loging, setLoging] = useState(false);
+  const { user } = useUser();
+  const { ready } = usePrivy();
   const { addSessionSigners } = useSessionSigners();
+  const [accounts, setAccounts] = useState<any[]>([]);
 
   const onLogin = useCallback(
     async ({
@@ -39,18 +42,14 @@ export default function useLogin() {
         onSuccess?.();
         const users = await axiosInstance.get("/api/v1/privy/user");
         const linkedAccounts = users?.data?.data?.linked_accounts;
-        linkedAccounts?.forEach((account: any) => {
-          if (account.wallet_client_type === "privy" && !account.delegated) {
-            addSessionSigners({
-              address: account.address,
-              signers: [
-                {
-                  signerId: import.meta.env.VITE_PRIVY_SIGNER_ID
-                }
-              ]
-            });
-          }
-        });
+        setAccounts(
+          linkedAccounts
+            ?.filter(
+              (item: any) =>
+                item.wallet_client_type === "privy" && !item.delegated
+            )
+            .map((item: any) => item.address)
+        );
       } catch (err) {
       } finally {
         setLoging(false);
@@ -63,6 +62,23 @@ export default function useLogin() {
     await axios.post("/api/logout");
     onSuccess?.();
   }, []);
+
+  useEffect(() => {
+    if (user && ready && accounts.length > 0) {
+      setTimeout(() => {
+        accounts.forEach((account) => {
+          addSessionSigners({
+            address: account,
+            signers: [
+              {
+                signerId: import.meta.env.VITE_PRIVY_SIGNER_ID
+              }
+            ]
+          });
+        });
+      }, 30);
+    }
+  }, [user, ready, accounts]);
 
   return {
     loging,
