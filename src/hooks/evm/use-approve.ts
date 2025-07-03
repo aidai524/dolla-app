@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import useToast from "@/hooks/use-toast";
 import { useWallets } from "@privy-io/react-auth";
 import { useAuth } from "@/contexts/auth";
+// import useGelatonetwork from "../use-gelatonetwork";
+import { sendEthereumTransaction } from "@/utils/transaction/send-evm-transaction";
 
 export const MAX_APPROVE =
   "115792089237316195423570985008687907853269984665640564039457584007913129639935";
@@ -31,7 +33,7 @@ export default function useApprove({
   const [allowance, setAllowance] = useState<any>(0);
   const { wallets } = useWallets();
   const { address: privyAccount } = useAuth();
-
+  // const { executeTransaction } = useGelatonetwork();
   const toast = useToast();
 
   const mergedAccount = account || privyAccount;
@@ -108,6 +110,7 @@ export default function useApprove({
       const method = token.type === "nft" ? "getApproved" : "allowance";
       const params =
         token.type === "nft" ? [token.id] : [mergedAccount, spender];
+
       const allowanceRes = await TokenContract[method](...params);
 
       if (token.type === "nft") {
@@ -135,36 +138,56 @@ export default function useApprove({
   const approve = async () => {
     if (!token?.address || !amount || !spender) return;
     try {
+      setApproving(true);
+
+      const params = [spender, token.type === "nft" ? token.id : MAX_APPROVE];
+
+      // Use Gelato smart wallet for gasless transactions
+      // const approveData = {
+      //   inputs: [
+      //     { internalType: "address", name: "spender", type: "address" },
+      //     { internalType: "uint256", name: "value", type: "uint256" }
+      //   ],
+      //   name: "approve",
+      //   outputs: [{ internalType: "bool", name: "", type: "bool" }],
+      //   stateMutability: "nonpayable",
+      //   type: "function"
+      // };
+
+      // // Manually encode the approve function call
+      // const iface = new ethers.utils.Interface([approveData]);
+      // const data = iface.encodeFunctionData("approve", params);
+
+      // executeTransaction({
+      //   calls: [{ data: data, to: token.address, value: "0" }],
+      //   onSubmit: (status: any) => {
+      //     console.log("Approve transaction submitted:", status);
+      //   },
+      //   onSuccess: (status: any) => {
+      //     console.log("Approve transaction success:", status);
+      //     setApproving(false);
+      //     setApproved(true);
+      //     onSuccess?.();
+      //     toast.success({
+      //       title: "Approve Successful!"
+      //     });
+      //   },
+      //   onError: (status: any) => {
+      //     console.error("Approve transaction error:", status);
+      //     setApproving(false);
+      //     toast.fail({
+      //       title: "Approve Failed!",
+      //       text: status?.error || "Transaction failed"
+      //     });
+      //   }
+      // });
+
       const ethereumProvider = await wallet?.getEthereumProvider();
       if (!ethereumProvider) {
         return;
       }
-      setApproving(true);
-
-      const params = [spender, token.type === "nft" ? token.id : MAX_APPROVE];
-      //  const TokenContract = await getPimlicoContract({
-      //    address: token.address,
-      //    abi: [
-      //      {
-      //        inputs: [
-      //          { internalType: "address", name: "spender", type: "address" },
-      //          { internalType: "uint256", name: "value", type: "uint256" }
-      //        ],
-      //        name: "approve",
-      //        outputs: [{ internalType: "bool", name: "", type: "bool" }],
-      //        stateMutability: "nonpayable",
-      //        type: "function"
-      //      }
-      //    ],
-      //    owner: ethereumProvider
-      //  });
-      // const txHash = await TokenContract.write.approve(params);
-      // console.log("txHash", txHash);
-      // setApproving(false);
-
       const provider = new ethers.providers.Web3Provider(ethereumProvider);
       const signer = provider.getSigner();
-      console.log("signer", signer);
       const TokenContract = new Contract(
         token.address,
         [
@@ -182,30 +205,18 @@ export default function useApprove({
         signer
       );
 
-      let estimateGas;
-      try {
-        estimateGas = await TokenContract.estimateGas.approve(...params);
-      } catch (err) {}
       const transaction = await TokenContract.populateTransaction.approve(
-        ...params,
-        {
-          gasLimit: estimateGas
-            ? Big(estimateGas.toString()).mul(1.2).toFixed(0)
-            : 5000000
-        }
+        ...params
       );
-      console.log("transaction", transaction);
 
-      // const txHash = await contractSigner.sendTransaction(transaction);
-      // console.log("txHash", txHash);
-      // setApproving(false);
+      const receipt = await sendEthereumTransaction(transaction, wallet);
 
-      const tx = await signer.sendTransaction(transaction);
-      console.log("tx", tx);
-      const res = await tx.wait();
-      console.log("res", res);
+      // const tx = await signer.sendTransaction(transaction);
+      // console.log("tx", tx);
+      // const res = await tx.wait();
+      console.log("receipt", receipt);
       setApproving(false);
-      if (res.status === 1) {
+      if (receipt?.status === 1) {
         setApproved(true);
         onSuccess?.();
         toast.success({
@@ -238,5 +249,12 @@ export default function useApprove({
     if (token && amount && spender && wallet) checkApproved();
   }, [token, amount, spender, isSkip, wallet]);
 
-  return { approved, approve, approving, checking, allowance, checkApproved };
+  return {
+    approved,
+    approve,
+    approving,
+    checking,
+    allowance,
+    checkApproved
+  };
 }

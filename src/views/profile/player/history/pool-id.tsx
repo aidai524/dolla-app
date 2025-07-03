@@ -1,6 +1,6 @@
-import Avatar from "@/components/avatar";
+// import Avatar from "@/components/avatar";
 import Market from "@/views/btc/markets/market";
-import MarkIcon from "./mark-icon";
+// import MarkIcon from "./mark-icon";
 import clsx from "clsx";
 
 export default function PoolId({ data }: { data: any }) {

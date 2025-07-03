@@ -2,6 +2,8 @@ import { useState } from "react";
 import useToast from "@/hooks/use-toast";
 import useBettingContract from "./use-betting-contract";
 import reportHash from "@/utils/report-hash";
+import { sendEthereumTransaction } from "@/utils/transaction/send-evm-transaction";
+import { useAuth } from "@/contexts/auth";
 
 export default function useDeposit(
   poolId: number,
@@ -11,6 +13,7 @@ export default function useDeposit(
   const [depositing, setDepositing] = useState(false);
   const toast = useToast();
   const BettingContract = useBettingContract(account);
+  const { wallet } = useAuth();
 
   const onDeposit = async () => {
     if (poolId === -1) {
@@ -34,18 +37,22 @@ export default function useDeposit(
         toast.fail({ title: "Reward already deposited" });
         return;
       }
-      const tx = await BettingContract.depositReward(poolId);
+      const tx = await BettingContract.populateTransaction.depositReward(
+        poolId
+      );
       console.log("Transaction sent:", tx.hash);
 
-      const receipt = await tx.wait();
+      const receipt = await sendEthereumTransaction(tx, wallet);
       console.log("Transaction receipt:", receipt);
-      reportHash({
-        hash: receipt.transactionHash,
-        block_number: receipt.blockNumber,
-        chain: "Berachain",
-        user: receipt?.from
-      });
-      if (receipt.status === 0) {
+      if (receipt) {
+        reportHash({
+          hash: receipt.transactionHash,
+          block_number: receipt.blockNumber,
+          chain: "Berachain",
+          user: receipt?.from
+        });
+      }
+      if (receipt?.status === 0) {
         toast.fail({ title: "Deposit failed" });
         throw new Error("Deposit failed");
       }

@@ -1,6 +1,5 @@
 import { PrivyProvider } from "@privy-io/react-auth";
-import { baseSepolia, berachain } from "viem/chains";
-import { USE_OTHER_WALLET } from "@/config";
+import { berachain } from "viem/chains";
 import {
   GelatoSmartWalletContextProvider,
   privy,
@@ -26,7 +25,7 @@ export default function WalletProvider({
           walletChainType: "ethereum-and-solana",
           walletList: ["metamask"]
         },
-        loginMethods: USE_OTHER_WALLET ? ["email", "wallet"] : ["email"],
+        loginMethods: ["email"],
         fundingMethodConfig: {
           moonpay: {
             useSandbox: true

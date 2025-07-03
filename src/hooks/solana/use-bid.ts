@@ -25,7 +25,7 @@ import {
   TransactionInstruction
 } from "@solana/web3.js";
 import { Randomness } from "@switchboard-xyz/on-demand";
-import { sendSolanaTransaction } from "@/utils/transaction/send-transaction";
+import { sendSolanaTransaction } from "@/utils/transaction/send-solana-transaction";
 import axiosInstance from "@/libs/axios";
 
 export default function useBid(onSuccess: (isWinner: boolean) => void) {
@@ -69,7 +69,7 @@ export default function useBid(onSuccess: (isWinner: boolean) => void) {
         return;
       }
 
-      const sbQueue = await setupQueue(program);
+      const sbQueue = await setupQueue();
 
       let randomnessCreateIx;
 

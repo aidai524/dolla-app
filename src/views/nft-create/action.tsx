@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import CreateButton from "./create-button";
 import Button from "@/components/button";
-import useDeposit from "@/hooks/use-deposit-reward";
-import useApprove from "@/hooks/use-approve";
-import useCreate from "@/hooks/use-create";
+import useDeposit from "@/hooks/evm/use-deposit-reward";
+import useApprove from "@/hooks/evm/use-approve";
+import useCreate from "@/hooks/evm/use-create";
 import { BETTING_CONTRACT_ADDRESS } from "@/config";
 import { useAuth } from "@/contexts/auth";
 

@@ -2,7 +2,7 @@
 
 import ListPrice from "./list-price";
 import useNfts from "./hooks/use-nfts";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import clsx from "clsx";
 import Nfts from "./nfts";
 import { useAuth } from "@/contexts/auth";
@@ -50,7 +50,7 @@ export default function ListNFT() {
           Chains
         </div>
         <div className="flex items-center gap-[20px]">
-          {chains.map((item, index) => (
+          {chains.map((item) => (
             <div
               key={item.id}
               className={clsx(

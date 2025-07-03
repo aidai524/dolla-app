@@ -16,15 +16,11 @@ import {
 } from "@solana/spl-token";
 import { useSolanaWallets } from "@privy-io/react-auth";
 import {
-  useSignTransaction,
-  useSendTransaction
-} from "@privy-io/react-auth/solana";
-import {
   PublicKey,
   Transaction,
   TransactionInstruction
 } from "@solana/web3.js";
-import { sendSolanaTransaction } from "@/utils/transaction/send-transaction";
+import { sendSolanaTransaction } from "@/utils/transaction/send-solana-transaction";
 
 export default function useCancel({
   onCancelSuccess
@@ -35,8 +31,7 @@ export default function useCancel({
   const { wallets } = useSolanaWallets();
   const toast = useToast();
   const { program, provider } = useProgram();
-  const { signTransaction } = useSignTransaction();
-  const { sendTransaction } = useSendTransaction();
+
   const onCancel = async (orderId: number) => {
     if (!wallets.length || !orderId) {
       toast.fail({ title: "Please connect your wallet" });

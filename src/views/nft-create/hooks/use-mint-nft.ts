@@ -3,6 +3,7 @@ import { Contract, ethers } from "ethers";
 import nftAbi from "@/config/abis/nft";
 import useToast from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/auth";
+import { sendEthereumTransaction } from "@/utils/transaction/send-evm-transaction";
 
 export default function useMintNft(
   nftAddress?: string,
@@ -26,18 +27,21 @@ export default function useMintNft(
 
       const NftContract = new Contract(nftAddress, nftAbi, signer);
 
-      const tx = await NftContract.safeMint();
-      const receipt = await tx.wait();
+      const tx = await NftContract.populateTransaction.safeMint();
+      const receipt = await sendEthereumTransaction(tx, wallet);
+      // const receipt = await tx.wait();
       console.log(receipt);
-      if (receipt.status === 0) {
+      if (receipt?.status === 0) {
         toast.fail({ title: "Mint NFT failed" });
         throw new Error("Mint NFT failed");
       }
-      const tokenId = receipt.logs[0].topics[3];
-      console.log("tokenId", Number(tokenId));
-      toast.success({ title: "Mint NFT success" });
-      setMinted(true);
-      onSuccess?.();
+      if (receipt?.status === 1) {
+        const tokenId = receipt.logs[0].topics[3];
+        console.log("tokenId", Number(tokenId));
+        toast.success({ title: "Mint NFT success" });
+        setMinted(true);
+        onSuccess?.();
+      }
     } catch (error) {
       console.error(error);
     } finally {

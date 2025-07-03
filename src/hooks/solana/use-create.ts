@@ -16,7 +16,7 @@ import {
   TOKEN_PROGRAM_ID
 } from "@solana/spl-token";
 import { useSolanaWallets } from "@privy-io/react-auth";
-import { sendSolanaTransaction } from "@/utils/transaction/send-transaction";
+import { sendSolanaTransaction } from "@/utils/transaction/send-solana-transaction";
 
 import {
   PublicKey,

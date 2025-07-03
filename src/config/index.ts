@@ -15,5 +15,3 @@ export const PURCHASE_TOKEN = {
 };
 
 export const INVATE_ACTIVE = false;
-
-export const USE_OTHER_WALLET = true;

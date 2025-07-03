@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Contract, ethers } from "ethers";
 import tokenAbi from "@/config/abis/token";
 import useToast from "@/hooks/use-toast";
@@ -7,7 +7,7 @@ import { TOKEN } from "@/config/btc";
 
 export default function useMintBtc(onSuccess?: () => void) {
   const [minting, setMinting] = useState(false);
-  const { wallet, address } = useAuth();
+  const { wallet } = useAuth();
   const toast = useToast();
   const mintBtc = async () => {
     try {

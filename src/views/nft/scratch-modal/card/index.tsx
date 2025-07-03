@@ -10,7 +10,7 @@ import TYPES from "./config";
 import { useMemo, useRef, useEffect, useState } from "react";
 import SoldLayer from "./sold-layer";
 import { formatNumber } from "@/utils/format/number";
-import { useAuth } from "@/contexts/auth";
+// import { useAuth } from "@/contexts/auth";
 
 export default function Card({
   data,
@@ -23,7 +23,7 @@ export default function Card({
   onClick?: (data: any) => void;
   from?: string;
 }) {
-  const { address } = useAuth();
+  // const { address } = useAuth();
   const type = useMemo(() => {
     if (Number(data?.rare) === 1) return "saudi";
     if (Number(data?.rare) === 2) return "redOg";

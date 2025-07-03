@@ -4,7 +4,7 @@ import Modal from "@/components/modal";
 import { formatNumber } from "@/utils/format/number";
 import { useMemo } from "react";
 import Big from "big.js";
-import useCancelOrder from "@/hooks/use-cancel-order";
+import useCancelOrder from "@/hooks/evm/use-cancel-order";
 
 export default function CancelModal({
   open,

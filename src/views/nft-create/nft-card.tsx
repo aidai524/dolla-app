@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import CheckedIcon from "./checked-icon";
+// import CheckedIcon from "./checked-icon";
 
 export default function NFTCard({
   checked = false,
@@ -47,26 +47,3 @@ export default function NFTCard({
     </div>
   );
 }
-
-const UncheckedIcon = () => {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="30"
-      height="30"
-      viewBox="0 0 30 30"
-      fill="none"
-    >
-      <rect
-        x="1"
-        y="1"
-        width="28"
-        height="28"
-        rx="14"
-        fill="#272727"
-        stroke="black"
-        strokeWidth="2"
-      />
-    </svg>
-  );
-};

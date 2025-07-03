@@ -17,7 +17,6 @@ import {
   useUser,
   useSolanaWallets
 } from "@privy-io/react-auth";
-import { USE_OTHER_WALLET } from "@/config";
 import { ethers } from "ethers";
 
 const AuthContext = React.createContext<any | null>(null);
@@ -41,10 +40,7 @@ export const AuthProvider: React.FC<{
 
     if (wallets.length === 0) return { address: "" };
     if (wallets.length === 1) return wallets[0];
-    const privyItem = wallets.find(
-      (item) =>
-        item.walletClientType === (USE_OTHER_WALLET ? "metamask" : "privy")
-    );
+    const privyItem = wallets.find((item) => item.walletClientType === "privy");
     return privyItem;
   }, [wallets, isLoggedOut]);
 
@@ -82,7 +78,9 @@ export const AuthProvider: React.FC<{
       login();
       return;
     }
-
+    if (!solanaWallets[0]?.address) {
+      return;
+    }
     try {
       const time = Date.now();
       const userId = user.id.split(":")[2];

@@ -199,7 +199,7 @@ export function getRandomnessAccount(payer: any) {
   return keypair;
 }
 
-export async function setupQueue(program: anchor.Program): Promise<PublicKey> {
+export async function setupQueue(): Promise<PublicKey> {
   return new PublicKey("EYiAmGSdsQTuCw413V5BzaruWuCCSDgTPtBGvLkXHbe7");
 }
 
@@ -252,40 +252,5 @@ export async function getTokenBalance(
     return Number(accountInfo.amount) / Math.pow(10, decimals);
   } catch (error) {
     return 0;
-  }
-}
-
-export class BrowserRandomness {
-  public program: any;
-  public publicKey: PublicKey;
-
-  constructor(program: any, publicKey: PublicKey) {
-    this.program = program;
-    this.publicKey = publicKey;
-  }
-
-  static async create(
-    program: any,
-    keypair: any,
-    queue: PublicKey,
-    payer: PublicKey
-  ): Promise<[BrowserRandomness, any]> {
-    // Browser implementation - return mock instructions
-    const createIx = {
-      programId: program.programId,
-      keys: [],
-      data: Buffer.from([])
-    };
-    const instance = new BrowserRandomness(program, keypair.publicKey);
-    return [instance, createIx];
-  }
-
-  async commitIx(queue: PublicKey, payer: PublicKey) {
-    // Browser implementation - return mock commit instruction
-    return {
-      programId: this.program.programId,
-      keys: [],
-      data: Buffer.from([])
-    };
   }
 }

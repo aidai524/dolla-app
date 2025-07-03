@@ -4,6 +4,8 @@ import { PURCHASE_TOKEN } from "@/config";
 import useToast from "@/hooks/use-toast";
 import useBettingContract from "./use-betting-contract";
 import reportHash from "@/utils/report-hash";
+import { sendEthereumTransaction } from "@/utils/transaction/send-evm-transaction";
+import { useAuth } from "@/contexts/auth";
 
 export default function useCreate({
   token,
@@ -19,6 +21,7 @@ export default function useCreate({
   const [creating, setCreating] = useState(false);
   const toast = useToast();
   const BettingContract = useBettingContract();
+  const { wallet } = useAuth();
 
   const onCreate = async () => {
     if (!BettingContract) {
@@ -55,7 +58,7 @@ export default function useCreate({
 
       const drawFee = Big(1 * 10 ** PURCHASE_TOKEN.decimals).toFixed(0);
 
-      const tx = await BettingContract.createPool(
+      const tx = await BettingContract.populateTransaction.createPool(
         PURCHASE_TOKEN.address,
         token.address,
         rewardAmount,
@@ -63,22 +66,27 @@ export default function useCreate({
         drawFee,
         Big(anchorPrice * 10 ** PURCHASE_TOKEN.decimals).toFixed(0)
       );
-      const receipt = await tx.wait();
+
+      const receipt = await sendEthereumTransaction(tx, wallet);
+
       console.log("receipt", receipt);
-      reportHash({
-        hash: receipt.transactionHash,
-        block_number: receipt.blockNumber,
-        chain: "Berachain",
-        user: receipt?.from
-      });
-      if (receipt.status === 0) {
+      if (receipt) {
+        reportHash({
+          hash: receipt.transactionHash,
+          block_number: receipt.blockNumber,
+          chain: "Berachain",
+          user: receipt?.from
+        });
+      }
+      if (receipt?.status === 0) {
         toast.fail({ title: "Create pool failed" });
         throw new Error("Create pool failed");
       }
-
-      toast.success({ title: "Create pool success" });
-      const poolId = receipt.logs[0].topics[1];
-      onCreateSuccess?.(Number(poolId));
+      if (receipt?.status === 1) {
+        const poolId = receipt.logs[0].topics[1];
+        onCreateSuccess?.(Number(poolId));
+        toast.success({ title: "Create pool success" });
+      }
     } catch (error) {
       console.error("Create error:", error);
       throw error;

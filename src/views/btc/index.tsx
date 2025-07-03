@@ -12,7 +12,7 @@ import { getAnchorPrice } from "@/utils/pool";
 
 export default function BTC() {
   const marketsRef = useRef<any>(null);
-  const { data, loading } = usePoolRecommend(0);
+  const { data } = usePoolRecommend(0);
   const [selectedMarket, setSelectedMarket] = useState<any>(null);
   const [selectedBid, setSelectedBid] = useState(1);
   const pool = useMemo(() => {

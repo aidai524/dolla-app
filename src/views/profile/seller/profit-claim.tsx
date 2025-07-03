@@ -1,6 +1,6 @@
 import Button from "@/components/button";
 import { formatNumber } from "@/utils/format/number";
-import useClaim from "@/hooks/use-claim";
+import useClaim from "@/hooks/evm/use-claim";
 import { useAuth } from "@/contexts/auth";
 
 export default function ProfitClaim({ profit }: { profit: number }) {

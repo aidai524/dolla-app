@@ -3,8 +3,8 @@ import Button from "@/components/button";
 import dayjs from "dayjs";
 import CancelModal from "./cancel-modal";
 import DepositModal from "./deposit-modal";
-import useClaim from "@/hooks/use-claim";
-import { useMemo, useState } from "react";
+import useClaim from "@/hooks/evm/use-claim";
+import { useState } from "react";
 import Loading from "@/components/icons/loading";
 
 export default function OrderList({

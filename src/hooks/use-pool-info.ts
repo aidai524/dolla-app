@@ -1,7 +1,7 @@
 import axiosInstance from "@/libs/axios";
 import { useState } from "react";
 
-export default function usePoolInfo() {
+export default function usePoolInfo(chain: string) {
   const [loading, setLoading] = useState(false);
   const [poolInfo, setPoolInfo] = useState<any>(null);
 
@@ -9,7 +9,9 @@ export default function usePoolInfo() {
     try {
       if (!poolId) return;
       setLoading(true);
-      const res = await axiosInstance.get(`/api/v1/pool?pool_id=${poolId}`);
+      const res = await axiosInstance.get(
+        `/api/v1/pool?pool_id=${poolId}&chain=${chain}`
+      );
       setPoolInfo(res.data.data);
     } catch (err) {
     } finally {

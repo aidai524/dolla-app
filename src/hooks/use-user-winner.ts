@@ -3,7 +3,7 @@ import axiosInstance from "@/libs/axios";
 import { useEffect, useState, useMemo } from "react";
 import { TOKEN } from "@/config/btc";
 import { PURCHASE_TOKEN } from "@/config";
-import useTokenBalance from "./use-token-balance";
+import useTokenBalance from "./evm/use-token-balance";
 
 export default function useUserWinner() {
   const [nfts, setNfts] = useState<any[]>([]);

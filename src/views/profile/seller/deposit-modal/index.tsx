@@ -4,9 +4,9 @@ import Modal from "@/components/modal";
 import { formatNumber } from "@/utils/format/number";
 import Big from "big.js";
 import { useMemo } from "react";
-import useTokenBalance from "@/hooks/use-token-balance";
-import useDeposit from "@/hooks/use-deposit-reward";
-import useApprove from "@/hooks/use-approve";
+import useTokenBalance from "@/hooks/evm/use-token-balance";
+import useDeposit from "@/hooks/evm/use-deposit-reward";
+import useApprove from "@/hooks/evm/use-approve";
 import { BETTING_CONTRACT_ADDRESS } from "@/config";
 import { useAuth } from "@/contexts/auth";
 
@@ -25,7 +25,7 @@ export default function DepositModal({
     return order?.reward_token_info?.[0] || {};
   }, [order]);
   const { address } = useAuth();
-  const { tokenBalance, isLoading, update } = useTokenBalance(
+  const { tokenBalance, isLoading } = useTokenBalance(
     order?.reward_token_info?.[0]
   );
 

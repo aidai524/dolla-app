@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from "react";
-import domtoimage from "dom-to-image";
+// import domtoimage from "dom-to-image";
 import { Coins } from "./top";
 import Big from "big.js";
 import { formatNumber } from "@/utils/format/number";
@@ -14,14 +14,14 @@ export default function BTCShareCard({ data }: { data: any }) {
 
     try {
       setIsLoading(true);
-      const dataUrl = await domtoimage.toPng(cardDomRef.current, {
-        quality: 1.0,
-        bgcolor: "#232932",
-        style: {
-          transform: "scale(1)",
-          transformOrigin: "top left"
-        }
-      });
+      // const dataUrl = await domtoimage.toPng(cardDomRef.current, {
+      //   quality: 1.0,
+      //   bgcolor: "#232932",
+      //   style: {
+      //     transform: "scale(1)",
+      //     transformOrigin: "top left"
+      //   }
+      // });
 
       // const a = document.createElement("a");
       // a.href = dataUrl;

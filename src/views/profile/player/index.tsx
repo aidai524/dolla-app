@@ -1,6 +1,6 @@
 import SwitchPanel from "@/components/switch/switch-panel";
 import Statistics from "./statistics";
-import ProfileChart from "./profile-chart";
+// import ProfileChart from "./profile-chart";
 import History from "./history";
 import UserInfo from "./user-info";
 import Invite from "./invite";

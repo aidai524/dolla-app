@@ -1,19 +1,19 @@
-import NFTBg from "./bg";
+// import NFTBg from "./bg";
 import NFTTop from "./top";
 import NFTBid from "./bid";
 import Switcher from "./switcher";
 import ProbabiltyChart from "./probabilty-chart";
 import PlayerDistribution from "./player-distribution";
 import usePoolRecommend from "../../hooks/use-pool-recommend";
-import WinnerCard from "@/components/winners/winner-card";
+// import WinnerCard from "@/components/winners/winner-card";
 import { useMemo, useState } from "react";
 import { getAnchorPrice } from "@/utils/pool";
 import usePoolInfo from "@/hooks/use-pool-info";
 
 export default function NFT() {
-  const { data, loading, getPoolRecommend } = usePoolRecommend(1);
+  const { data, getPoolRecommend } = usePoolRecommend(1);
   const [selectedBid, setSelectedBid] = useState(1);
-  const { onQueryPoolInfo, poolInfo } = usePoolInfo();
+  const { onQueryPoolInfo, poolInfo } = usePoolInfo("Berachain");
   const [refresh, setRefresh] = useState(0);
 
   const mergedData = useMemo(() => {

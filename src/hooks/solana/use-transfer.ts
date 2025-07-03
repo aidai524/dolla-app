@@ -15,7 +15,7 @@ import {
   Transaction,
   TransactionInstruction
 } from "@solana/web3.js";
-import { sendSolanaTransaction } from "@/utils/transaction/send-transaction";
+import { sendSolanaTransaction } from "@/utils/transaction/send-solana-transaction";
 
 export default function useTransfer({
   token,

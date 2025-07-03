@@ -4,7 +4,7 @@ import Button from "@/components/button";
 import QuickPopup from "./quick-popup";
 import CashierModal from "./modal";
 import { useRef, useState } from "react";
-import useTokenBalance from "@/hooks/use-token-balance";
+import useTokenBalance from "@/hooks/evm/use-token-balance";
 import { PURCHASE_TOKEN } from "@/config";
 import { formatNumber } from "@/utils/format/number";
 

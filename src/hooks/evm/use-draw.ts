@@ -1,13 +1,16 @@
-import useToast from "./use-toast";
+import useToast from "../use-toast";
 import { useState } from "react";
 import { ethers } from "ethers";
 import useBettingContract from "./use-betting-contract";
 import reportHash from "@/utils/report-hash";
+import { useAuth } from "@/contexts/auth";
+import { sendEthereumTransaction } from "@/utils/transaction/send-evm-transaction";
 
 export default function useDraw(onSuccess: (isWinner: boolean) => void) {
   const [drawing, setDrawing] = useState(false);
   const toast = useToast();
   const BettingContract = useBettingContract();
+  const { wallet } = useAuth();
 
   const onDraw = async (poolId: number, times: number) => {
     if (poolId === -1 || !BettingContract) {
@@ -34,31 +37,29 @@ export default function useDraw(onSuccess: (isWinner: boolean) => void) {
         times > 1
           ? [poolId, times, userRandomNumber]
           : [poolId, userRandomNumber];
-      console.log("params", method, params);
-      const estimateGas = await BettingContract.estimateGas[method](...params, {
+
+      const tx = await BettingContract.populateTransaction[method](...params, {
         value: flipFee
       });
-      console.log("estimateGas", estimateGas.toString());
 
-      const tx = await BettingContract[method](...params, {
-        value: flipFee,
-        gasLimit: estimateGas.mul(120).div(100)
-      });
-      const receipt = await tx.wait();
+      const receipt = await sendEthereumTransaction(tx, wallet);
+
+      setDrawing(false);
+      // const tx = await BettingContract[method](...params, {
+      //   value: flipFee,
+      //   gasLimit: estimateGas.mul(120).div(100)
+      // });
+      // const receipt = await tx.wait();
       console.log("receipt", receipt);
-      reportHash({
-        hash: receipt.transactionHash,
-        block_number: receipt.blockNumber,
-        chain: "Berachain",
-        user: receipt?.from
-      });
-      if (receipt.status === 0) {
-        toast.fail({ title: "Draw failed" });
-        setDrawing(false);
-        return;
+      if (receipt) {
+        reportHash({
+          hash: receipt.transactionHash,
+          block_number: receipt.blockNumber,
+          chain: "Berachain",
+          user: receipt.from
+        });
       }
-
-      setTimeout(async () => {
+      if (receipt?.status === 1) {
         const afterPoolState = await BettingContract.getPoolState(poolId);
         console.log("afterPoolState", afterPoolState);
         onSuccess(
@@ -72,7 +73,7 @@ export default function useDraw(onSuccess: (isWinner: boolean) => void) {
               : "Draw success"
         });
         setDrawing(false);
-      }, 8000);
+      }
     } catch (error) {
       setDrawing(false);
       console.error(error);

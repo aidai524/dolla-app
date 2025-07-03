@@ -1,12 +1,12 @@
 import BidCom from "@/components/bid";
 import ScratchModal from "./scratch-modal";
 import { useState } from "react";
-import useDraw from "@/hooks/use-draw";
+import useDraw from "@/hooks/evm/use-draw";
 import ButtonWithAuth from "@/components/button/button-with-auth";
-import useTokenBalance from "@/hooks/use-token-balance";
+import useTokenBalance from "@/hooks/evm/use-token-balance";
 import { BETTING_CONTRACT_ADDRESS, PURCHASE_TOKEN } from "@/config";
 import Big from "big.js";
-import useApprove from "@/hooks/use-approve";
+import useApprove from "@/hooks/evm/use-approve";
 import clsx from "clsx";
 
 export default function NFTBid(props: any) {

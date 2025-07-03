@@ -1,7 +1,7 @@
 import Profit from "./profit";
 import ProfitClaim from "../seller/profit-claim";
 import YourWon from "./your-won";
-import Button from "@/components/button";
+// import Button from "@/components/button";
 import { useAuth } from "@/contexts/auth";
 import dayjs from "dayjs";
 
