@@ -1216,6 +1216,179 @@ export default {
       args: []
     },
     {
+      name: "transfer_helper",
+      discriminator: [91, 127, 17, 103, 187, 1, 7, 59],
+      accounts: [
+        {
+          name: "dolla_state"
+        },
+        {
+          name: "token_mint"
+        },
+        {
+          name: "paid_mint"
+        },
+        {
+          name: "user_token_account",
+          writable: true,
+          pda: {
+            seeds: [
+              {
+                kind: "account",
+                path: "user"
+              },
+              {
+                kind: "const",
+                value: [
+                  6, 221, 246, 225, 215, 101, 161, 147, 217, 203, 225, 70, 206,
+                  235, 121, 172, 28, 180, 133, 237, 95, 91, 55, 145, 58, 140,
+                  245, 133, 126, 255, 0, 169
+                ]
+              },
+              {
+                kind: "account",
+                path: "token_mint"
+              }
+            ],
+            program: {
+              kind: "const",
+              value: [
+                140, 151, 37, 143, 78, 36, 137, 241, 187, 61, 16, 41, 20, 142,
+                13, 131, 11, 90, 19, 153, 218, 255, 16, 132, 4, 142, 123, 216,
+                219, 233, 248, 89
+              ]
+            }
+          }
+        },
+        {
+          name: "to_token_account",
+          writable: true,
+          pda: {
+            seeds: [
+              {
+                kind: "account",
+                path: "to_user"
+              },
+              {
+                kind: "const",
+                value: [
+                  6, 221, 246, 225, 215, 101, 161, 147, 217, 203, 225, 70, 206,
+                  235, 121, 172, 28, 180, 133, 237, 95, 91, 55, 145, 58, 140,
+                  245, 133, 126, 255, 0, 169
+                ]
+              },
+              {
+                kind: "account",
+                path: "token_mint"
+              }
+            ],
+            program: {
+              kind: "const",
+              value: [
+                140, 151, 37, 143, 78, 36, 137, 241, 187, 61, 16, 41, 20, 142,
+                13, 131, 11, 90, 19, 153, 218, 255, 16, 132, 4, 142, 123, 216,
+                219, 233, 248, 89
+              ]
+            }
+          }
+        },
+        {
+          name: "user_paid_account",
+          writable: true,
+          pda: {
+            seeds: [
+              {
+                kind: "account",
+                path: "user"
+              },
+              {
+                kind: "const",
+                value: [
+                  6, 221, 246, 225, 215, 101, 161, 147, 217, 203, 225, 70, 206,
+                  235, 121, 172, 28, 180, 133, 237, 95, 91, 55, 145, 58, 140,
+                  245, 133, 126, 255, 0, 169
+                ]
+              },
+              {
+                kind: "account",
+                path: "paid_mint"
+              }
+            ],
+            program: {
+              kind: "const",
+              value: [
+                140, 151, 37, 143, 78, 36, 137, 241, 187, 61, 16, 41, 20, 142,
+                13, 131, 11, 90, 19, 153, 218, 255, 16, 132, 4, 142, 123, 216,
+                219, 233, 248, 89
+              ]
+            }
+          }
+        },
+        {
+          name: "operator_paid_account",
+          writable: true,
+          pda: {
+            seeds: [
+              {
+                kind: "account",
+                path: "operator"
+              },
+              {
+                kind: "const",
+                value: [
+                  6, 221, 246, 225, 215, 101, 161, 147, 217, 203, 225, 70, 206,
+                  235, 121, 172, 28, 180, 133, 237, 95, 91, 55, 145, 58, 140,
+                  245, 133, 126, 255, 0, 169
+                ]
+              },
+              {
+                kind: "account",
+                path: "paid_mint"
+              }
+            ],
+            program: {
+              kind: "const",
+              value: [
+                140, 151, 37, 143, 78, 36, 137, 241, 187, 61, 16, 41, 20, 142,
+                13, 131, 11, 90, 19, 153, 218, 255, 16, 132, 4, 142, 123, 216,
+                219, 233, 248, 89
+              ]
+            }
+          }
+        },
+        {
+          name: "token_program"
+        },
+        {
+          name: "associated_token_program",
+          address: "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          name: "user",
+          writable: true,
+          signer: true
+        },
+        {
+          name: "to_user"
+        },
+        {
+          name: "operator",
+          writable: true,
+          signer: true
+        },
+        {
+          name: "system_program",
+          address: "11111111111111111111111111111111"
+        }
+      ],
+      args: [
+        {
+          name: "transfer_amount",
+          type: "u64"
+        }
+      ]
+    },
+    {
       name: "withdraw_protocol_fee",
       discriminator: [158, 201, 158, 189, 33, 93, 162, 103],
       accounts: [
@@ -1324,6 +1497,10 @@ export default {
     {
       name: "TransferEvent",
       discriminator: [100, 10, 46, 113, 8, 28, 179, 125]
+    },
+    {
+      name: "TransferHelperEvent",
+      discriminator: [160, 90, 93, 153, 247, 62, 63, 186]
     },
     {
       name: "WithdrawEvent",
@@ -1972,6 +2149,42 @@ export default {
           {
             name: "token_id",
             type: "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      name: "TransferHelperEvent",
+      type: {
+        kind: "struct",
+        fields: [
+          {
+            name: "user",
+            type: "pubkey"
+          },
+          {
+            name: "to_user",
+            type: "pubkey"
+          },
+          {
+            name: "operator",
+            type: "pubkey"
+          },
+          {
+            name: "token_mint",
+            type: "pubkey"
+          },
+          {
+            name: "transfer_amount",
+            type: "u64"
+          },
+          {
+            name: "gas_token",
+            type: "pubkey"
+          },
+          {
+            name: "gas_fee",
+            type: "u64"
           }
         ]
       }
