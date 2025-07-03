@@ -54,7 +54,7 @@ export default function useCreate({
 
       let nextOrderId = await getNextOrderId(program, provider, state.pda);
       nextOrderId = new anchor.BN(nextOrderId);
-
+      console.log("nextOrderId", nextOrderId.toNumber());
       const pool = await getPool(program, provider, state.pda, nextOrderId);
 
       const userBaseAccount = await getAssociatedTokenAddress(
@@ -130,17 +130,16 @@ export default function useCreate({
       // });
       // console.log("receipt:", receipt);
       // Report hash for tracking
+      // Extract pool ID from transaction logs or use nextOrderId
+      const poolId = nextOrderId.toNumber();
+
+      onCreateSuccess?.(poolId);
       reportHash({
         chain: "solana",
         user: payer.address,
         hash: result.data.data.hash,
         block_number: blockhash
       });
-
-      // Extract pool ID from transaction logs or use nextOrderId
-      const poolId = nextOrderId.toNumber();
-
-      onCreateSuccess?.(poolId);
     } catch (error) {
       console.error("Create error:", error);
       throw error;
