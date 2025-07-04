@@ -5,12 +5,13 @@ import tokenAbi from "@/config/abis/token";
 import reportHash from "@/utils/report-hash";
 import useToast from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/auth";
-import { sendEthereumTransaction } from "@/utils/transaction/send-evm-transaction";
+import useGelatonetwork from "./use-gelatonetwork";
 
 export default function useWithdraw(onSuccess: () => void) {
   const [withdrawing, setWithdrawing] = useState(false);
   const { wallet } = useAuth();
   const toast = useToast();
+  const { executeTransaction } = useGelatonetwork();
   const onWithdraw = async ({
     type,
     amount,
@@ -37,26 +38,32 @@ export default function useWithdraw(onSuccess: () => void) {
           ? [receiveAddress, amount]
           : [wallet.address, receiveAddress, tokenId];
       const tx = await Contract.populateTransaction[method](...params);
-      const receipt = await sendEthereumTransaction(tx, wallet);
-      // const receipt = await tx.wait();
-      if (receipt) {
-        reportHash({
-          hash: receipt.transactionHash,
-          block_number: receipt.blockNumber,
-          chain: "Berachain",
-          user: receipt?.from
-        });
-      }
-      if (receipt?.status === 0) {
-        toast.fail({ title: "Withdraw failed" });
-        return;
-      }
-      onSuccess?.();
-      toast.success({ title: "Withdraw success" });
+      executeTransaction({
+        calls: [tx],
+        onSuccess: (receipt: any) => {
+          console.log("receipt", receipt);
+          setWithdrawing(false);
+          if (receipt?.status === 0) {
+            toast.fail({ title: "Withdraw failed" });
+          } else {
+            onSuccess?.();
+            toast.success({ title: "Withdraw success" });
+          }
+          reportHash({
+            hash: receipt.transactionHash,
+            block_number: receipt.blockNumber,
+            chain: "Berachain",
+            user: receipt?.from
+          });
+        },
+        onError: () => {
+          setWithdrawing(false);
+          toast.fail({ title: "Withdraw failed" });
+          throw new Error("Withdraw failed");
+        }
+      });
     } catch (err) {
       console.error(err);
-    } finally {
-      setWithdrawing(false);
     }
   };
   return {

@@ -3,7 +3,7 @@ import { Contract, ethers } from "ethers";
 import nftAbi from "@/config/abis/nft";
 import useToast from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/auth";
-import { sendEthereumTransaction } from "@/utils/transaction/send-evm-transaction";
+import useGelatonetwork from "@/hooks/evm/use-gelatonetwork";
 
 export default function useMintNft(
   nftAddress?: string,
@@ -14,6 +14,7 @@ export default function useMintNft(
   const [minted, setMinted] = useState(false);
   const [mintedLoading, setMintedLoading] = useState(false);
   const toast = useToast();
+  const { executeTransaction } = useGelatonetwork();
   const mintNft = async () => {
     try {
       setMinting(true);
@@ -28,23 +29,28 @@ export default function useMintNft(
       const NftContract = new Contract(nftAddress, nftAbi, signer);
 
       const tx = await NftContract.populateTransaction.safeMint();
-      const receipt = await sendEthereumTransaction(tx, wallet);
-      // const receipt = await tx.wait();
-      console.log(receipt);
-      if (receipt?.status === 0) {
-        toast.fail({ title: "Mint NFT failed" });
-        throw new Error("Mint NFT failed");
-      }
-      if (receipt?.status === 1) {
-        const tokenId = receipt.logs[0].topics[3];
-        console.log("tokenId", Number(tokenId));
-        toast.success({ title: "Mint NFT success" });
-        setMinted(true);
-        onSuccess?.();
-      }
+      executeTransaction({
+        calls: [tx],
+        onSuccess: (receipt: any) => {
+          console.log("receipt", receipt);
+          setMinting(false);
+          if (receipt?.status === 0) {
+            toast.fail({ title: "Mint NFT failed" });
+          } else {
+            const tokenId = receipt.logs[0].topics[3];
+            console.log("tokenId", Number(tokenId));
+            toast.success({ title: "Mint NFT success" });
+            setMinted(true);
+            onSuccess?.();
+          }
+        },
+        onError: () => {
+          toast.fail({ title: "Mint NFT failed" });
+          setMinting(false);
+        }
+      });
     } catch (error) {
       console.error(error);
-    } finally {
       setMinting(false);
     }
   };

@@ -2,8 +2,7 @@ import { useState, useEffect } from "react";
 import useBettingContract from "@/hooks/evm/use-betting-contract";
 import useToast from "@/hooks/use-toast";
 import reportHash from "@/utils/report-hash";
-import { sendEthereumTransaction } from "@/utils/transaction/send-evm-transaction";
-import { useAuth } from "@/contexts/auth";
+import useGelatonetwork from "./use-gelatonetwork";
 
 export default function useCancelOrder({
   poolId,
@@ -17,7 +16,7 @@ export default function useCancelOrder({
   const [loading, setLoading] = useState(false);
   const BettingContract = useBettingContract();
   const toast = useToast();
-  const { wallet } = useAuth();
+  const { executeTransaction } = useGelatonetwork();
   const cancelOrder = async () => {
     if (!BettingContract) {
       return;
@@ -27,28 +26,32 @@ export default function useCancelOrder({
       const tx = await BettingContract.populateTransaction.cancelActivity(
         poolId
       );
-      const receipt = await sendEthereumTransaction(tx, wallet);
-      // const receipt = await tx.wait();
-      console.log("receipt", receipt);
-      if (receipt) {
-        reportHash({
-          hash: receipt.transactionHash,
-          block_number: receipt.blockNumber,
-          chain: "Berachain",
-          user: receipt?.from
-        });
-      }
-      if (receipt?.status === 0) {
-        toast.fail({ title: "Cancel order failed" });
-        return;
-      }
-      toast.success({ title: "Cancel order success" });
-      onSuccess();
+      executeTransaction({
+        calls: [tx],
+        onSuccess: async (receipt: any) => {
+          setCancelling(false);
+          if (receipt?.status === 0) {
+            toast.fail({ title: "Cancel order failed" });
+          } else {
+            toast.success({ title: "Cancel order success" });
+            onSuccess();
+          }
+
+          reportHash({
+            hash: receipt.transactionHash,
+            block_number: receipt.blockNumber,
+            chain: "Berachain",
+            user: receipt?.from
+          });
+        },
+        onError: () => {
+          setCancelling(false);
+          toast.fail({ title: "Cancel order failed" });
+        }
+      });
     } catch (error) {
       console.error("Cancel error:", error);
       toast.fail({ title: "Cancel order failed" });
-      throw error;
-    } finally {
       setCancelling(false);
     }
   };

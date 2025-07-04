@@ -6,6 +6,7 @@ import useBettingContract from "./use-betting-contract";
 import reportHash from "@/utils/report-hash";
 import { sendEthereumTransaction } from "@/utils/transaction/send-evm-transaction";
 import { useAuth } from "@/contexts/auth";
+import useGelatonetwork from "./use-gelatonetwork";
 
 export default function useCreate({
   token,
@@ -22,6 +23,7 @@ export default function useCreate({
   const toast = useToast();
   const BettingContract = useBettingContract();
   const { wallet } = useAuth();
+  const { executeTransaction } = useGelatonetwork();
 
   const onCreate = async () => {
     if (!BettingContract) {
@@ -66,31 +68,36 @@ export default function useCreate({
         drawFee,
         Big(anchorPrice * 10 ** PURCHASE_TOKEN.decimals).toFixed(0)
       );
+      executeTransaction({
+        calls: [tx],
+        onSuccess: async (receipt: any) => {
+          console.log("success", receipt);
+          setCreating(false);
 
-      const receipt = await sendEthereumTransaction(tx, wallet);
+          if (receipt?.status === 0) {
+            toast.fail({ title: "Create pool failed" });
+          } else {
+            const poolId = receipt.logs[0].topics[1];
+            onCreateSuccess?.(Number(poolId));
+            toast.success({ title: "Create pool success" });
+          }
 
-      console.log("receipt", receipt);
-      if (receipt) {
-        reportHash({
-          hash: receipt.transactionHash,
-          block_number: receipt.blockNumber,
-          chain: "Berachain",
-          user: receipt?.from
-        });
-      }
-      if (receipt?.status === 0) {
-        toast.fail({ title: "Create pool failed" });
-        throw new Error("Create pool failed");
-      }
-      if (receipt?.status === 1) {
-        const poolId = receipt.logs[0].topics[1];
-        onCreateSuccess?.(Number(poolId));
-        toast.success({ title: "Create pool success" });
-      }
+          reportHash({
+            hash: receipt.transactionHash,
+            block_number: receipt.blockNumber,
+            chain: "Berachain",
+            user: receipt?.from
+          });
+        },
+        onError: (status: any) => {
+          console.log("onError", status);
+          setCreating(false);
+          toast.fail({ title: "Create pool failed" });
+        }
+      });
     } catch (error) {
       console.error("Create error:", error);
-      throw error;
-    } finally {
+      toast.fail({ title: "Create pool failed" });
       setCreating(false);
     }
   };

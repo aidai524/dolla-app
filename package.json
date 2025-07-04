@@ -11,8 +11,8 @@
   },
   "dependencies": {
     "@coral-xyz/anchor": "0.30.1",
-    "@gelatonetwork/smartwallet": "^0.0.15",
-    "@gelatonetwork/smartwallet-react-sdk": "^0.0.15",
+    "@gelatonetwork/smartwallet": "^0.0.18",
+    "@gelatonetwork/smartwallet-react-sdk": "^0.0.18",
     "@privy-io/react-auth": "^2.13.8",
     "@rainbow-me/rainbowkit": "^2.2.6",
     "@solana/spl-token": "^0.4.13",
@@ -24,6 +24,7 @@
     "axios": "^1.8.4",
     "big.js": "^7.0.1",
     "buffer": "^6.0.3",
+    "caip": "^1.1.1",
     "chart.js": "^4.4.9",
     "chartjs-plugin-annotation": "^3.1.0",
     "clsx": "^2.1.1",

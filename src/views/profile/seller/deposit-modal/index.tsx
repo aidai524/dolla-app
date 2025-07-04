@@ -34,8 +34,21 @@ export default function DepositModal({
       .div(10 ** rewardTokenInfo.decimals)
       .toString();
   }, [order, rewardTokenInfo]);
+
+  const approveToken = useMemo(() => {
+    const _t = order?.reward_token_info?.[0];
+
+    if (!_t) return null;
+    return {
+      type: _t.token_id ? "nft" : "token",
+      address: _t.address,
+      id: _t.token_id,
+      decimals: _t.decimals
+    };
+  }, [order]);
+
   const { approving, approve, approved, checking } = useApprove({
-    token: order?.reward_token_info?.[0],
+    token: approveToken,
     amount: amount?.toString(),
     spender: BETTING_CONTRACT_ADDRESS,
     account: address

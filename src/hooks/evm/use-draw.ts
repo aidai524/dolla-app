@@ -3,14 +3,13 @@ import { useState } from "react";
 import { ethers } from "ethers";
 import useBettingContract from "./use-betting-contract";
 import reportHash from "@/utils/report-hash";
-import { useAuth } from "@/contexts/auth";
-import { sendEthereumTransaction } from "@/utils/transaction/send-evm-transaction";
+import useGelatonetwork from "./use-gelatonetwork";
 
 export default function useDraw(onSuccess: (isWinner: boolean) => void) {
   const [drawing, setDrawing] = useState(false);
   const toast = useToast();
   const BettingContract = useBettingContract();
-  const { wallet } = useAuth();
+  const { executeTransaction } = useGelatonetwork();
 
   const onDraw = async (poolId: number, times: number) => {
     if (poolId === -1 || !BettingContract) {
@@ -41,39 +40,42 @@ export default function useDraw(onSuccess: (isWinner: boolean) => void) {
       const tx = await BettingContract.populateTransaction[method](...params, {
         value: flipFee
       });
+      executeTransaction({
+        calls: [tx],
+        onSuccess: async (receipt: any) => {
+          setDrawing(false);
 
-      const receipt = await sendEthereumTransaction(tx, wallet);
-
-      setDrawing(false);
-      // const tx = await BettingContract[method](...params, {
-      //   value: flipFee,
-      //   gasLimit: estimateGas.mul(120).div(100)
-      // });
-      // const receipt = await tx.wait();
-      console.log("receipt", receipt);
-      if (receipt) {
-        reportHash({
-          hash: receipt.transactionHash,
-          block_number: receipt.blockNumber,
-          chain: "Berachain",
-          user: receipt.from
-        });
-      }
-      if (receipt?.status === 1) {
-        const afterPoolState = await BettingContract.getPoolState(poolId);
-        console.log("afterPoolState", afterPoolState);
-        onSuccess(
-          afterPoolState.winner !== "0x0000000000000000000000000000000000000000"
-        );
-        toast.success({
-          title:
-            afterPoolState.winner !==
-            "0x0000000000000000000000000000000000000000"
-              ? "You are the winner"
-              : "Draw success"
-        });
-        setDrawing(false);
-      }
+          if (receipt?.status === 1) {
+            const afterPoolState = await BettingContract.getPoolState(poolId);
+            console.log("afterPoolState", afterPoolState);
+            onSuccess(
+              afterPoolState.winner !==
+                "0x0000000000000000000000000000000000000000"
+            );
+            toast.success({
+              title:
+                afterPoolState.winner !==
+                "0x0000000000000000000000000000000000000000"
+                  ? "You are the winner"
+                  : "Draw success"
+            });
+            setDrawing(false);
+          } else {
+            toast.fail({ title: "Bid failed" });
+          }
+          reportHash({
+            hash: receipt.transactionHash,
+            block_number: receipt.blockNumber,
+            chain: "Berachain",
+            user: receipt.from
+          });
+        },
+        onError: (status: any) => {
+          console.log("onError", status);
+          setDrawing(false);
+          toast.fail({ title: "Bid failed" });
+        }
+      });
     } catch (error) {
       setDrawing(false);
       console.error(error);

@@ -122,7 +122,7 @@ export default function History() {
 
                     {["purchase_amount"].includes(column.key) &&
                       record[column.key]}
-                    {column.key === "date" &&
+                    {column.key === "updated_at" &&
                       dayjs(record[column.key]).format("HH:mm DD MMM, YYYY")}
                   </div>
                 ))}
@@ -226,7 +226,7 @@ const COLUMNS = [
     align: "left"
   },
   {
-    key: "date",
+    key: "updated_at",
     label: "Date",
     width: "35%",
     align: "right"

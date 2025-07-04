@@ -4,8 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import useToast from "@/hooks/use-toast";
 import { useWallets } from "@privy-io/react-auth";
 import { useAuth } from "@/contexts/auth";
-// import useGelatonetwork from "../use-gelatonetwork";
-import { sendEthereumTransaction } from "@/utils/transaction/send-evm-transaction";
+import useGelatonetwork from "./use-gelatonetwork";
 
 export const MAX_APPROVE =
   "115792089237316195423570985008687907853269984665640564039457584007913129639935";
@@ -33,8 +32,8 @@ export default function useApprove({
   const [allowance, setAllowance] = useState<any>(0);
   const { wallets } = useWallets();
   const { address: privyAccount } = useAuth();
-  // const { executeTransaction } = useGelatonetwork();
   const toast = useToast();
+  const { executeTransaction } = useGelatonetwork();
 
   const mergedAccount = account || privyAccount;
   const wallet = useMemo(() => {
@@ -122,7 +121,7 @@ export default function useApprove({
           allowanceRes.toString(),
           token.decimals
         );
-
+        console.log("_allowance", _allowance);
         const needApproved = Big(_allowance).lt(amount || "0");
 
         setAllowance(_allowance);
@@ -141,46 +140,6 @@ export default function useApprove({
       setApproving(true);
 
       const params = [spender, token.type === "nft" ? token.id : MAX_APPROVE];
-
-      // Use Gelato smart wallet for gasless transactions
-      // const approveData = {
-      //   inputs: [
-      //     { internalType: "address", name: "spender", type: "address" },
-      //     { internalType: "uint256", name: "value", type: "uint256" }
-      //   ],
-      //   name: "approve",
-      //   outputs: [{ internalType: "bool", name: "", type: "bool" }],
-      //   stateMutability: "nonpayable",
-      //   type: "function"
-      // };
-
-      // // Manually encode the approve function call
-      // const iface = new ethers.utils.Interface([approveData]);
-      // const data = iface.encodeFunctionData("approve", params);
-
-      // executeTransaction({
-      //   calls: [{ data: data, to: token.address, value: "0" }],
-      //   onSubmit: (status: any) => {
-      //     console.log("Approve transaction submitted:", status);
-      //   },
-      //   onSuccess: (status: any) => {
-      //     console.log("Approve transaction success:", status);
-      //     setApproving(false);
-      //     setApproved(true);
-      //     onSuccess?.();
-      //     toast.success({
-      //       title: "Approve Successful!"
-      //     });
-      //   },
-      //   onError: (status: any) => {
-      //     console.error("Approve transaction error:", status);
-      //     setApproving(false);
-      //     toast.fail({
-      //       title: "Approve Failed!",
-      //       text: status?.error || "Transaction failed"
-      //     });
-      //   }
-      // });
 
       const ethereumProvider = await wallet?.getEthereumProvider();
       if (!ethereumProvider) {
@@ -209,20 +168,26 @@ export default function useApprove({
         ...params
       );
 
-      const receipt = await sendEthereumTransaction(transaction, wallet);
-
-      // const tx = await signer.sendTransaction(transaction);
-      // console.log("tx", tx);
-      // const res = await tx.wait();
-      console.log("receipt", receipt);
-      setApproving(false);
-      if (receipt?.status === 1) {
-        setApproved(true);
-        onSuccess?.();
-        toast.success({
-          title: "Approve Successful!"
-        });
-      }
+      executeTransaction({
+        calls: [transaction],
+        onSuccess: (receipt: any) => {
+          setApproving(false);
+          console.log("receipt", receipt);
+          if (receipt?.status === 1) {
+            setApproved(true);
+            onSuccess?.();
+            toast.success({
+              title: "Approve Successful!"
+            });
+          }
+        },
+        onError: () => {
+          setApproving(false);
+          toast.fail({
+            title: "Approve Failed!"
+          });
+        }
+      });
     } catch (err: any) {
       console.log("err", err);
       toast.fail({

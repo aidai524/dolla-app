@@ -51,7 +51,7 @@ export default function Market({
         <span className="text-[16px] font-bold">
           {data?.nft_ids
             ? 1
-            : rewardTokenInfo && data?.reward_amount
+            : rewardTokenInfo?.decimals && data?.reward_amount
             ? formatNumber(
                 Big(data.reward_amount || 0).div(
                   10 ** rewardTokenInfo.decimals

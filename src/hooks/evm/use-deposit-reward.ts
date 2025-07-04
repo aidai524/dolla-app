@@ -2,8 +2,7 @@ import { useState } from "react";
 import useToast from "@/hooks/use-toast";
 import useBettingContract from "./use-betting-contract";
 import reportHash from "@/utils/report-hash";
-import { sendEthereumTransaction } from "@/utils/transaction/send-evm-transaction";
-import { useAuth } from "@/contexts/auth";
+import useGelatonetwork from "./use-gelatonetwork";
 
 export default function useDeposit(
   poolId: number,
@@ -13,7 +12,7 @@ export default function useDeposit(
   const [depositing, setDepositing] = useState(false);
   const toast = useToast();
   const BettingContract = useBettingContract(account);
-  const { wallet } = useAuth();
+  const { executeTransaction } = useGelatonetwork();
 
   const onDeposit = async () => {
     if (poolId === -1) {
@@ -42,31 +41,31 @@ export default function useDeposit(
       );
       console.log("Transaction sent:", tx.hash);
 
-      const receipt = await sendEthereumTransaction(tx, wallet);
-      console.log("Transaction receipt:", receipt);
-      if (receipt) {
-        reportHash({
-          hash: receipt.transactionHash,
-          block_number: receipt.blockNumber,
-          chain: "Berachain",
-          user: receipt?.from
-        });
-      }
-      if (receipt?.status === 0) {
-        toast.fail({ title: "Deposit failed" });
-        throw new Error("Deposit failed");
-      }
-
-      toast.success({ title: "Deposit success" });
-      onSuccess?.();
-    } catch (error: any) {
-      console.error("Deposit error details:", {
-        message: error.message,
-        code: error.code,
-        data: error.data,
-        transaction: error.transaction
+      executeTransaction({
+        calls: [tx],
+        onSuccess: (receipt: any) => {
+          console.log("receipt", receipt);
+          setDepositing(false);
+          if (receipt?.status === 0) {
+            toast.fail({ title: "Deposit failed" });
+          } else {
+            toast.success({ title: "Deposit success" });
+            onSuccess?.();
+          }
+          reportHash({
+            hash: receipt.transactionHash,
+            block_number: receipt.blockNumber,
+            chain: "Berachain",
+            user: receipt?.from
+          });
+        },
+        onError: () => {
+          toast.fail({ title: "Deposit failed" });
+          setDepositing(false);
+          throw new Error("Deposit failed");
+        }
       });
-
+    } catch (error: any) {
       // Show more specific error message
       let errorMessage = "Deposit failed";
       if (error.message) {
@@ -78,10 +77,8 @@ export default function useDeposit(
           errorMessage = "Reward already deposited";
         }
       }
-
-      toast.fail({ title: errorMessage });
-    } finally {
       setDepositing(false);
+      toast.fail({ title: errorMessage });
     }
   };
 
