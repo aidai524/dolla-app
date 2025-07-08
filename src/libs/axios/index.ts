@@ -5,8 +5,8 @@ import { HOST_API } from "@/config";
 // ----------------------------------------------------------------------
 
 const axiosInstance = axios.create({
-  baseURL: HOST_API,
-  timeout: 10000 // 10 seconds timeout
+  baseURL: HOST_API
+  // timeout: 10000 // 10 seconds timeout
 });
 
 axiosInstance.interceptors.request.use(

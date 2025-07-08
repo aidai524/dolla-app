@@ -60,8 +60,9 @@ const CoinFlip: React.FC<CoinFlipProps> = ({
       opacity: 0
     });
     const ground = new THREE.Mesh(groundGeometry, groundMaterial);
-    ground.rotation.x = -Math.PI / 2;
-    ground.position.y = -2;
+    // Rotate to create a vertical plane facing forward (Z-axis)
+    ground.rotation.y = Math.PI;
+    ground.position.z = -2;
     ground.receiveShadow = true;
     _scene.add(ground);
 

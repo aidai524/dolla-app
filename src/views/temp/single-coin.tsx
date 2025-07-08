@@ -27,7 +27,7 @@ const SingleCoin = forwardRef<any, SingleCoinProps>(
       forceResult,
       onFlipComplete,
       autoFlip = false,
-      position = { x: 0, y: 0, z: 0 },
+      position = { x: 0, y: 0, z: 2 },
       scale = 1,
       rotation = { x: 1, y: 0, z: 0 }
     },
@@ -102,8 +102,8 @@ const SingleCoin = forwardRef<any, SingleCoinProps>(
       const coin = coinRef.current;
       const physics = physicsRef.current;
 
-      // Apply gravity
-      physics.velocity.y += physics.gravity * deltaTime;
+      // Apply gravity in Z direction (forward throw direction)
+      physics.velocity.z += physics.gravity * deltaTime;
 
       // Apply air resistance
       physics.velocity.multiplyScalar(physics.airResistance);
@@ -117,22 +117,22 @@ const SingleCoin = forwardRef<any, SingleCoinProps>(
       coin.rotation.y += physics.angularVelocity.y * deltaTime;
       coin.rotation.z += physics.angularVelocity.z * deltaTime;
 
-      // Ground collision detection
-      if (coin.position.y <= -2 + 0.05) {
-        coin.position.y = -2 + 0.05;
+      // Z-axis "ground" collision detection (for gravity in Z direction)
+      if (coin.position.z <= -2 + 0.05) {
+        coin.position.z = -2 + 0.05;
 
-        // Bounce
+        // Enhanced bounce on Z-axis "ground"
         if (
-          Math.abs(physics.velocity.y) > 0.3 &&
+          Math.abs(physics.velocity.z) > 0.3 &&
           physics.bounceCount < physics.maxBounces
         ) {
-          physics.velocity.y = -physics.velocity.y * physics.bounceDamping;
+          physics.velocity.z = -physics.velocity.z * physics.bounceDamping;
           physics.angularVelocity.multiplyScalar(0.7);
           physics.bounceCount++;
 
           // Add some horizontal randomness
           physics.velocity.x += (Math.random() - 0.5) * 0.5;
-          physics.velocity.z += (Math.random() - 0.5) * 0.5;
+          physics.velocity.y += (Math.random() - 0.5) * 0.5;
         } else {
           // Start gradual stop after bouncing ends
           physics.gradualStopTime += deltaTime;
@@ -186,7 +186,7 @@ const SingleCoin = forwardRef<any, SingleCoinProps>(
             angularVelocityMagnitude < physics.angularStopThreshold &&
             physics.gradualStopTime > 0.5 // At least 0.5 seconds of gradual stop
           ) {
-            // Completely stop and set to target state
+            // Completely stop and set to target state - ensure flat on Z-axis
             physics.velocity.set(0, 0, 0);
             physics.angularVelocity.set(0, 0, 0);
             coin.position.copy(physics.targetPosition);
@@ -208,7 +208,7 @@ const SingleCoin = forwardRef<any, SingleCoinProps>(
       const coin = coinRef.current;
       const physics = physicsRef.current;
 
-      // Reset coin to initial state (using custom position)
+      // Reset coin to initial state (using custom position) - flat on Z-axis
       coin.rotation.set(Math.PI / 2, 0, 0);
       coin.position.set(position.x, position.y, position.z);
 
@@ -219,14 +219,14 @@ const SingleCoin = forwardRef<any, SingleCoinProps>(
       // Adjust physics parameters based on animation duration
       const durationFactor = animationDuration / 3000; // Duration factor relative to 3 seconds
 
-      // Set initial physics state - throw
       physics.velocity.set(
         (Math.random() - 0.5) * 1.5 * durationFactor, // X direction velocity
-        (6 + Math.random() * 3) * durationFactor, // Y direction velocity (upward)
-        (Math.random() - 0.5) * 1.5 * durationFactor // Z direction velocity
+        (Math.random() - 0.5) * 1.5 * durationFactor,
+        // Y direction velocity
+        (6 + Math.random() * 3) * durationFactor // Z direction velocity (upward)
       );
 
-      // Preset target state based on forced result
+      // Preset target state based on forced result - visible result
       if (forceResult === "heads") {
         physics.targetRotation.set(
           6 + Math.random(), // X-axis: ensure heads face user
@@ -241,11 +241,11 @@ const SingleCoin = forwardRef<any, SingleCoinProps>(
         );
       }
 
-      // Set target position (coin's final landing position, based on custom position)
+      // Set target position (coin's final landing position on wall, based on custom position)
       physics.targetPosition.set(
         position.x + (Math.random() - 0.5) * 2, // X direction random offset
-        -2 + 0.05, // Ground height
-        position.z + (Math.random() - 0.5) * 2 // Z direction random offset
+        position.y + (Math.random() - 0.5) * 2, // Y direction random offset
+        -2 + 0.05 // Wall position
       );
 
       // Set target velocity (coin's final stop)
@@ -284,7 +284,7 @@ const SingleCoin = forwardRef<any, SingleCoinProps>(
       }, 100);
 
       // Force stop mechanism - prevent physics simulation from getting stuck
-      const maxPhysicsTime = animationDuration; // Use provided animation duration
+      const maxPhysicsTime = animationDuration; // Add extra time for smooth transition
       setTimeout(() => {
         if (physics.isPhysicsActive) {
           console.log("Force stop physics simulation");
