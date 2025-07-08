@@ -4,8 +4,6 @@ import { PURCHASE_TOKEN } from "@/config";
 import useToast from "@/hooks/use-toast";
 import useBettingContract from "./use-betting-contract";
 import reportHash from "@/utils/report-hash";
-import { sendEthereumTransaction } from "@/utils/transaction/send-evm-transaction";
-import { useAuth } from "@/contexts/auth";
 import useGelatonetwork from "./use-gelatonetwork";
 
 export default function useCreate({
@@ -22,7 +20,6 @@ export default function useCreate({
   const [creating, setCreating] = useState(false);
   const toast = useToast();
   const BettingContract = useBettingContract();
-  const { wallet } = useAuth();
   const { executeTransaction } = useGelatonetwork();
 
   const onCreate = async () => {
