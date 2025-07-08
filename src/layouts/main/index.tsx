@@ -44,7 +44,7 @@ const Content = () => {
                 alt="dolla"
                 className="w-[78px] h-[39px] ml-[10px]"
               />
-              {/* <Switch
+              <Switch
                 tabs={[
                   { label: "Bid BTC", value: "btc" },
                   { label: "Bid NFT", value: "nft" }
@@ -53,12 +53,12 @@ const Content = () => {
                   navigate(`/${tab}`);
                 }}
                 tab={tab}
-              /> */}
+              />
             </div>
-            {/* <Cashier className="absolute top-[20px] left-[50%] translate-x-[-50%]" /> */}
+            <Cashier className="absolute top-[20px] left-[50%] translate-x-[-50%]" />
             <Actions />
           </div>
-          {/* <ClaimHints ref={claimRef} /> */}
+          <ClaimHints ref={claimRef} />
         </div>
 
         <div
@@ -75,7 +75,7 @@ const Content = () => {
             <Outlet />
           </div>
         </div>
-        {/* <Footer /> */}
+        <Footer />
       </div>
     </div>
   );
