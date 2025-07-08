@@ -31,7 +31,6 @@ export default function BTCBid(props: any) {
         }}
         loading={bidding || isLoading}
         disabled={
-          true ||
           !isBalanceEnough ||
           isWinner ||
           (!data?.pool_id && data?.pool_id !== 0)
