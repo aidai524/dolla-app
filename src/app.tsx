@@ -10,6 +10,7 @@ import MainLayout from "./layouts/main";
 import WalletProvider from "./contexts/wallet";
 import { AuthProvider } from "./contexts/auth";
 import { ToastContainer } from "react-toastify";
+import Temp from "./views/temp";
 import "react-toastify/dist/ReactToastify.css";
 import "@rainbow-me/rainbowkit/styles.css";
 
@@ -65,10 +66,10 @@ const router = createBrowserRouter([
       }
     ]
   },
-  // {
-  //   path: "/cards",
-  //   element: <Temp />
-  // },
+  {
+    path: "/temp",
+    element: <Temp />
+  },
   {
     path: "*",
     element: <Navigate to="/" replace />
