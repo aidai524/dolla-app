@@ -51,7 +51,7 @@ const SingleCoin = forwardRef<any, SingleCoinProps>(
       rollSpeedMultiplier: 1.5, // Rolling speed multiplier
       isPhysicsActive: false,
       bounceCount: 0,
-      maxBounces: 2, // Allow more bounces for natural behavior
+      maxBounces: 50, // Allow more bounces for natural behavior
       stopThreshold: 0.1, // Stop threshold
       angularStopThreshold: 0.05, // Angular velocity stop threshold
       gradualStopTime: 0, // Gradual stop time
@@ -159,7 +159,7 @@ const SingleCoin = forwardRef<any, SingleCoinProps>(
 
         // Natural ground collision with realistic bouncing
         if (
-          Math.abs(physics.velocity.z) > 0.1 && // Lower threshold for more natural bouncing
+          Math.abs(physics.velocity.z) > 0.02 && // Lower threshold for more natural bouncing
           physics.bounceCount < physics.maxBounces
         ) {
           // Calculate impact energy for more realistic bounce
@@ -201,7 +201,10 @@ const SingleCoin = forwardRef<any, SingleCoinProps>(
           const targetRotation =
             forceResult === "heads" ? Math.PI / 2 : -Math.PI / 2;
           const currentRotationX = coin.rotation.x % (2 * Math.PI);
-          const rotationDiff = targetRotation - currentRotationX;
+          const rotationDiff =
+            physics.maxBounces - physics.bounceCount <= 25
+              ? targetRotation * 3 - currentRotationX
+              : targetRotation - currentRotationX;
           const bounceBiasStrength = 0.25; // Stronger bias after bounce
           coin.rotation.x += rotationDiff * bounceBiasStrength * deltaTime; // Only adjust X-axis rotation
 
@@ -210,9 +213,9 @@ const SingleCoin = forwardRef<any, SingleCoinProps>(
           // On final landing, set coin to preset result
           const targetFlatRotation =
             forceResult === "heads" ? Math.PI / 2 : -Math.PI / 2;
-          coin.rotation.x = targetFlatRotation + (Math.random() - 0.5) * 0.1; // Small random variation
-          coin.rotation.y = (Math.random() - 0.5) * 0.2;
-          coin.rotation.z = (Math.random() - 0.5) * 0.2;
+          coin.rotation.x = targetFlatRotation + (Math.random() - 0.5) * 0.05; // Small random variation
+          coin.rotation.y = (Math.random() - 0.5) * 0.1;
+          coin.rotation.z = (Math.random() - 0.5) * 0.1;
           // Start gradual stop after bouncing ends
           physics.gradualStopTime += deltaTime;
 
