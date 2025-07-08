@@ -13,6 +13,7 @@ import { ToastContainer } from "react-toastify";
 import Temp from "./views/temp";
 import "react-toastify/dist/ReactToastify.css";
 import "@rainbow-me/rainbowkit/styles.css";
+import NewLayout from "./layouts/new";
 
 const LazyNft = lazy(() => import("./views/nft"));
 const LazyBtc = lazy(() => import("./views/btc"));
@@ -20,6 +21,7 @@ const LazyNftCreate = lazy(() => import("./views/nft-create"));
 const LazyBtcCreate = lazy(() => import("./views/btc-create"));
 const LazyProfilePlayer = lazy(() => import("./views/profile/player"));
 const LazyProfileSeller = lazy(() => import("./views/profile/seller"));
+const LazyNewBTC = lazy(() => import("./views/new-btc"));
 
 const router = createBrowserRouter([
   {
@@ -69,6 +71,16 @@ const router = createBrowserRouter([
   {
     path: "/temp",
     element: <Temp />
+  },
+  {
+    path: "/new",
+    element: <NewLayout />,
+    children: [
+      {
+        path: "btc",
+        element: <LazyNewBTC />
+      }
+    ]
   },
   {
     path: "*",

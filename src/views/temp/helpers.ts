@@ -56,7 +56,7 @@ export const createBackMaterial = () => {
 
 export const createSideMaterial = () => {
   const sideMaterial = new THREE.MeshPhysicalMaterial({
-    color: 0x1a1e24, // Black
+    color: 0xfafc81, // Yellow
     metalness: 1,
     roughness: 0.3,
     clearcoat: 0.6,

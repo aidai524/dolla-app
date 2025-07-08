@@ -9,9 +9,9 @@ export default function Actions() {
   const { userInfo, login } = useAuth();
 
   return (
-    <div className="flex h-[72px] items-center pr-[30px] gap-[10px] shrink-0">
+    <div className="flex h-[72px] items-center gap-[10px] shrink-0">
       {/* <DailyCase active /> */}
-      <ListPrize />
+      {/* <ListPrize /> */}
       {!userInfo ? (
         <Button onClick={login} className="w-[100px] h-[36px]">
           Connect

@@ -5,6 +5,12 @@ import path from "path";
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  css: {
+    modules: {
+      localsConvention: "camelCase",
+      generateScopedName: "[name]__[local]___[hash:base64:5]"
+    }
+  },
   resolve: {
     alias: [
       { find: "@", replacement: path.resolve(__dirname, "src") },

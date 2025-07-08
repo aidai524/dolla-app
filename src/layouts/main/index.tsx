@@ -35,16 +35,16 @@ const Content = () => {
             claimRef.current?.show ? "h-[106px]" : "h-[75px]"
           )}
         >
-          <div className="flex items-center justify-between px-[20px]">
+          <div className="flex items-center justify-between pr-[20px]">
             {/* <TopWinner className="absolute top-[20px] left-[50%] translate-x-[-50%]" /> */}
             {/* <Tips purchase={homeData?.latest_purchase} /> */}
             <div className="flex items-center gap-[28px]">
               <img
-                src="/logo.svg"
-                alt="logo"
-                className="w-[101px] h-[30px] ml-[10px]"
+                src="/logo.png"
+                alt="dolla"
+                className="w-[78px] h-[39px] ml-[10px]"
               />
-              <Switch
+              {/* <Switch
                 tabs={[
                   { label: "Bid BTC", value: "btc" },
                   { label: "Bid NFT", value: "nft" }
@@ -53,12 +53,12 @@ const Content = () => {
                   navigate(`/${tab}`);
                 }}
                 tab={tab}
-              />
+              /> */}
             </div>
-            <Cashier className="absolute top-[20px] left-[50%] translate-x-[-50%]" />
+            {/* <Cashier className="absolute top-[20px] left-[50%] translate-x-[-50%]" /> */}
             <Actions />
           </div>
-          <ClaimHints ref={claimRef} />
+          {/* <ClaimHints ref={claimRef} /> */}
         </div>
 
         <div
@@ -75,7 +75,7 @@ const Content = () => {
             <Outlet />
           </div>
         </div>
-        <Footer />
+        {/* <Footer /> */}
       </div>
     </div>
   );

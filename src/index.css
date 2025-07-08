@@ -30,22 +30,21 @@
   font-weight: 700;
 }
 
-
+@font-face {
+  font-family: "AlfaSlabOne";
+  src: url("/fonts/AlfaSlabOne-Regular.ttf");
+  font-weight: 400;
+}
 
 body {
-  font-family: "SpaceGrotesk" !important;
-  background-color: #0D0F12;
+  font-family: "AlfaSlabOne" !important;
+  background-color: #0d0f12;
 }
 
 /* Reset */
 input {
   outline: none;
   background: transparent;
-}
-
-.swiper-slide-shadow-left,
-.swiper-slide-shadow-right {
-  display: none;
 }
 
 /* Scrollbar */
@@ -96,16 +95,15 @@ div::-webkit-scrollbar-thumb:hover {
   overflow: hidden;
   transition: all 0.3s ease;
   position: relative;
-  box-shadow:inset 2px 2px 2px 0px rgba(255,255,255,.5),
-     7px 7px 20px 0px rgba(0,0,0,.1),
-     4px 4px 5px 0px rgba(0,0,0,.1);
+  box-shadow: inset 2px 2px 2px 0px rgba(255, 255, 255, 0.5),
+    7px 7px 20px 0px rgba(0, 0, 0, 0.1), 4px 4px 5px 0px rgba(0, 0, 0, 0.1);
 }
 .bid-button:hover {
   text-decoration: none;
 }
 .bid-button:before {
   position: absolute;
-  content: '';
+  content: "";
   display: inline-block;
   top: -180px;
   left: 0;
@@ -114,19 +112,31 @@ div::-webkit-scrollbar-thumb:hover {
   background-color: #fff;
   animation: shiny-btn1 3s ease-in-out infinite;
 }
-.bid-button:hover{
-  opacity: .7;
+.bid-button:hover {
+  opacity: 0.7;
 }
-.bid-button:active{
-  box-shadow:  4px 4px 6px 0 rgba(255,255,255,.3),
-              -4px -4px 6px 0 rgba(116, 125, 136, .2), 
-    inset -4px -4px 6px 0 rgba(255,255,255,.2),
-    inset 4px 4px 6px 0 rgba(0, 0, 0, .2);
+.bid-button:active {
+  box-shadow: 4px 4px 6px 0 rgba(255, 255, 255, 0.3),
+    -4px -4px 6px 0 rgba(116, 125, 136, 0.2),
+    inset -4px -4px 6px 0 rgba(255, 255, 255, 0.2),
+    inset 4px 4px 6px 0 rgba(0, 0, 0, 0.2);
 }
 
 @keyframes shiny-btn1 {
-  0% { transform: scale(0) rotate(45deg); opacity: 0; }
-  80% { transform: scale(0) rotate(45deg); opacity: 0.5; }
-  81% { transform: scale(4) rotate(45deg); opacity: 1; }
-  100% { transform: scale(50) rotate(45deg); opacity: 0; }
+  0% {
+    transform: scale(0) rotate(45deg);
+    opacity: 0;
+  }
+  80% {
+    transform: scale(0) rotate(45deg);
+    opacity: 0.5;
+  }
+  81% {
+    transform: scale(4) rotate(45deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(50) rotate(45deg);
+    opacity: 0;
+  }
 }

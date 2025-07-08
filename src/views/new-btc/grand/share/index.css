@@ -1,0 +1,10 @@
+.share-button {
+  width: 83px;
+  height: 30px;
+  border-radius: 10px;
+  border: 1px solid #6c5c8d;
+  background: #392c53;
+  position: absolute;
+  right: 28px;
+  top: 10px;
+}
