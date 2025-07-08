@@ -5,12 +5,6 @@ import path from "path";
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  css: {
-    modules: {
-      localsConvention: "camelCase",
-      generateScopedName: "[name]__[local]___[hash:base64:5]"
-    }
-  },
   resolve: {
     alias: [
       { find: "@", replacement: path.resolve(__dirname, "src") },
@@ -24,8 +18,7 @@ export default defineConfig({
     ]
   },
   define: {
-    global: "globalThis",
-    "process.env": {}
+    global: "globalThis"
   },
   optimizeDeps: {
     esbuildOptions: {
@@ -34,15 +27,5 @@ export default defineConfig({
       }
     },
     include: ["buffer", "process", "https-browserify", "stream-http"]
-  },
-  server: {
-    proxy: {
-      "/api": {
-        target: "https://test-api.dolla.market",
-        changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace(/^\/api/, "/api")
-      }
-    }
   }
 });
