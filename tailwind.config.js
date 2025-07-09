@@ -5,8 +5,23 @@ export default {
     extend: {
       fontFamily: {
         alfa: ["AlfaSlabOne"]
+      },
+      transitionDuration: {
+        600: "600ms"
       }
     }
   },
-  plugins: []
+  plugins: [
+    function ({ addUtilities }) {
+      const newUtilities = {
+        ".preserve-3d": {
+          "transform-style": "preserve-3d"
+        },
+        ".backface-hidden": {
+          "backface-visibility": "hidden"
+        }
+      };
+      addUtilities(newUtilities);
+    }
+  ]
 };

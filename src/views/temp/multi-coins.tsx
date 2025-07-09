@@ -19,29 +19,25 @@ interface CoinConfig {
   };
 }
 
+interface CoinPhysics {
+  velocity: THREE.Vector3;
+  angularVelocity: THREE.Vector3;
+  position: THREE.Vector3;
+  radius: number;
+  mass: number;
+  isActive: boolean;
+}
+
 interface CoinFlipProps {
   autoFlip?: boolean;
   coinConfigs: CoinConfig[]; // Coin configuration array
   animationDuration?: number; // Animation duration (milliseconds)
-  layout?: "grid" | "circle" | "random" | "custom"; // Layout method
-  gridConfig?: {
-    rows: number;
-    cols: number;
-    spacing: number;
-  };
-  circleConfig?: {
-    radius: number;
-    centerY: number;
-  };
 }
 
 const MultiCoins: React.FC<CoinFlipProps> = ({
   autoFlip = false,
   coinConfigs,
-  animationDuration = 3000,
-  layout = "grid",
-  gridConfig = { rows: 2, cols: 2, spacing: 2 },
-  circleConfig = { radius: 3, centerY: 0 }
+  animationDuration = 3000
 }) => {
   const mountRef = useRef<HTMLDivElement>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
@@ -52,69 +48,333 @@ const MultiCoins: React.FC<CoinFlipProps> = ({
 
   const [isFlipping, setIsFlipping] = useState(false);
 
-  // Calculate coin positions
+  // Collision detection system
+  const collisionSystemRef = useRef({
+    coins: new Map<number, CoinPhysics>(),
+    coinRadius: 1.2, // Increased coin radius for better collision detection
+    restitution: 0.7, // Bounce factor for collisions
+    friction: 0.8, // Friction between coins
+    collisionDistance: 3.0, // Increased collision detection distance
+    isCollisionActive: false,
+    collisionCount: 0, // Track collision count for debugging
+    maxCollisionsPerFrame: 20, // Increased max collisions per frame
+    separationForce: 2.0, // Force multiplier for separation
+    penetrationThreshold: 0.1 // Minimum penetration to trigger separation
+  });
+
+  // Calculate random coin positions with improved distribution
   const calculateCoinPositions = useCallback(() => {
     const positions: CoinPosition[] = [];
 
-    // Define safe boundaries to prevent coins from going out of view when flipped
-    const safeBoundary = 3; // Safe distance from edges
-    const maxX = 6 - safeBoundary; // Maximum X coordinate
-    const maxZ = 6 - safeBoundary; // Maximum Z coordinate
+    // Define distribution area based on canvas size (1200x400)
+    const maxX = Math.floor(window.innerWidth / 150); // Much wider X range for 1200px canvas
+    const maxY = Math.floor(window.innerHeight / 120); // Much wider Y range for 400px canvas
+    const coinRadius = 0.6;
+    const minDistance = coinRadius * 3;
 
-    switch (layout) {
-      case "grid":
-        const { rows, cols, spacing } = gridConfig;
-        for (let i = 0; i < coinConfigs.length; i++) {
-          const row = Math.floor(i / cols);
-          const col = i % cols;
-          const x = (col - (cols - 1) / 2) * spacing;
-          const z = (row - (rows - 1) / 2) * spacing;
-          // Limit within safe boundaries
-          const safeX = Math.max(-maxX, Math.min(maxX, x));
-          const safeZ = Math.max(-maxZ, Math.min(maxZ, z));
-          positions.push({ x: safeX, y: 0, z: safeZ });
+    // Create grid zones to ensure better distribution
+    const gridSize = Math.ceil(Math.sqrt(coinConfigs.length));
+    const zoneWidth = (maxX * 2) / gridSize;
+    const zoneHeight = (maxY * 2) / gridSize;
+
+    for (let i = 0; i < coinConfigs.length; i++) {
+      let position: CoinPosition | null = null;
+      let attemptsCount = 0;
+      const maxAttempts = 200;
+
+      // Calculate which zone this coin should be in
+      const zoneRow = Math.floor(i / gridSize);
+      const zoneCol = i % gridSize;
+
+      // Define zone boundaries
+      const zoneStartX = -maxX + zoneCol * zoneWidth;
+      const zoneEndX = -maxX + (zoneCol + 1) * zoneWidth;
+      const zoneStartY = -maxY + zoneRow * zoneHeight;
+      const zoneEndY = -maxY + (zoneRow + 1) * zoneHeight;
+
+      while (!position && attemptsCount < maxAttempts) {
+        // Generate position within the assigned zone
+        const x = zoneStartX + Math.random() * (zoneEndX - zoneStartX);
+        const y = zoneStartY + Math.random() * (zoneEndY - zoneStartY);
+
+        // Check if this position overlaps with existing coins
+        let hasOverlap = false;
+        for (const existingPos of positions) {
+          const distance = Math.sqrt(
+            Math.pow(x - existingPos.x, 2) + Math.pow(y - existingPos.y, 2)
+          );
+          if (distance < minDistance) {
+            hasOverlap = true;
+            break;
+          }
         }
-        break;
 
-      case "circle":
-        const { radius, centerY } = circleConfig;
-        // Limit circle radius to ensure coins don't go beyond boundaries
-        const safeRadius = Math.min(radius, maxX - 1, maxZ - 1);
-        for (let i = 0; i < coinConfigs.length; i++) {
-          const angle = (i / coinConfigs.length) * 2 * Math.PI;
-          const x = Math.cos(angle) * safeRadius;
-          const z = Math.sin(angle) * safeRadius;
-          positions.push({ x, y: centerY, z });
+        if (!hasOverlap) {
+          position = { x, y, z: -2 };
         }
-        break;
+        attemptsCount++;
+      }
 
-      case "random":
-        for (let i = 0; i < coinConfigs.length; i++) {
-          // Generate random positions within safe boundaries
-          const x = (Math.random() - 0.5) * (maxX * 2);
-          const z = (Math.random() - 0.5) * (maxZ * 2);
-          positions.push({ x, y: 0, z });
-        }
-        break;
+      // If no non-overlapping position found in zone, try anywhere
+      if (!position) {
+        const x = (Math.random() - 0.5) * (maxX * 2);
+        const y = (Math.random() - 0.5) * (maxY * 2);
+        position = { x, y, z: -2 };
+      }
 
-      case "custom":
-        // Use custom positions from coinConfigs, but also check boundaries
-        coinConfigs.forEach((config) => {
-          const customPos = config.position || { x: 0, y: 0, z: 0 };
-          const safeX = Math.max(-maxX, Math.min(maxX, customPos.x));
-          const safeZ = Math.max(-maxZ, Math.min(maxZ, customPos.z));
-          positions.push({ x: safeX, y: customPos.y, z: safeZ });
-        });
-        break;
+      positions.push(position);
     }
 
+    // Debug: Log positions to console
+    console.log(
+      "Coin positions:",
+      positions.map(
+        (pos, i) => `Coin ${i}: (${pos.x.toFixed(2)}, ${pos.y.toFixed(2)})`
+      )
+    );
+
     return positions;
-  }, [layout, gridConfig, circleConfig, coinConfigs]);
+  }, [coinConfigs]);
+
+  // Initialize collision system
+  const initializeCollisionSystem = useCallback(() => {
+    const collisionSystem = collisionSystemRef.current;
+    collisionSystem.coins.clear();
+
+    // Initialize physics data for each coin
+    coinConfigs.forEach((_, index) => {
+      collisionSystem.coins.set(index, {
+        velocity: new THREE.Vector3(0, 0, 0),
+        angularVelocity: new THREE.Vector3(0, 0, 0),
+        position: new THREE.Vector3(0, 0, 0),
+        radius: collisionSystem.coinRadius,
+        mass: 1.0,
+        isActive: false
+      });
+    });
+  }, [coinConfigs]);
+
+  // Collision detection and response
+  const updateCollisions = useCallback(() => {
+    const collisionSystem = collisionSystemRef.current;
+    if (!collisionSystem.isCollisionActive) return;
+
+    const coins = Array.from(collisionSystem.coins.entries());
+    collisionSystem.collisionCount = 0;
+
+    // Multiple collision resolution passes for better accuracy
+    const maxPasses = 3;
+
+    for (let pass = 0; pass < maxPasses; pass++) {
+      let collisionResolved = false;
+
+      // Check all coin pairs for collisions
+      for (let i = 0; i < coins.length; i++) {
+        for (let j = i + 1; j < coins.length; j++) {
+          const [index1, coin1] = coins[i];
+          const [index2, coin2] = coins[j];
+
+          if (!coin1.isActive || !coin2.isActive) continue;
+
+          // Skip collision detection if coins are too far apart (performance optimization)
+          const distance = coin1.position.distanceTo(coin2.position);
+          const maxDetectionDistance = collisionSystem.collisionDistance * 2;
+
+          if (distance > maxDetectionDistance) continue;
+
+          const minDistance = coin1.radius + coin2.radius;
+          const penetration = minDistance - distance;
+
+          if (
+            penetration > collisionSystem.penetrationThreshold &&
+            collisionSystem.collisionCount <
+              collisionSystem.maxCollisionsPerFrame
+          ) {
+            // Collision detected - resolve collision
+            resolveCollision(coin1, coin2, index1, index2, penetration);
+            collisionSystem.collisionCount++;
+            collisionResolved = true;
+          }
+        }
+      }
+
+      // If no collisions were resolved in this pass, we can stop
+      if (!collisionResolved) break;
+    }
+  }, []);
+
+  // Resolve collision between two coins
+  const resolveCollision = useCallback(
+    (
+      coin1: CoinPhysics,
+      coin2: CoinPhysics,
+      index1: number,
+      index2: number,
+      penetration: number
+    ) => {
+      const collisionSystem = collisionSystemRef.current;
+
+      // Calculate collision normal
+      const normal = new THREE.Vector3()
+        .subVectors(coin2.position, coin1.position)
+        .normalize();
+
+      // Calculate relative velocity
+      const relativeVelocity = new THREE.Vector3().subVectors(
+        coin2.velocity,
+        coin1.velocity
+      );
+
+      // Calculate velocity along normal
+      const velocityAlongNormal = relativeVelocity.dot(normal);
+
+      // Don't resolve if objects are moving apart
+      if (velocityAlongNormal > 0) return;
+
+      // Calculate restitution
+      const restitution = collisionSystem.restitution;
+
+      // Calculate impulse scalar
+      const impulseScalar = -(1 + restitution) * velocityAlongNormal;
+      const impulse = normal.clone().multiplyScalar(impulseScalar);
+
+      // Apply impulse to velocities
+      const impulse1 = impulse.clone().multiplyScalar(-1 / coin1.mass);
+      const impulse2 = impulse.clone().multiplyScalar(1 / coin2.mass);
+
+      coin1.velocity.add(impulse1);
+      coin2.velocity.add(impulse2);
+
+      // Apply friction to reduce sliding
+      const friction = collisionSystem.friction;
+      const tangentialVelocity = relativeVelocity
+        .clone()
+        .sub(normal.clone().multiplyScalar(velocityAlongNormal));
+
+      const frictionImpulse = tangentialVelocity
+        .clone()
+        .multiplyScalar(-friction);
+
+      coin1.velocity.add(
+        frictionImpulse.clone().multiplyScalar(-1 / coin1.mass)
+      );
+      coin2.velocity.add(
+        frictionImpulse.clone().multiplyScalar(1 / coin2.mass)
+      );
+
+      // Enhanced separation algorithm to prevent overlap
+      const separationDistance = penetration * collisionSystem.separationForce;
+      const separation = normal.clone().multiplyScalar(separationDistance);
+
+      // Apply separation based on mass ratio for more realistic behavior
+      const totalMass = coin1.mass + coin2.mass;
+      const separation1 = separation
+        .clone()
+        .multiplyScalar(coin2.mass / totalMass);
+      const separation2 = separation
+        .clone()
+        .multiplyScalar(coin1.mass / totalMass);
+
+      coin1.position.sub(separation1);
+      coin2.position.add(separation2);
+
+      // Add additional velocity correction to prevent sticking
+      const velocityCorrection = normal
+        .clone()
+        .multiplyScalar(separationDistance * 10);
+      coin1.velocity.sub(
+        velocityCorrection.clone().multiplyScalar(coin2.mass / totalMass)
+      );
+      coin2.velocity.add(
+        velocityCorrection.clone().multiplyScalar(coin1.mass / totalMass)
+      );
+
+      // Update actual coin meshes
+      const coinMesh1 = coinsRef.current[index1]?.coinRef?.current;
+      const coinMesh2 = coinsRef.current[index2]?.coinRef?.current;
+
+      if (coinMesh1) {
+        coinMesh1.position.copy(coin1.position);
+      }
+      if (coinMesh2) {
+        coinMesh2.position.copy(coin2.position);
+      }
+
+      // Add collision sound effect (optional)
+      console.log(`Collision detected between coins ${index1} and ${index2}`);
+    },
+    []
+  );
+
+  // Update coin physics in collision system
+  const updateCoinPhysics = useCallback(
+    (
+      index: number,
+      position: THREE.Vector3,
+      velocity: THREE.Vector3,
+      isActive: boolean
+    ) => {
+      const collisionSystem = collisionSystemRef.current;
+      const coin = collisionSystem.coins.get(index);
+
+      if (coin) {
+        // Apply boundary constraints to prevent coins from flying out of scene
+        const boundaryX = 15; // X boundary
+        const boundaryY = 10; // Y boundary
+
+        let constrainedPosition = position.clone();
+        let constrainedVelocity = velocity.clone();
+
+        // X-axis boundary
+        if (Math.abs(position.x) > boundaryX) {
+          constrainedPosition.x = Math.sign(position.x) * boundaryX;
+          constrainedVelocity.x *= -0.5; // Bounce back with reduced velocity
+        }
+
+        // Y-axis boundary
+        if (Math.abs(position.y) > boundaryY) {
+          constrainedPosition.y = Math.sign(position.y) * boundaryY;
+          constrainedVelocity.y *= -0.5; // Bounce back with reduced velocity
+        }
+
+        // Additional penetration correction with other coins
+        if (isActive) {
+          const coins = Array.from(collisionSystem.coins.entries());
+          for (const [otherIndex, otherCoin] of coins) {
+            if (otherIndex === index || !otherCoin.isActive) continue;
+
+            const distance = constrainedPosition.distanceTo(otherCoin.position);
+            const minDistance = coin.radius + otherCoin.radius;
+
+            if (distance < minDistance) {
+              // Force separation to prevent overlap
+              const normal = new THREE.Vector3()
+                .subVectors(constrainedPosition, otherCoin.position)
+                .normalize();
+
+              const penetration = minDistance - distance;
+              const correction = normal
+                .clone()
+                .multiplyScalar(penetration * 0.5);
+
+              constrainedPosition.add(correction);
+            }
+          }
+        }
+
+        coin.position.copy(constrainedPosition);
+        coin.velocity.copy(constrainedVelocity);
+        coin.isActive = isActive;
+      }
+    },
+    []
+  );
 
   // Initialize coin ref array
   useEffect(() => {
     coinsRef.current = new Array(coinConfigs.length).fill(null);
-  }, [coinConfigs.length]);
+    initializeCollisionSystem();
+  }, [coinConfigs.length, initializeCollisionSystem]);
 
   // Initialize Three.js scene
   useEffect(() => {
@@ -132,7 +392,7 @@ const MultiCoins: React.FC<CoinFlipProps> = ({
       0.1,
       1000
     );
-    camera.position.set(0, 2, 8); // Adjust camera position for larger view
+    camera.position.set(0, 3, 12); // Adjusted camera position for wider view
     camera.lookAt(0, 0, 0);
     cameraRef.current = camera;
 
@@ -151,7 +411,7 @@ const MultiCoins: React.FC<CoinFlipProps> = ({
     mountRef.current.appendChild(renderer.domElement);
 
     // Create ground
-    const groundGeometry = new THREE.PlaneGeometry(20, 20);
+    const groundGeometry = new THREE.PlaneGeometry(40, 20); // Wider ground for better distribution
     const groundMaterial = new THREE.MeshLambertMaterial({
       // color: 0x333333,
       transparent: true,
@@ -159,7 +419,7 @@ const MultiCoins: React.FC<CoinFlipProps> = ({
     });
     const ground = new THREE.Mesh(groundGeometry, groundMaterial);
     ground.rotation.y = Math.PI;
-    ground.position.z = -2;
+    ground.position.z = 0;
     ground.receiveShadow = true;
     _scene.add(ground);
 
@@ -200,6 +460,13 @@ const MultiCoins: React.FC<CoinFlipProps> = ({
     frontLight.position.set(0, 0, 10);
     _scene.add(frontLight);
 
+    // Collision update loop - higher frequency for better accuracy
+    const collisionUpdateLoop = () => {
+      updateCollisions(); // 120fps collision updates for better accuracy
+      requestAnimationFrame(collisionUpdateLoop);
+    };
+    collisionUpdateLoop();
+
     // Cleanup function
     return () => {
       if (mountRef.current && renderer.domElement) {
@@ -207,7 +474,7 @@ const MultiCoins: React.FC<CoinFlipProps> = ({
       }
       renderer.dispose();
     };
-  }, []);
+  }, [updateCollisions]);
 
   return (
     <div>
@@ -228,12 +495,16 @@ const MultiCoins: React.FC<CoinFlipProps> = ({
                 filpNumber.current++;
                 if (filpNumber.current === coinConfigs?.length) {
                   setIsFlipping(false);
+                  collisionSystemRef.current.isCollisionActive = false;
                 }
               }}
               autoFlip={autoFlip}
               position={coinPosition}
               scale={config.scale || 1}
               rotation={config.rotation || { x: 1, y: 0, z: 0 }}
+              onPhysicsUpdate={(position, velocity, isActive) => {
+                updateCoinPhysics(index, position, velocity, isActive);
+              }}
               ref={(el) => {
                 coinsRef.current[index] = el;
               }}
@@ -245,19 +516,20 @@ const MultiCoins: React.FC<CoinFlipProps> = ({
         ref={mountRef}
         className="coin-canvas"
         style={{
-          width: "400px",
-          height: "400px",
+          width: "100vw",
+          height: "100vh",
           cursor: isFlipping ? "not-allowed" : "pointer"
         }}
       />
       <div
-        className="coin-controls"
-        style={{ marginTop: "20px", textAlign: "center" }}
+        className="fixed right-[20px] top-[20px] z-10"
+        style={{ textAlign: "center" }}
       >
         <button
           onClick={() => {
             filpNumber.current = 0;
             setIsFlipping(true);
+            collisionSystemRef.current.isCollisionActive = true;
             coinsRef.current?.forEach((coinRef: any) => {
               if (coinRef && typeof coinRef.flipCoin === "function") {
                 coinRef.flipCoin();

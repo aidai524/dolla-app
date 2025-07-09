@@ -2,37 +2,23 @@
 // import Probability from "./charts/probability";
 // import DistributionChart from "./charts/distribution";
 import React from "react";
-import CoinFlip from "./coin";
+// import CoinFlip from "./coin";
 import MultiCoins from "./multi-coins";
 
 const TempDemo: React.FC = () => {
   return (
-    <div className="temp-demo ml-[100px] mt-[100px]">
-      <div style={{ marginBottom: "40px" }}>
-        <h2 style={{ fontSize: "24px", marginBottom: "20px", color: "#333" }}>
-          Three.js Coin Flip Animation - Physics Simulation
-        </h2>
-        <p style={{ marginBottom: "20px", color: "#666", fontSize: "14px" }}>
-          Physics simulation including gravity, air resistance, ground collision
-          and bounce effects
-        </p>
-        <CoinFlip animationDuration={3000} forceResult="heads" />
-      </div>
-      <div style={{ marginBottom: "40px" }}>
-        <h2 style={{ fontSize: "24px", marginBottom: "20px", color: "#333" }}>
-          Multi-Coin Flip Animation - Physics Simulation
-        </h2>
-        <p style={{ marginBottom: "20px", color: "#666", fontSize: "14px" }}>
-          Physics simulation including gravity, air resistance, ground collision
-          and bounce effects
-        </p>
-        <MultiCoins
-          animationDuration={3000}
-          coinConfigs={[{ result: "heads" }, { result: "tails" }]}
-          layout="circle"
-          circleConfig={{ radius: 3, centerY: 0 }}
-        />
-      </div>
+    <div className="temp-demo">
+      <MultiCoins
+        autoFlip={false}
+        animationDuration={5000}
+        coinConfigs={[
+          { result: "heads" as const, scale: 1.0 },
+          { result: "tails" as const, scale: 1.0 },
+          { result: "heads" as const, scale: 1.0 },
+          { result: "tails" as const, scale: 1.0 },
+          { result: "heads" as const, scale: 1.0 }
+        ]}
+      />
     </div>
   );
 };

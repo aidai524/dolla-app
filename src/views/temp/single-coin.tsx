@@ -14,6 +14,11 @@ interface SingleCoinProps {
   position?: { x: number; y: number; z: number };
   scale?: number;
   rotation?: { x: number; y: number; z: number };
+  onPhysicsUpdate?: (
+    position: THREE.Vector3,
+    velocity: THREE.Vector3,
+    isActive: boolean
+  ) => void;
 }
 
 const SingleCoin = forwardRef<any, SingleCoinProps>(
@@ -29,7 +34,8 @@ const SingleCoin = forwardRef<any, SingleCoinProps>(
       autoFlip = false,
       position = { x: 0, y: 0, z: 2 },
       scale = 1,
-      rotation = { x: 1, y: 0, z: 0 }
+      rotation = { x: 1, y: 0, z: 0 },
+      onPhysicsUpdate
     },
     ref
   ) => {
@@ -103,6 +109,15 @@ const SingleCoin = forwardRef<any, SingleCoinProps>(
 
       const coin = coinRef.current;
       const physics = physicsRef.current;
+
+      // Call physics update callback for collision detection
+      if (onPhysicsUpdate) {
+        onPhysicsUpdate(
+          coin.position.clone(),
+          physics.velocity.clone(),
+          physics.isPhysicsActive
+        );
+      }
 
       // Apply gravity in Z direction (forward throw direction)
       physics.velocity.z += physics.gravity * deltaTime;
@@ -186,8 +201,8 @@ const SingleCoin = forwardRef<any, SingleCoinProps>(
         const targetFlatRotation =
           forceResult === "heads" ? Math.PI / 2 : -Math.PI / 2;
         coin.rotation.x = targetFlatRotation + (Math.random() - 0.5) * 0.01; // Small random variation
-        coin.rotation.y = coin.rotation.y + (Math.random() - 0.5) * 0.1;
-        coin.rotation.z = (Math.random() - 0.5) * 0.1;
+        coin.rotation.y = coin.rotation.y + (Math.random() - 0.5) * 0.01;
+        coin.rotation.z = (Math.random() - 0.5) * 0.01;
         // Start gradual stop after bouncing ends
         physics.gradualStopTime += deltaTime;
 
