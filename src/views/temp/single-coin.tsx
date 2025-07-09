@@ -256,21 +256,8 @@ const SingleCoin = forwardRef<any, SingleCoinProps>(
       // Calculate initial angular velocity with bias towards preset result
       const spinSpeed = (15 + Math.random() * 10) * durationFactor; // Much higher spin speed
 
-      // Calculate target rotation for preset result
-      const targetRotation =
-        forceResult === "heads" ? Math.PI / 2 : -Math.PI / 2;
-
-      // Calculate how many full rotations to reach target
-      const currentRotation = Math.PI / 2; // Initial flat position
-      const rotationDiff = targetRotation - currentRotation;
-
-      // Add bias to ensure coin lands on preset result
-      const biasFactor = 0.3; // How much to bias towards target
-      const biasedRotation = rotationDiff * biasFactor;
-
       // Primary flip axis (X) with bias towards target
-      const primaryFlip =
-        spinSpeed * (0.8 + Math.random() * 0.4) + biasedRotation * 2;
+      const primaryFlip = spinSpeed * (0.8 + Math.random() * 0.4);
       // Secondary rotations for realistic coin behavior
       const sideSpin = spinSpeed * (0.2 + Math.random() * 0.3);
       const wobble = spinSpeed * (0.1 + Math.random() * 0.2);
