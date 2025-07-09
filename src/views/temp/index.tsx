@@ -16,7 +16,7 @@ const TempDemo: React.FC = () => {
           Physics simulation including gravity, air resistance, ground collision
           and bounce effects
         </p>
-        <CoinFlip animationDuration={3000} forceResult="tails" />
+        <CoinFlip animationDuration={3000} forceResult="heads" />
       </div>
       <div style={{ marginBottom: "40px" }}>
         <h2 style={{ fontSize: "24px", marginBottom: "20px", color: "#333" }}>

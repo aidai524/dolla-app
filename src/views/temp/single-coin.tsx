@@ -52,10 +52,10 @@ const SingleCoin = forwardRef<any, SingleCoinProps>(
       isPhysicsActive: false,
       bounceCount: 0,
       maxBounces: 50, // Allow more bounces for natural behavior
-      stopThreshold: 0.1, // Stop threshold
-      angularStopThreshold: 0.05, // Angular velocity stop threshold
+      stopThreshold: 0.5, // Much higher stop threshold for easier stopping
+      angularStopThreshold: 0.5, // Much higher angular velocity stop threshold
       gradualStopTime: 0, // Gradual stop time
-      maxGradualStopTime: 1.5 // Longer gradual stop time for natural settling
+      maxGradualStopTime: 1.0 // Shorter gradual stop time for faster completion
     });
 
     useEffect(() => {
@@ -194,7 +194,7 @@ const SingleCoin = forwardRef<any, SingleCoinProps>(
           const rollSpeed = horizontalSpeed * 1.2;
 
           // Apply rolling rotation
-          coin.rotation.y += rollSpeed * deltaTime * 1.5; // More natural rolling after bounce
+          coin.rotation.y += rollSpeed * deltaTime * 1.2; // More natural rolling after bounce
           coin.rotation.x += physics.velocity.x * 0.4 * deltaTime;
 
           // Add bias towards preset result after bounce (X-axis only)
@@ -203,7 +203,7 @@ const SingleCoin = forwardRef<any, SingleCoinProps>(
           const currentRotationX = coin.rotation.x % (2 * Math.PI);
           const rotationDiff =
             physics.maxBounces - physics.bounceCount <= 25
-              ? targetRotation * 3 - currentRotationX
+              ? targetRotation * 5 - currentRotationX
               : targetRotation - currentRotationX;
           const bounceBiasStrength = 0.25; // Stronger bias after bounce
           coin.rotation.x += rotationDiff * bounceBiasStrength * deltaTime; // Only adjust X-axis rotation
@@ -213,8 +213,8 @@ const SingleCoin = forwardRef<any, SingleCoinProps>(
           // On final landing, set coin to preset result
           const targetFlatRotation =
             forceResult === "heads" ? Math.PI / 2 : -Math.PI / 2;
-          coin.rotation.x = targetFlatRotation + (Math.random() - 0.5) * 0.05; // Small random variation
-          coin.rotation.y = (Math.random() - 0.5) * 0.1;
+          coin.rotation.x = targetFlatRotation + (Math.random() - 0.5) * 0.01; // Small random variation
+          coin.rotation.y = coin.rotation.y + (Math.random() - 0.5) * 0.1;
           coin.rotation.z = (Math.random() - 0.5) * 0.1;
           // Start gradual stop after bouncing ends
           physics.gradualStopTime += deltaTime;
@@ -226,15 +226,15 @@ const SingleCoin = forwardRef<any, SingleCoinProps>(
           );
 
           // Gradually slow down with natural physics
-          physics.velocity.multiplyScalar(1 - stopFactor * 0.2);
-          physics.angularVelocity.multiplyScalar(1 - stopFactor * 0.3);
+          physics.velocity.multiplyScalar(1 - stopFactor * 0.6); // Much stronger damping
+          physics.angularVelocity.multiplyScalar(1 - stopFactor * 0.5); // Much stronger damping
 
           // Add rolling effect during settling phase
           const horizontalSpeed = Math.sqrt(
             physics.velocity.x * physics.velocity.x +
               physics.velocity.y * physics.velocity.y
           );
-          const rollSpeed = horizontalSpeed * (1 - stopFactor) * 1.0; // Rolling decreases as coin settles
+          const rollSpeed = horizontalSpeed * (1 - stopFactor) * 0.6; // Rolling decreases as coin settles
 
           // Apply rolling rotation
           coin.rotation.y += rollSpeed * deltaTime;
@@ -245,43 +245,8 @@ const SingleCoin = forwardRef<any, SingleCoinProps>(
             forceResult === "heads" ? Math.PI / 2 : -Math.PI / 2;
           const currentRotationX = coin.rotation.x % (2 * Math.PI);
           const rotationDiff = targetRotation - currentRotationX;
-          const settlingBiasStrength = stopFactor * 0.4; // Increase bias as coin settles
+          const settlingBiasStrength = stopFactor * 0.5; // Increase bias as coin settles
           coin.rotation.x += rotationDiff * settlingBiasStrength * deltaTime; // Only adjust X-axis rotation
-
-          // Natural settling - let physics handle the final state
-          // The coin will naturally settle based on its current rotation and momentum
-
-          // Check if completely stopped
-          const velocityMagnitude = physics.velocity.length();
-          const angularVelocityMagnitude = physics.angularVelocity.length();
-
-          if (
-            velocityMagnitude < physics.stopThreshold &&
-            angularVelocityMagnitude < physics.angularStopThreshold &&
-            physics.gradualStopTime > 0.5 // At least 0.5 seconds of gradual stop
-          ) {
-            // Completely stop and use preset result
-            physics.velocity.set(0, 0, 0);
-            physics.angularVelocity.set(0, 0, 0);
-
-            // Ensure coin shows preset result with natural variation (X-axis focus)
-            const targetFlatRotation =
-              forceResult === "heads" ? Math.PI / 2 : -Math.PI / 2;
-            // Focus on X-axis rotation for final result
-            const finalRotationX =
-              targetFlatRotation + (Math.random() - 0.5) * 0.08; // Small random variation on X-axis
-            coin.rotation.x = finalRotationX;
-            // Keep Y and Z rotations minimal for natural coin appearance
-            coin.rotation.y = (Math.random() - 0.5) * 0.1;
-            coin.rotation.z = (Math.random() - 0.5) * 0.1;
-
-            physics.isPhysicsActive = false;
-
-            // Call completion callback with preset result
-            if (onFlipComplete) {
-              onFlipComplete(forceResult);
-            }
-          }
         }
       }
     };
@@ -316,9 +281,6 @@ const SingleCoin = forwardRef<any, SingleCoinProps>(
         position.y + (Math.random() - 0.5) * 2, // Y direction random offset
         -2 + 0.05 // Wall position
       );
-
-      // Set target velocity (coin's final stop)
-      physics.targetVelocity.set(0, 0, 0);
 
       // Calculate initial angular velocity with bias towards preset result
       const spinSpeed = (15 + Math.random() * 10) * durationFactor; // Much higher spin speed
@@ -371,17 +333,8 @@ const SingleCoin = forwardRef<any, SingleCoinProps>(
       const maxPhysicsTime = animationDuration * 1; // Add extra time for natural physics
       setTimeout(() => {
         if (physics.isPhysicsActive) {
-          console.log("Force stop physics simulation");
+          console.log("Force stop triggered");
           physics.isPhysicsActive = false;
-          physics.velocity.set(0, 0, 0);
-          physics.angularVelocity.set(0, 0, 0);
-
-          // Ensure coin shows preset result (X-axis focus)
-          const targetFlatRotation =
-            forceResult === "heads" ? Math.PI / 2 : -Math.PI / 2;
-          coin.rotation.x = targetFlatRotation + (Math.random() - 0.5) * 0.08; // Focus on X-axis
-          coin.rotation.y = (Math.random() - 0.5) * 0.1; // Minimal Y variation
-          coin.rotation.z = (Math.random() - 0.5) * 0.1; // Minimal Z variation
 
           if (onFlipComplete) {
             onFlipComplete(forceResult);
