@@ -122,14 +122,15 @@ const SingleCoin = forwardRef<any, SingleCoinProps>(
       // Add subtle bias towards preset result during flight (mainly X-axis)
       const targetRotation =
         forceResult === "heads" ? Math.PI / 2 : -Math.PI / 2;
-      const currentRotationX = coin.rotation.x;
-      const rotationDiff = targetRotation - currentRotationX;
+
+      const rotationDiff = targetRotation - coin.rotation.x;
 
       // Apply gentle bias as coin approaches ground (X-axis only)
       const groundDistance = coin.position.z - -2;
-      if (groundDistance < 3) {
+
+      if (groundDistance < 3 && groundDistance > 0) {
         // Start bias when coin is close to ground
-        const biasStrength = Math.max(0, (3 - groundDistance) / 3) * 1; // Increase bias as coin gets closer
+        const biasStrength = Math.max(0, (3 - groundDistance) / 3) * 0.6; // Increase bias as coin gets closer
         coin.rotation.x -= rotationDiff * biasStrength * deltaTime; // Only adjust X-axis rotation
 
         //  coin.rotation.x = targetFlatRotation + (Math.random() - 0.5) * 0.01;
