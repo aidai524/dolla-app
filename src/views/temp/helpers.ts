@@ -27,7 +27,9 @@ export const createCoin = (scene: THREE.Scene) => {
 };
 
 export const createFrontMaterial = () => {
-  const headsTexture = new THREE.TextureLoader().load("/btc/coins/dolla-s.png");
+  const headsTexture = new THREE.TextureLoader().load(
+    "/new-btc/coins/dolla-s.png"
+  );
   const headsMaterial = new THREE.MeshStandardMaterial({
     map: headsTexture,
     metalness: 0.3,
@@ -41,7 +43,7 @@ export const createFrontMaterial = () => {
 
 export const createBackMaterial = () => {
   const tailsTexture = new THREE.TextureLoader().load(
-    "/btc/coins/dolla-eth.png"
+    "/new-btc/coins/dolla-eth.png"
   );
   const tailsMaterial = new THREE.MeshStandardMaterial({
     map: tailsTexture,

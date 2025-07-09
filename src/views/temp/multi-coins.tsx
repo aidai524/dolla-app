@@ -132,7 +132,7 @@ const MultiCoins: React.FC<CoinFlipProps> = ({
       0.1,
       1000
     );
-    camera.position.set(0, 3, 10); // Adjust camera position for larger view
+    camera.position.set(0, 2, 8); // Adjust camera position for larger view
     camera.lookAt(0, 0, 0);
     cameraRef.current = camera;
 

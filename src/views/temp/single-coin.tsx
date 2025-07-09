@@ -122,132 +122,102 @@ const SingleCoin = forwardRef<any, SingleCoinProps>(
       // Add subtle bias towards preset result during flight (mainly X-axis)
       const targetRotation =
         forceResult === "heads" ? Math.PI / 2 : -Math.PI / 2;
-      const currentRotationX = coin.rotation.x % (2 * Math.PI);
+      const currentRotationX = coin.rotation.x;
       const rotationDiff = targetRotation - currentRotationX;
 
       // Apply gentle bias as coin approaches ground (X-axis only)
       const groundDistance = coin.position.z - -2;
       if (groundDistance < 3) {
         // Start bias when coin is close to ground
-        const biasStrength = Math.max(0, (3 - groundDistance) / 3) * 0.15; // Increase bias as coin gets closer
-        coin.rotation.x += rotationDiff * biasStrength * deltaTime; // Only adjust X-axis rotation
+        const biasStrength = Math.max(0, (3 - groundDistance) / 3) * 1; // Increase bias as coin gets closer
+        coin.rotation.x -= rotationDiff * biasStrength * deltaTime; // Only adjust X-axis rotation
+
+        //  coin.rotation.x = targetFlatRotation + (Math.random() - 0.5) * 0.01;
       }
-
+      if (coin.position.z > -2 + 0.05) return;
       // Z-axis "ground" collision detection (for gravity in Z direction)
-      if (coin.position.z <= -2 + 0.05) {
-        coin.position.z = -2 + 0.05;
+      coin.position.z = -2 + 0.05;
 
-        // Add rolling effect when coin is close to ground
-        if (coin.position.z <= -2 + 0.1 && physics.velocity.z < 0) {
-          // Calculate rolling speed based on horizontal velocity
-          const horizontalSpeed = Math.sqrt(
-            physics.velocity.x * physics.velocity.x +
-              physics.velocity.y * physics.velocity.y
-          );
-          const rollSpeed = horizontalSpeed * physics.rollSpeedMultiplier;
+      // Natural ground collision with realistic bouncing
 
-          // Apply rolling rotation around Y-axis (sideways roll)
-          coin.rotation.y += rollSpeed * deltaTime;
+      if (
+        Math.abs(physics.velocity.z) > 0.02 && // Lower threshold for more natural bouncing
+        physics.bounceCount < physics.maxBounces
+      ) {
+        // Calculate impact energy for more realistic bounce
+        const impactEnergy = Math.abs(physics.velocity.z);
 
-          // Apply rolling rotation around X-axis (forward/backward roll)
-          coin.rotation.x += physics.velocity.x * 0.3 * deltaTime;
+        // Natural bounce with energy loss based on impact
+        const bounceFactor = Math.max(
+          0.2,
+          physics.bounceDamping - impactEnergy * 0.05
+        );
+        physics.velocity.z = -physics.velocity.z * bounceFactor;
 
-          // Reduce horizontal velocity due to friction
-          physics.velocity.x *= physics.groundFriction;
-          physics.velocity.y *= physics.groundFriction;
-        }
+        // Angular velocity response to impact
+        const angularResponse = impactEnergy * 0.8;
+        physics.angularVelocity.x += (Math.random() - 0.5) * angularResponse;
+        physics.angularVelocity.y += (Math.random() - 0.5) * angularResponse;
+        physics.angularVelocity.z += (Math.random() - 0.5) * angularResponse;
 
-        // Natural ground collision with realistic bouncing
-        if (
-          Math.abs(physics.velocity.z) > 0.02 && // Lower threshold for more natural bouncing
-          physics.bounceCount < physics.maxBounces
-        ) {
-          // Calculate impact energy for more realistic bounce
-          const impactEnergy = Math.abs(physics.velocity.z);
+        // Angular velocity damping on impact
+        physics.angularVelocity.multiplyScalar(0.7);
 
-          // Natural bounce with energy loss based on impact
-          const bounceFactor = Math.max(
-            0.2,
-            physics.bounceDamping - impactEnergy * 0.05
-          );
-          physics.velocity.z = -physics.velocity.z * bounceFactor;
+        // Add realistic horizontal movement from impact
+        const horizontalSpread = impactEnergy * 0.4;
+        physics.velocity.x += (Math.random() - 0.5) * horizontalSpread;
+        physics.velocity.y += (Math.random() - 0.5) * horizontalSpread;
 
-          // Angular velocity response to impact
-          const angularResponse = impactEnergy * 0.8;
-          physics.angularVelocity.x += (Math.random() - 0.5) * angularResponse;
-          physics.angularVelocity.y += (Math.random() - 0.5) * angularResponse;
-          physics.angularVelocity.z += (Math.random() - 0.5) * angularResponse;
+        // Add rolling effect after bounce
+        const horizontalSpeed = Math.sqrt(
+          physics.velocity.x * physics.velocity.x +
+            physics.velocity.y * physics.velocity.y
+        );
+        const rollSpeed = horizontalSpeed * 1.2;
 
-          // Angular velocity damping on impact
-          physics.angularVelocity.multiplyScalar(0.7);
+        // Apply rolling rotation
+        coin.rotation.y += rollSpeed * deltaTime * 1.2; // More natural rolling after bounce
+        coin.rotation.x += physics.velocity.x * 0.1 * deltaTime;
 
-          // Add realistic horizontal movement from impact
-          const horizontalSpread = impactEnergy * 0.4;
-          physics.velocity.x += (Math.random() - 0.5) * horizontalSpread;
-          physics.velocity.y += (Math.random() - 0.5) * horizontalSpread;
+        physics.bounceCount++;
+      } else {
+        // On final landing, set coin to preset result
+        const targetFlatRotation =
+          forceResult === "heads" ? Math.PI / 2 : -Math.PI / 2;
+        coin.rotation.x = targetFlatRotation + (Math.random() - 0.5) * 0.01; // Small random variation
+        coin.rotation.y = coin.rotation.y + (Math.random() - 0.5) * 0.1;
+        coin.rotation.z = (Math.random() - 0.5) * 0.1;
+        // Start gradual stop after bouncing ends
+        physics.gradualStopTime += deltaTime;
 
-          // Add rolling effect after bounce
-          const horizontalSpeed = Math.sqrt(
-            physics.velocity.x * physics.velocity.x +
-              physics.velocity.y * physics.velocity.y
-          );
-          const rollSpeed = horizontalSpeed * 1.2;
+        // Calculate gradual stop factor
+        const stopFactor = Math.min(
+          physics.gradualStopTime / physics.maxGradualStopTime,
+          1.0
+        );
 
-          // Apply rolling rotation
-          coin.rotation.y += rollSpeed * deltaTime * 1.2; // More natural rolling after bounce
-          coin.rotation.x += physics.velocity.x * 0.4 * deltaTime;
+        // Gradually slow down with natural physics
+        physics.velocity.multiplyScalar(1 - stopFactor * 0.6); // Much stronger damping
+        physics.angularVelocity.multiplyScalar(1 - stopFactor * 0.5); // Much stronger damping
 
-          // Add bias towards preset result after bounce (X-axis only)
-          const targetRotation =
-            forceResult === "heads" ? Math.PI / 2 : -Math.PI / 2;
-          const currentRotationX = coin.rotation.x % (2 * Math.PI);
-          const rotationDiff =
-            physics.maxBounces - physics.bounceCount <= 25
-              ? targetRotation * 5 - currentRotationX
-              : targetRotation - currentRotationX;
-          const bounceBiasStrength = 0.25; // Stronger bias after bounce
-          coin.rotation.x += rotationDiff * bounceBiasStrength * deltaTime; // Only adjust X-axis rotation
+        // Add rolling effect during settling phase
+        const horizontalSpeed = Math.sqrt(
+          physics.velocity.x * physics.velocity.x +
+            physics.velocity.y * physics.velocity.y
+        );
+        const rollSpeed = horizontalSpeed * (1 - stopFactor) * 0.6; // Rolling decreases as coin settles
 
-          physics.bounceCount++;
-        } else {
-          // On final landing, set coin to preset result
-          const targetFlatRotation =
-            forceResult === "heads" ? Math.PI / 2 : -Math.PI / 2;
-          coin.rotation.x = targetFlatRotation + (Math.random() - 0.5) * 0.01; // Small random variation
-          coin.rotation.y = coin.rotation.y + (Math.random() - 0.5) * 0.1;
-          coin.rotation.z = (Math.random() - 0.5) * 0.1;
-          // Start gradual stop after bouncing ends
-          physics.gradualStopTime += deltaTime;
+        // Apply rolling rotation
+        coin.rotation.y += rollSpeed * deltaTime;
+        coin.rotation.x += physics.velocity.x * 0.2 * deltaTime;
 
-          // Calculate gradual stop factor
-          const stopFactor = Math.min(
-            physics.gradualStopTime / physics.maxGradualStopTime,
-            1.0
-          );
-
-          // Gradually slow down with natural physics
-          physics.velocity.multiplyScalar(1 - stopFactor * 0.6); // Much stronger damping
-          physics.angularVelocity.multiplyScalar(1 - stopFactor * 0.5); // Much stronger damping
-
-          // Add rolling effect during settling phase
-          const horizontalSpeed = Math.sqrt(
-            physics.velocity.x * physics.velocity.x +
-              physics.velocity.y * physics.velocity.y
-          );
-          const rollSpeed = horizontalSpeed * (1 - stopFactor) * 0.6; // Rolling decreases as coin settles
-
-          // Apply rolling rotation
-          coin.rotation.y += rollSpeed * deltaTime;
-          coin.rotation.x += physics.velocity.x * 0.2 * deltaTime;
-
-          // Add bias towards preset result during settling (X-axis only)
-          const targetRotation =
-            forceResult === "heads" ? Math.PI / 2 : -Math.PI / 2;
-          const currentRotationX = coin.rotation.x % (2 * Math.PI);
-          const rotationDiff = targetRotation - currentRotationX;
-          const settlingBiasStrength = stopFactor * 0.5; // Increase bias as coin settles
-          coin.rotation.x += rotationDiff * settlingBiasStrength * deltaTime; // Only adjust X-axis rotation
-        }
+        // Add bias towards preset result during settling (X-axis only)
+        const targetRotation =
+          forceResult === "heads" ? Math.PI / 2 : -Math.PI / 2;
+        const currentRotationX = coin.rotation.x % (2 * Math.PI);
+        const rotationDiff = targetRotation - currentRotationX;
+        const settlingBiasStrength = stopFactor * 0.5; // Increase bias as coin settles
+        coin.rotation.x += rotationDiff * settlingBiasStrength * deltaTime; // Only adjust X-axis rotation
       }
     };
 
