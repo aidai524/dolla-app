@@ -14,7 +14,9 @@ const CannonCoin = forwardRef<any, any>(
       bounceDamping: 0.7,
       maxGradualStopTime: 2.0,
       transitionStarted: false,
-      isPhysicsActive: false
+      isPhysicsActive: false,
+      lastPosition: null,
+      lastPositionTime: null
     });
     const animationRef = useRef<number | null>(null);
 
@@ -34,7 +36,7 @@ const CannonCoin = forwardRef<any, any>(
         }),
 
         new THREE.MeshBasicMaterial({
-          map: loadCoinFaceTexture("/new-btc/coins/dolla-eth.png")
+          map: loadCoinFaceTexture(coin.backgroundImage)
         })
       ];
 
@@ -112,6 +114,14 @@ const CannonCoin = forwardRef<any, any>(
 
         const physics = physicsRef.current;
 
+        // Check for stop condition first, regardless of position
+        if (isAlmostStopped) {
+          physicsRef.current.isPhysicsActive = false;
+          coinBody.velocity.set(0, 0, 0);
+          onFlipComplete(coin);
+          return;
+        }
+
         if (
           coinBody.velocity.z < 0 &&
           coinBody.position.z < 1.5 &&
@@ -149,13 +159,13 @@ const CannonCoin = forwardRef<any, any>(
 
             .to(coinMesh.rotation, {
               x: targetRotationX - diffRotationX / 3,
-              z: 0, // 消除任何侧向旋转
+              z: 0,
               duration: estimatedFallTime / 3,
               ease: "power2.out"
             })
             .to(coinMesh.rotation, {
               x: targetRotationX - (diffRotationX / 3) * 2,
-              z: 0, // 消除任何侧向旋转
+              z: 0,
               duration: estimatedFallTime / 3,
               ease: "power2.out"
             })
@@ -173,11 +183,6 @@ const CannonCoin = forwardRef<any, any>(
             coinMesh.quaternion.copy(coinBody.quaternion as any);
           }
           return;
-        }
-
-        if (isAlmostStopped) {
-          physicsRef.current.isPhysicsActive = false;
-          onFlipComplete();
         }
 
         if (!physics.transitionStarted) {
@@ -275,11 +280,9 @@ const createCoinSideTexture = () => {
   canvas.height = 64;
   const ctx = canvas.getContext("2d")!;
 
-  // 使用指定的侧面颜色
   ctx.fillStyle = "#7D6C41";
   ctx.fillRect(0, 0, 256, 64);
 
-  // 添加轻微的纹理效果
   ctx.strokeStyle = "#6B5A35";
   ctx.lineWidth = 1;
   for (let i = 0; i < 256; i += 12) {

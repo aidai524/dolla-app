@@ -5,24 +5,34 @@ import CannonCoin from "./cannon-coin";
 
 const coins = [
   {
-    presetResult: "heads",
-    position: { x: 0, y: 0, z: -1.8 }
-  },
-  {
-    presetResult: "heads",
-    position: { x: 3, y: 1, z: -1.8 }
+    presetResult: "tails",
+    key: "1",
+    position: { x: 0, y: 0, z: -1.8 },
+    backgroundImage: "/new-btc/coins/dolla-eth.png"
   },
   {
     presetResult: "tails",
-    position: { x: 6, y: 2, z: -1.8 }
+    key: "2",
+    position: { x: 3, y: 1, z: -1.8 },
+    backgroundImage: "/new-btc/coins/dolla-btc.png"
   },
   {
     presetResult: "tails",
-    position: { x: -3, y: 8, z: -1.8 }
+    key: "3",
+    position: { x: 6, y: 2, z: -1.8 },
+    backgroundImage: "/new-btc/coins/dolla-ticket.png"
   },
   {
     presetResult: "tails",
-    position: { x: -6, y: -5, z: -1.8 }
+    key: "4",
+    position: { x: -3, y: 8, z: -1.8 },
+    backgroundImage: "/new-btc/coins/dolla-sol.png"
+  },
+  {
+    presetResult: "tails",
+    key: "5",
+    position: { x: -6, y: -5, z: -1.8 },
+    backgroundImage: "/new-btc/coins/dolla-usdt.png"
   }
 ];
 
@@ -163,8 +173,9 @@ const CannonCoins: React.FC = () => {
           world={worldRef.current}
           coin={coin}
           isFlipping={isFlipping}
-          onFlipComplete={() => {
+          onFlipComplete={(coin: any) => {
             filpNumber.current++;
+
             if (filpNumber.current === coins.length) {
               setIsFlipping(false);
             }
