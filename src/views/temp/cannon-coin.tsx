@@ -114,12 +114,31 @@ const CannonCoin = forwardRef<any, any>(
 
         const physics = physicsRef.current;
 
-        // Check for stop condition first, regardless of position
-        if (isAlmostStopped) {
-          physicsRef.current.isPhysicsActive = false;
-          coinBody.velocity.set(0, 0, 0);
-          onFlipComplete(coin);
-          return;
+        // Enhanced stop condition with multiple criteria
+        const isReallySettled =
+          isAlmostStopped &&
+          // Must be near or below a reasonable height (not floating in air)
+          coinBody.position.z < 2 &&
+          // Angular velocity should also be small
+          Math.abs(coinBody.angularVelocity.x) < 0.5 &&
+          Math.abs(coinBody.angularVelocity.y) < 0.5 &&
+          Math.abs(coinBody.angularVelocity.z) < 0.5;
+
+        if (isReallySettled) {
+          // Add time-based confirmation to avoid false positives
+          if (!physics.settlementStartTime) {
+            physics.settlementStartTime = Date.now();
+          } else if (Date.now() - physics.settlementStartTime > 200) {
+            // Wait 200ms
+            physicsRef.current.isPhysicsActive = false;
+            coinBody.velocity.set(0, 0, 0);
+            coinBody.angularVelocity.set(0, 0, 0);
+            onFlipComplete(coin);
+            return;
+          }
+        } else {
+          // Reset settlement timer if conditions not met
+          physics.settlementStartTime = null;
         }
 
         if (
@@ -240,7 +259,8 @@ const CannonCoin = forwardRef<any, any>(
         bounceDamping: 0.7,
         maxGradualStopTime: 2.0,
         transitionStarted: false,
-        isPhysicsActive: false
+        isPhysicsActive: false,
+        settlementStartTime: null
       };
 
       // Wait a frame before applying forces to ensure position is set
