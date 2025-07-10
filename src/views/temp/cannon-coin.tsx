@@ -4,7 +4,7 @@ import * as CANNON from "cannon-es";
 import { gsap } from "gsap";
 
 const CannonCoin = forwardRef<any, any>(
-  ({ scene, world, coin, onFlipComplete }, ref) => {
+  ({ scene, world, coin, onFlipComplete, isFlipping }, ref) => {
     const coinBodyRef = useRef<CANNON.Body | null>(null);
     const coinMeshRef = useRef<THREE.Mesh | null>(null);
     const physicsRef = useRef<any>({
@@ -202,11 +202,7 @@ const CannonCoin = forwardRef<any, any>(
     // Flip coin animation
     const flipCoin = () => {
       console.log("flipCoin called");
-      if (!coinBodyRef.current || !coinMeshRef.current) {
-        console.log("Missing refs:", {
-          coinBody: !!coinBodyRef.current,
-          coinMesh: !!coinMeshRef.current
-        });
+      if (!coinBodyRef.current || !coinMeshRef.current || isFlipping) {
         return;
       }
 

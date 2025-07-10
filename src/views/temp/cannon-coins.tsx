@@ -162,6 +162,7 @@ const CannonCoins: React.FC = () => {
           scene={scene}
           world={worldRef.current}
           coin={coin}
+          isFlipping={isFlipping}
           onFlipComplete={() => {
             filpNumber.current++;
             if (filpNumber.current === coins.length) {
