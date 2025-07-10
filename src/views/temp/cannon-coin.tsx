@@ -56,7 +56,13 @@ const CannonCoin = forwardRef<any, any>(
           coin.position.x,
           coin.position.y,
           coin.position.z
-        )
+        ),
+        material: new CANNON.Material({
+          friction: 0.6, // Higher friction to prevent sliding
+          restitution: 0.2 // Very low restitution to reduce bouncing
+        }),
+        linearDamping: 0.2, // Stronger linear damping
+        angularDamping: 0.2 // Stronger angular damping
       });
 
       coinBody.quaternion.setFromAxisAngle(
@@ -114,16 +120,108 @@ const CannonCoin = forwardRef<any, any>(
 
         const physics = physicsRef.current;
 
+        // Apply stronger damping when coin is near settled state
+        if (isAlmostStopped && coinBody.position.z < 1) {
+          // Strong damping for overlapping coins
+          coinBody.velocity.scale(0.7, coinBody.velocity);
+          coinBody.angularVelocity.scale(0.7, coinBody.angularVelocity);
+
+          // Prevent tiny oscillations by snapping very small movements to zero
+          if (Math.abs(coinBody.velocity.x) < 0.05) coinBody.velocity.x = 0;
+          if (Math.abs(coinBody.velocity.y) < 0.05) coinBody.velocity.y = 0;
+          if (Math.abs(coinBody.velocity.z) < 0.05) coinBody.velocity.z = 0;
+
+          if (Math.abs(coinBody.angularVelocity.x) < 0.1)
+            coinBody.angularVelocity.x = 0;
+          if (Math.abs(coinBody.angularVelocity.y) < 0.1)
+            coinBody.angularVelocity.y = 0;
+          if (Math.abs(coinBody.angularVelocity.z) < 0.1)
+            coinBody.angularVelocity.z = 0;
+
+          // Store stable position when coin first settles
+          if (!physics.stablePosition) {
+            physics.stablePosition = {
+              x: coinBody.position.x,
+              y: coinBody.position.y,
+              z: coinBody.position.z
+            };
+            physics.stableTime = Date.now();
+          } else {
+            // Check if coin has been stable long enough to lock its position
+            const stableElapsed = Date.now() - physics.stableTime;
+
+            if (stableElapsed > 300) {
+              // After 300ms of stability, lock position more aggressively
+              // Very strong position locking for overlapping coins
+              const distance = Math.sqrt(
+                Math.pow(coinBody.position.x - physics.stablePosition.x, 2) +
+                  Math.pow(coinBody.position.y - physics.stablePosition.y, 2)
+              );
+
+              // If moved more than 0.15 units horizontally, snap back immediately
+              if (distance > 0.15) {
+                coinBody.position.x = physics.stablePosition.x;
+                coinBody.position.y = physics.stablePosition.y;
+                coinBody.velocity.x = 0;
+                coinBody.velocity.y = 0;
+                coinBody.velocity.z = Math.min(coinBody.velocity.z, 0); // Only allow downward movement
+              }
+
+              // More strict Z-axis jump prevention
+              const zDiff = Math.abs(
+                coinBody.position.z - physics.stablePosition.z
+              );
+              if (zDiff > 0.3) {
+                // Reduced from 0.5 to 0.3
+                // If coin tries to jump more than 0.3 units in Z, snap it back
+                coinBody.position.z = physics.stablePosition.z;
+                coinBody.velocity.z = 0;
+                coinBody.angularVelocity.set(0, 0, 0); // Also stop rotation
+              }
+
+              // Additional check: if coin is moving too fast while supposed to be stable, stop it
+              const speed = Math.sqrt(
+                coinBody.velocity.x * coinBody.velocity.x +
+                  coinBody.velocity.y * coinBody.velocity.y +
+                  coinBody.velocity.z * coinBody.velocity.z
+              );
+              if (speed > 0.5) {
+                coinBody.velocity.scale(0.3, coinBody.velocity); // Aggressive damping
+              }
+            } else {
+              // During initial settling, use gentler correction
+              const distance = Math.sqrt(
+                Math.pow(coinBody.position.x - physics.stablePosition.x, 2) +
+                  Math.pow(coinBody.position.y - physics.stablePosition.y, 2) +
+                  Math.pow(coinBody.position.z - physics.stablePosition.z, 2)
+              );
+
+              if (distance > 0.3) {
+                const pullStrength = 0.2;
+                coinBody.position.x +=
+                  (physics.stablePosition.x - coinBody.position.x) *
+                  pullStrength;
+                coinBody.position.y +=
+                  (physics.stablePosition.y - coinBody.position.y) *
+                  pullStrength;
+              }
+            }
+          }
+        } else {
+          // Reset stable position if coin starts moving again
+          physics.stablePosition = null;
+          physics.stableTime = null;
+        }
+
         // Enhanced stop condition with multiple criteria
         const isReallySettled =
           isAlmostStopped &&
           // Must be near or below a reasonable height (not floating in air)
           coinBody.position.z < 2 &&
           // Angular velocity should also be small
-          Math.abs(coinBody.angularVelocity.x) < 0.5 &&
-          Math.abs(coinBody.angularVelocity.y) < 0.5 &&
-          Math.abs(coinBody.angularVelocity.z) < 0.5;
-
+          Math.abs(coinBody.angularVelocity.x) < 0.3 &&
+          Math.abs(coinBody.angularVelocity.y) < 0.3 &&
+          Math.abs(coinBody.angularVelocity.z) < 0.3;
         if (isReallySettled) {
           // Add time-based confirmation to avoid false positives
           if (!physics.settlementStartTime) {
@@ -225,11 +323,10 @@ const CannonCoin = forwardRef<any, any>(
 
     // Flip coin animation
     const flipCoin = () => {
-      console.log("flipCoin called");
       if (!coinBodyRef.current || !coinMeshRef.current || isFlipping) {
         return;
       }
-
+      console.log("flipCoin called");
       const coinMesh = coinMeshRef.current;
       const coinBody = coinBodyRef.current;
 
@@ -260,7 +357,9 @@ const CannonCoin = forwardRef<any, any>(
         maxGradualStopTime: 2.0,
         transitionStarted: false,
         isPhysicsActive: false,
-        settlementStartTime: null
+        settlementStartTime: null,
+        stablePosition: null,
+        stableTime: null
       };
 
       // Wait a frame before applying forces to ensure position is set
