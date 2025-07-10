@@ -1,0 +1,306 @@
+import { useEffect, useImperativeHandle, useRef, forwardRef } from "react";
+import * as THREE from "three";
+import * as CANNON from "cannon-es";
+import { gsap } from "gsap";
+
+const CannonCoin = forwardRef<any, any>(
+  ({ scene, world, coin, onFlipComplete }, ref) => {
+    const coinBodyRef = useRef<CANNON.Body | null>(null);
+    const coinMeshRef = useRef<THREE.Mesh | null>(null);
+    const physicsRef = useRef<any>({
+      bounceCount: 0,
+      gradualStopTime: 0,
+      maxBounces: 5,
+      bounceDamping: 0.7,
+      maxGradualStopTime: 2.0,
+      transitionStarted: false,
+      isPhysicsActive: false
+    });
+    const animationRef = useRef<number | null>(null);
+
+    useEffect(() => {
+      if (!scene || !coin || !world) return;
+
+      const coinGeometry = new THREE.CylinderGeometry(1, 1, 0.2, 64);
+
+      const coinMaterials = [
+        new THREE.MeshBasicMaterial({
+          color: 0x7d6c41,
+          map: createCoinSideTexture()
+        }),
+
+        new THREE.MeshBasicMaterial({
+          map: loadCoinFaceTexture("/new-btc/coins/dolla-s.png")
+        }),
+
+        new THREE.MeshBasicMaterial({
+          map: loadCoinFaceTexture("/new-btc/coins/dolla-eth.png")
+        })
+      ];
+
+      const coinMesh = new THREE.Mesh(coinGeometry, coinMaterials);
+      coinMesh.position.set(coin.position.x, coin.position.y, coin.position.z);
+
+      coinMesh.rotation.x = Math.PI / 2;
+
+      coinMesh.castShadow = true;
+      coinMesh.receiveShadow = true;
+      scene.add(coinMesh);
+      const coinShape = new CANNON.Cylinder(1, 1, 0.2, 32);
+      const coinBody = new CANNON.Body({
+        mass: 1,
+        shape: coinShape,
+        position: new CANNON.Vec3(
+          coin.position.x,
+          coin.position.y,
+          coin.position.z
+        )
+      });
+
+      coinBody.quaternion.setFromAxisAngle(
+        new CANNON.Vec3(1, 0, 0),
+        Math.PI / 2
+      );
+      world.addBody(coinBody);
+      coinBodyRef.current = coinBody;
+      coinMeshRef.current = coinMesh;
+
+      const updateCoin = () => {
+        if (!physicsRef.current.isPhysicsActive) {
+          return;
+        }
+
+        const coinBody = coinBodyRef.current;
+        const coinMesh = coinMeshRef.current;
+
+        if (!coinBody || !coinMesh) {
+          return;
+        }
+
+        // Apply air resistance to both linear and angular velocity (but not too much initially)
+        const airResistance = 0.999;
+        coinBody.velocity.scale(airResistance, coinBody.velocity);
+        coinBody.angularVelocity.scale(airResistance, coinBody.angularVelocity);
+
+        const boundaryX = 8;
+        const boundaryY = 6;
+        const boundaryBuffer = 0.5;
+
+        if (Math.abs(coinBody.position.x) > boundaryX - boundaryBuffer) {
+          coinBody.position.x =
+            Math.sign(coinBody.position.x) * (boundaryX - boundaryBuffer);
+          coinBody.velocity.x *= -0.7; // Bounce back with reduced velocity
+          coinBody.velocity.y *= 0.95; // Add damping
+          coinBody.velocity.z *= 0.95; // Add damping
+        }
+
+        if (Math.abs(coinBody.position.y) > boundaryY - boundaryBuffer) {
+          coinBody.position.y =
+            Math.sign(coinBody.position.y) * (boundaryY - boundaryBuffer);
+          coinBody.velocity.y *= -0.7; // Bounce back with reduced velocity
+          coinBody.velocity.x *= 0.95; // Add damping
+          coinBody.velocity.z *= 0.95; // Add damping
+        }
+
+        const groundZ = -2;
+        const groundBuffer = 0.1;
+
+        const isAlmostStopped =
+          Math.abs(coinBody.velocity.x) < 0.1 &&
+          Math.abs(coinBody.velocity.y) < 0.1 &&
+          Math.abs(coinBody.velocity.z) < 0.1;
+
+        const physics = physicsRef.current;
+
+        if (
+          coinBody.velocity.z < 0 &&
+          coinBody.position.z < 1.5 &&
+          !physics.transitionStarted
+        ) {
+          physics.transitionStarted = true;
+
+          const isHeads = coin.presetResult === "heads";
+          const targetRotationX = isHeads ? Math.PI / 2 : -Math.PI / 2;
+
+          const distanceToGround = coinBody.position.z - groundZ;
+          const fallSpeed = Math.abs(coinBody.velocity.z);
+          const estimatedFallTime = distanceToGround / fallSpeed;
+
+          const diffRotationX = targetRotationX - coinMesh.rotation.x;
+
+          gsap
+            .timeline({
+              onStart: () => {
+                physics.transitionStarted = true;
+                coinBody.angularVelocity.set(0.01, 0.01, 0.01);
+              },
+              onComplete: () => {
+                coinMesh.rotation.z = 0;
+
+                coinBody.position.z = -2;
+                coinBody.velocity.set(0, 0, 0);
+
+                coinBody.quaternion.setFromAxisAngle(
+                  new CANNON.Vec3(1, 0, 0),
+                  targetRotationX
+                );
+              }
+            })
+
+            .to(coinMesh.rotation, {
+              x: targetRotationX - diffRotationX / 3,
+              z: 0, // 消除任何侧向旋转
+              duration: estimatedFallTime / 3,
+              ease: "power2.out"
+            })
+            .to(coinMesh.rotation, {
+              x: targetRotationX - (diffRotationX / 3) * 2,
+              z: 0, // 消除任何侧向旋转
+              duration: estimatedFallTime / 3,
+              ease: "power2.out"
+            })
+            .to(coinMesh.rotation, {
+              x: targetRotationX,
+              z: 0,
+              duration: estimatedFallTime,
+              ease: "power2.out"
+            });
+        }
+
+        if (coinBody.position.z > groundZ + groundBuffer) {
+          coinMesh.position.copy(coinBody.position as any);
+          if (!physics.transitionStarted) {
+            coinMesh.quaternion.copy(coinBody.quaternion as any);
+          }
+          return;
+        }
+
+        if (isAlmostStopped) {
+          physicsRef.current.isPhysicsActive = false;
+          onFlipComplete();
+        }
+
+        if (!physics.transitionStarted) {
+          coinMesh.position.copy(coinBody.position as any);
+          coinMesh.quaternion.copy(coinBody.quaternion as any);
+        }
+      };
+
+      const animate = () => {
+        animationRef.current = requestAnimationFrame(animate);
+        updateCoin();
+      };
+      animate();
+
+      return () => {
+        if (animationRef.current) {
+          cancelAnimationFrame(animationRef.current);
+        }
+      };
+    }, [scene, coin, world]);
+
+    // Flip coin animation
+    const flipCoin = () => {
+      console.log("flipCoin called");
+      if (!coinBodyRef.current || !coinMeshRef.current) {
+        console.log("Missing refs:", {
+          coinBody: !!coinBodyRef.current,
+          coinMesh: !!coinMeshRef.current
+        });
+        return;
+      }
+
+      const coinMesh = coinMeshRef.current;
+      const coinBody = coinBodyRef.current;
+
+      // First stop any existing physics
+      physicsRef.current.isPhysicsActive = false;
+
+      // Reset positions and rotations
+      coinMesh.rotation.set(Math.PI / 2, 0, 0);
+      coinMesh.position.set(coin.position.x, coin.position.y, coin.position.z);
+
+      // Reset physics body position and rotation
+      coinBody.position.set(coin.position.x, coin.position.y, coin.position.z);
+      coinBody.quaternion.setFromAxisAngle(
+        new CANNON.Vec3(1, 0, 0),
+        Math.PI / 2
+      );
+
+      // Clear any existing velocities
+      coinBody.velocity.set(0, 0, 0);
+      coinBody.angularVelocity.set(0, 0, 0);
+
+      // Reset physics state
+      physicsRef.current = {
+        bounceCount: 0,
+        gradualStopTime: 0,
+        maxBounces: 5,
+        bounceDamping: 0.7,
+        maxGradualStopTime: 2.0,
+        transitionStarted: false,
+        isPhysicsActive: false
+      };
+
+      // Wait a frame before applying forces to ensure position is set
+      setTimeout(() => {
+        const initialVelocityZ = 18 + Math.random() * 4;
+        coinBody.velocity.set(
+          (Math.random() - 0.5) * 2.0, // X direction velocity
+          (Math.random() - 0.5) * 0.5, // Y direction velocity - minimal Y movement
+          initialVelocityZ // Z direction velocity
+        );
+
+        const spinSpeed = 25 + Math.random() * 3;
+        const primaryFlip = spinSpeed * (0.8 + Math.random() * 0.4);
+        const sideSpin = spinSpeed * (0.2 + Math.random() * 0.3);
+        const wobble = spinSpeed * (0.1 + Math.random() * 0.2);
+
+        coinBody.angularVelocity.set(primaryFlip, sideSpin, wobble);
+
+        // Activate physics
+        physicsRef.current.isPhysicsActive = true;
+      }, 16); // Wait one frame (16ms)
+    };
+
+    useImperativeHandle(ref, () => ({
+      flipCoin
+    }));
+
+    return null;
+  }
+);
+
+export default CannonCoin;
+
+const createCoinSideTexture = () => {
+  const canvas = document.createElement("canvas");
+  canvas.width = 256;
+  canvas.height = 64;
+  const ctx = canvas.getContext("2d")!;
+
+  // 使用指定的侧面颜色
+  ctx.fillStyle = "#7D6C41";
+  ctx.fillRect(0, 0, 256, 64);
+
+  // 添加轻微的纹理效果
+  ctx.strokeStyle = "#6B5A35";
+  ctx.lineWidth = 1;
+  for (let i = 0; i < 256; i += 12) {
+    ctx.beginPath();
+    ctx.moveTo(i, 0);
+    ctx.lineTo(i, 64);
+    ctx.stroke();
+  }
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.wrapS = THREE.RepeatWrapping;
+  return texture;
+};
+
+const loadCoinFaceTexture = (imagePath: string) => {
+  const loader = new THREE.TextureLoader();
+  const texture = loader.load(imagePath);
+  texture.flipY = true;
+  return texture;
+};

@@ -1,26 +1,36 @@
-// import Cards from "./cards";
-// import Probability from "./charts/probability";
-// import DistributionChart from "./charts/distribution";
-import React from "react";
-// import CoinFlip from "./coin";
+import React, { useState } from "react";
 import MultiCoins from "./multi-coins";
+import CannonCoins from "./cannon-coins";
 
-const TempDemo: React.FC = () => {
+const TempPage: React.FC = () => {
+  const [activeComponent, setActiveComponent] = useState<"multi" | "cannon">(
+    "cannon"
+  );
+
+  const coinConfigs = [
+    { result: "heads" as const, scale: 1.0 },
+    { result: "tails" as const, scale: 1.0 },
+    { result: "heads" as const, scale: 1.0 },
+    { result: "tails" as const, scale: 1.0 },
+    { result: "heads" as const, scale: 1.0 }
+    // { result: "tails" as const, scale: 1.0 },
+    // { result: "heads" as const, scale: 1.0 },
+    // { result: "tails" as const, scale: 1.0 },
+    // { result: "heads" as const, scale: 1.0 },
+    // { result: "tails" as const, scale: 1.0 }
+  ];
+
   return (
-    <div className="temp-demo">
-      <MultiCoins
-        autoFlip={false}
-        animationDuration={5000}
-        coinConfigs={[
-          { result: "heads" as const, scale: 1.0 },
-          { result: "tails" as const, scale: 1.0 },
-          { result: "heads" as const, scale: 1.0 },
-          { result: "tails" as const, scale: 1.0 },
-          { result: "heads" as const, scale: 1.0 }
-        ]}
-      />
+    <div className="relative">
+      {/* Component Selector */}
+
+      {/* Component Rendering */}
+      {activeComponent === "cannon" && <CannonCoins />}
+      {activeComponent === "multi" && (
+        <MultiCoins coinConfigs={coinConfigs} animationDuration={3000} />
+      )}
     </div>
   );
 };
 
-export default TempDemo;
+export default TempPage;

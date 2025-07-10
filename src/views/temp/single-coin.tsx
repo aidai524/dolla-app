@@ -61,7 +61,12 @@ const SingleCoin = forwardRef<any, SingleCoinProps>(
       stopThreshold: 0.5, // Much higher stop threshold for easier stopping
       angularStopThreshold: 0.5, // Much higher angular velocity stop threshold
       gradualStopTime: 0, // Gradual stop time
-      maxGradualStopTime: 1.0 // Shorter gradual stop time for faster completion
+      maxGradualStopTime: 1.0, // Shorter gradual stop time for faster completion
+      // Enhanced collision parameters
+      groundBuffer: 0.1, // Buffer zone above ground
+      maxPenetrationDepth: 0.05, // Maximum allowed penetration depth
+      collisionResponse: 0.8, // Collision response strength
+      boundaryBuffer: 0.5 // Buffer zone for boundary constraints
     });
 
     useEffect(() => {
@@ -129,6 +134,29 @@ const SingleCoin = forwardRef<any, SingleCoinProps>(
       // Update position
       coin.position.add(physics.velocity.clone().multiplyScalar(deltaTime));
 
+      // Apply boundary constraints to prevent coin from flying out of scene
+      const boundaryX = 15;
+      const boundaryY = 10;
+      const boundaryBuffer = physics.boundaryBuffer;
+
+      // X-axis boundary constraint
+      if (Math.abs(coin.position.x) > boundaryX - boundaryBuffer) {
+        coin.position.x =
+          Math.sign(coin.position.x) * (boundaryX - boundaryBuffer);
+        physics.velocity.x *= -0.7; // Bounce back with reduced velocity
+        physics.velocity.y *= 0.95; // Add damping
+        physics.velocity.z *= 0.95; // Add damping
+      }
+
+      // Y-axis boundary constraint
+      if (Math.abs(coin.position.y) > boundaryY - boundaryBuffer) {
+        coin.position.y =
+          Math.sign(coin.position.y) * (boundaryY - boundaryBuffer);
+        physics.velocity.y *= -0.7; // Bounce back with reduced velocity
+        physics.velocity.x *= 0.95; // Add damping
+        physics.velocity.z *= 0.95; // Add damping
+      }
+
       // Update rotation
       coin.rotation.x += physics.angularVelocity.x * deltaTime;
       coin.rotation.y += physics.angularVelocity.y * deltaTime;
@@ -150,9 +178,19 @@ const SingleCoin = forwardRef<any, SingleCoinProps>(
 
         //  coin.rotation.x = targetFlatRotation + (Math.random() - 0.5) * 0.01;
       }
-      if (coin.position.z > -2 + 0.05) return;
-      // Z-axis "ground" collision detection (for gravity in Z direction)
-      coin.position.z = -2 + 0.05;
+      // Enhanced ground collision detection with better penetration prevention
+      const groundZ = -2;
+      const coinRadius = 1.0; // Coin radius for collision detection
+      const groundBuffer = 0.1; // Buffer zone above ground
+
+      if (coin.position.z > groundZ + groundBuffer) return;
+
+      // Prevent coin from going below ground
+      coin.position.z = groundZ + groundBuffer;
+
+      // Add ground friction to reduce sliding
+      physics.velocity.x *= 0.9;
+      physics.velocity.y *= 0.9;
 
       // Natural ground collision with realistic bouncing
 
@@ -197,14 +235,9 @@ const SingleCoin = forwardRef<any, SingleCoinProps>(
 
         physics.bounceCount++;
       } else {
-        // On final landing, set coin to preset result
-        const targetFlatRotation =
-          forceResult === "heads" ? Math.PI / 2 : -Math.PI / 2;
-        coin.rotation.x = targetFlatRotation + (Math.random() - 0.5) * 0.01; // Small random variation
-        coin.rotation.y = coin.rotation.y + (Math.random() - 0.5) * 0.01;
-        coin.rotation.z = (Math.random() - 0.5) * 0.01;
-        // Start gradual stop after bouncing ends
+        coin.rotation.x = forceResult === "heads" ? Math.PI / 2 : -Math.PI / 2;
         physics.gradualStopTime += deltaTime;
+        coin.rotation.z = 0;
 
         // Calculate gradual stop factor
         const stopFactor = Math.min(
@@ -215,25 +248,6 @@ const SingleCoin = forwardRef<any, SingleCoinProps>(
         // Gradually slow down with natural physics
         physics.velocity.multiplyScalar(1 - stopFactor * 0.6); // Much stronger damping
         physics.angularVelocity.multiplyScalar(1 - stopFactor * 0.5); // Much stronger damping
-
-        // Add rolling effect during settling phase
-        const horizontalSpeed = Math.sqrt(
-          physics.velocity.x * physics.velocity.x +
-            physics.velocity.y * physics.velocity.y
-        );
-        const rollSpeed = horizontalSpeed * (1 - stopFactor) * 0.6; // Rolling decreases as coin settles
-
-        // Apply rolling rotation
-        coin.rotation.y += rollSpeed * deltaTime;
-        coin.rotation.x += physics.velocity.x * 0.2 * deltaTime;
-
-        // Add bias towards preset result during settling (X-axis only)
-        const targetRotation =
-          forceResult === "heads" ? Math.PI / 2 : -Math.PI / 2;
-        const currentRotationX = coin.rotation.x % (2 * Math.PI);
-        const rotationDiff = targetRotation - currentRotationX;
-        const settlingBiasStrength = stopFactor * 0.5; // Increase bias as coin settles
-        coin.rotation.x += rotationDiff * settlingBiasStrength * deltaTime; // Only adjust X-axis rotation
       }
     };
 

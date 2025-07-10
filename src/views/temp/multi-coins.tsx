@@ -51,15 +51,18 @@ const MultiCoins: React.FC<CoinFlipProps> = ({
   // Collision detection system
   const collisionSystemRef = useRef({
     coins: new Map<number, CoinPhysics>(),
-    coinRadius: 1.2, // Increased coin radius for better collision detection
+    coinRadius: 1.1, // Adjusted coin radius to match geometry
     restitution: 0.7, // Bounce factor for collisions
     friction: 0.8, // Friction between coins
     collisionDistance: 3.0, // Increased collision detection distance
     isCollisionActive: false,
     collisionCount: 0, // Track collision count for debugging
     maxCollisionsPerFrame: 20, // Increased max collisions per frame
-    separationForce: 2.0, // Force multiplier for separation
-    penetrationThreshold: 0.1 // Minimum penetration to trigger separation
+    separationForce: 3.0, // Increased force multiplier for separation
+    penetrationThreshold: 0.05, // Reduced threshold for more sensitive detection
+    maxPenetrationDepth: 0.2, // Maximum allowed penetration depth
+    continuousCollisionDetection: true, // Enable continuous collision detection
+    boundaryBuffer: 0.5 // Buffer zone for boundary constraints
   });
 
   // Calculate random coin positions with improved distribution
@@ -163,7 +166,7 @@ const MultiCoins: React.FC<CoinFlipProps> = ({
     collisionSystem.collisionCount = 0;
 
     // Multiple collision resolution passes for better accuracy
-    const maxPasses = 3;
+    const maxPasses = 5; // Increased passes for better collision resolution
 
     for (let pass = 0; pass < maxPasses; pass++) {
       let collisionResolved = false;
@@ -184,6 +187,38 @@ const MultiCoins: React.FC<CoinFlipProps> = ({
 
           const minDistance = coin1.radius + coin2.radius;
           const penetration = minDistance - distance;
+
+          // Enhanced collision detection with continuous collision detection
+          if (collisionSystem.continuousCollisionDetection) {
+            // Check for future collision based on velocity
+            const relativeVelocity = new THREE.Vector3().subVectors(
+              coin2.velocity,
+              coin1.velocity
+            );
+            const velocityAlongNormal = relativeVelocity.dot(
+              new THREE.Vector3()
+                .subVectors(coin2.position, coin1.position)
+                .normalize()
+            );
+
+            // If coins are moving towards each other, predict collision
+            if (velocityAlongNormal < 0 && distance < minDistance + 0.5) {
+              const predictedPenetration =
+                minDistance - distance + Math.abs(velocityAlongNormal) * 0.016;
+              if (predictedPenetration > collisionSystem.penetrationThreshold) {
+                resolveCollision(
+                  coin1,
+                  coin2,
+                  index1,
+                  index2,
+                  predictedPenetration
+                );
+                collisionSystem.collisionCount++;
+                collisionResolved = true;
+                continue;
+              }
+            }
+          }
 
           if (
             penetration > collisionSystem.penetrationThreshold &&
@@ -263,7 +298,10 @@ const MultiCoins: React.FC<CoinFlipProps> = ({
       );
 
       // Enhanced separation algorithm to prevent overlap
-      const separationDistance = penetration * collisionSystem.separationForce;
+      const separationDistance = Math.min(
+        penetration * collisionSystem.separationForce,
+        collisionSystem.maxPenetrationDepth
+      );
       const separation = normal.clone().multiplyScalar(separationDistance);
 
       // Apply separation based on mass ratio for more realistic behavior
@@ -281,13 +319,31 @@ const MultiCoins: React.FC<CoinFlipProps> = ({
       // Add additional velocity correction to prevent sticking
       const velocityCorrection = normal
         .clone()
-        .multiplyScalar(separationDistance * 10);
+        .multiplyScalar(separationDistance * 15); // Increased correction force
       coin1.velocity.sub(
         velocityCorrection.clone().multiplyScalar(coin2.mass / totalMass)
       );
       coin2.velocity.add(
         velocityCorrection.clone().multiplyScalar(coin1.mass / totalMass)
       );
+
+      // Additional penetration correction to ensure coins don't overlap
+      const currentDistance = coin1.position.distanceTo(coin2.position);
+      const minRequiredDistance = coin1.radius + coin2.radius;
+
+      if (currentDistance < minRequiredDistance) {
+        const additionalPenetration = minRequiredDistance - currentDistance;
+        const additionalSeparation = normal
+          .clone()
+          .multiplyScalar(additionalPenetration * 0.5);
+
+        coin1.position.sub(
+          additionalSeparation.clone().multiplyScalar(coin2.mass / totalMass)
+        );
+        coin2.position.add(
+          additionalSeparation.clone().multiplyScalar(coin1.mass / totalMass)
+        );
+      }
 
       // Update actual coin meshes
       const coinMesh1 = coinsRef.current[index1]?.coinRef?.current;
@@ -321,23 +377,34 @@ const MultiCoins: React.FC<CoinFlipProps> = ({
         // Apply boundary constraints to prevent coins from flying out of scene
         const boundaryX = 15; // X boundary
         const boundaryY = 10; // Y boundary
+        const boundaryBuffer = collisionSystem.boundaryBuffer;
 
         let constrainedPosition = position.clone();
         let constrainedVelocity = velocity.clone();
 
-        // X-axis boundary
-        if (Math.abs(position.x) > boundaryX) {
-          constrainedPosition.x = Math.sign(position.x) * boundaryX;
-          constrainedVelocity.x *= -0.5; // Bounce back with reduced velocity
+        // X-axis boundary with buffer zone
+        if (Math.abs(position.x) > boundaryX - boundaryBuffer) {
+          const maxX = boundaryX - boundaryBuffer;
+          constrainedPosition.x = Math.sign(position.x) * maxX;
+          constrainedVelocity.x *= -0.7; // Increased bounce back velocity
+
+          // Add damping to prevent oscillation
+          constrainedVelocity.y *= 0.95;
+          constrainedVelocity.z *= 0.95;
         }
 
-        // Y-axis boundary
-        if (Math.abs(position.y) > boundaryY) {
-          constrainedPosition.y = Math.sign(position.y) * boundaryY;
-          constrainedVelocity.y *= -0.5; // Bounce back with reduced velocity
+        // Y-axis boundary with buffer zone
+        if (Math.abs(position.y) > boundaryY - boundaryBuffer) {
+          const maxY = boundaryY - boundaryBuffer;
+          constrainedPosition.y = Math.sign(position.y) * maxY;
+          constrainedVelocity.y *= -0.7; // Increased bounce back velocity
+
+          // Add damping to prevent oscillation
+          constrainedVelocity.x *= 0.95;
+          constrainedVelocity.z *= 0.95;
         }
 
-        // Additional penetration correction with other coins
+        // Enhanced penetration correction with other coins
         if (isActive) {
           const coins = Array.from(collisionSystem.coins.entries());
           for (const [otherIndex, otherCoin] of coins) {
@@ -355,9 +422,18 @@ const MultiCoins: React.FC<CoinFlipProps> = ({
               const penetration = minDistance - distance;
               const correction = normal
                 .clone()
-                .multiplyScalar(penetration * 0.5);
+                .multiplyScalar(penetration * 1.0); // Full correction force
 
               constrainedPosition.add(correction);
+              constrainedVelocity.add(correction.clone().multiplyScalar(8)); // Increased velocity correction
+
+              // Additional iterative correction for deep penetration
+              if (penetration > collisionSystem.maxPenetrationDepth) {
+                const additionalCorrection = normal
+                  .clone()
+                  .multiplyScalar(penetration * 0.5);
+                constrainedPosition.add(additionalCorrection);
+              }
             }
           }
         }

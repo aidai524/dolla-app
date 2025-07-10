@@ -53,6 +53,9 @@ importers:
       caip:
         specifier: ^1.1.1
         version: 1.1.1
+      cannon-es:
+        specifier: ^0.20.0
+        version: 0.20.0
       chart.js:
         specifier: ^4.4.9
         version: 4.4.9
@@ -77,6 +80,9 @@ importers:
       framer-motion:
         specifier: ^12.7.3
         version: 12.7.4(@emotion/is-prop-valid@1.2.2)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      gsap:
+        specifier: ^3.13.0
+        version: 3.13.0
       howler:
         specifier: ^2.2.4
         version: 2.2.4
@@ -3460,6 +3466,9 @@ packages:
   caniuse-lite@1.0.30001726:
     resolution: {integrity: sha512-VQAUIUzBiZ/UnlM28fSp2CRF3ivUn1BWEvxMcVTNwpw91Py1pGbPIyIKtd+tzct9C3ouceCVdGAXxZOpZAsgdw==}
 
+  cannon-es@0.20.0:
+    resolution: {integrity: sha512-eZhWTZIkFOnMAJOgfXJa9+b3kVlvG+FX4mdkpePev/w/rP5V8NRquGyEozcjPfEoXUlb+p7d9SUcmDSn14prOA==}
+
   canonicalize@2.1.0:
     resolution: {integrity: sha512-F705O3xrsUtgt98j7leetNhTWPe+5S72rlL5O4jA1pKqBVQ/dT1O1D6PFxmSXvc0SUOinWS57DKx0I3CHrXJHQ==}
     hasBin: true
@@ -4346,6 +4355,9 @@ packages:
 
   graphemer@1.4.0:
     resolution: {integrity: sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==}
+
+  gsap@3.13.0:
+    resolution: {integrity: sha512-QL7MJ2WMjm1PHWsoFrAQH/J8wUeqZvMtHO58qdekHpCfhvhSL4gSiz6vJf5EeMP0LOn3ZCprL2ki/gjED8ghVw==}
 
   h3@1.15.1:
     resolution: {integrity: sha512-+ORaOBttdUm1E2Uu/obAyCguiI7MbBvsLTndc3gyK3zU+SYLoZXlyCP9Xgy0gikkGufFLTZXCXD6+4BsufnmHA==}
@@ -7949,7 +7961,7 @@ snapshots:
       '@dynamic-labs/types': 4.18.3
       '@dynamic-labs/utils': 4.18.3
       '@dynamic-labs/wallet-book': 4.18.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@dynamic-labs/wallet-connector-core': 4.18.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@dynamic-labs/wallet-connector-core': 4.18.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@dynamic-labs/webauthn': 4.18.3
       '@turnkey/api-key-stamper': 0.4.3
       '@turnkey/iframe-stamper': 2.0.0
@@ -7974,7 +7986,7 @@ snapshots:
       '@dynamic-labs/sdk-api-core': 0.0.663
       '@dynamic-labs/utils': 4.18.3
       '@dynamic-labs/wallet-book': 4.18.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@dynamic-labs/wallet-connector-core': 4.18.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@dynamic-labs/wallet-connector-core': 4.18.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@dynamic-labs/webauthn': 4.18.3
       '@turnkey/api-key-stamper': 0.4.3
       '@turnkey/http': 2.15.0(encoding@0.1.13)
@@ -7994,7 +8006,7 @@ snapshots:
       '@dynamic-labs/types': 4.18.3
       '@dynamic-labs/utils': 4.18.3
       '@dynamic-labs/wallet-book': 4.18.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@dynamic-labs/wallet-connector-core': 4.18.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@dynamic-labs/wallet-connector-core': 4.18.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       viem: 2.29.4(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@5.0.10)(zod@3.24.4)
     transitivePeerDependencies:
       - react
@@ -8026,7 +8038,7 @@ snapshots:
       '@dynamic-labs/types': 4.18.3
       '@dynamic-labs/utils': 4.18.3
       '@dynamic-labs/wallet-book': 4.18.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@dynamic-labs/wallet-connector-core': 4.18.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@dynamic-labs/wallet-connector-core': 4.18.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@metamask/sdk': 0.32.0(bufferutil@4.0.9)(encoding@0.1.13)(utf-8-validate@5.0.10)
       '@walletconnect/ethereum-provider': 2.19.1(@types/react@19.1.2)(bufferutil@4.0.9)(encoding@0.1.13)(react@18.3.1)(typescript@5.7.3)(utf-8-validate@5.0.10)(zod@3.24.4)
       buffer: 6.0.3
@@ -8062,14 +8074,6 @@ snapshots:
       - uploadthing
       - utf-8-validate
       - zod
-
-  '@dynamic-labs/iconic@4.18.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
-    dependencies:
-      '@dynamic-labs/assert-package-version': 4.18.3
-      '@dynamic-labs/logger': 4.18.3
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
-      sharp: 0.33.5
 
   '@dynamic-labs/iconic@4.18.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
     dependencies:
@@ -8173,7 +8177,7 @@ snapshots:
   '@dynamic-labs/wallet-book@4.18.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@dynamic-labs/assert-package-version': 4.18.3
-      '@dynamic-labs/iconic': 4.18.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@dynamic-labs/iconic': 4.18.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@dynamic-labs/logger': 4.18.3
       '@dynamic-labs/utils': 4.18.3
       eventemitter3: 5.0.1
@@ -8193,20 +8197,6 @@ snapshots:
       react-dom: 19.1.0(react@19.1.0)
       util: 0.12.5
       zod: 3.22.4
-
-  '@dynamic-labs/wallet-connector-core@4.18.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
-    dependencies:
-      '@dynamic-labs/assert-package-version': 4.18.3
-      '@dynamic-labs/logger': 4.18.3
-      '@dynamic-labs/rpc-providers': 4.18.3
-      '@dynamic-labs/sdk-api-core': 0.0.663
-      '@dynamic-labs/types': 4.18.3
-      '@dynamic-labs/utils': 4.18.3
-      '@dynamic-labs/wallet-book': 4.18.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      eventemitter3: 5.0.1
-    transitivePeerDependencies:
-      - react
-      - react-dom
 
   '@dynamic-labs/wallet-connector-core@4.18.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
     dependencies:
@@ -13108,6 +13098,8 @@ snapshots:
 
   caniuse-lite@1.0.30001726: {}
 
+  cannon-es@0.20.0: {}
+
   canonicalize@2.1.0: {}
 
   chalk@4.1.2:
@@ -14049,6 +14041,8 @@ snapshots:
   graceful-fs@4.2.11: {}
 
   graphemer@1.4.0: {}
+
+  gsap@3.13.0: {}
 
   h3@1.15.1:
     dependencies:
