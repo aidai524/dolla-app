@@ -26,17 +26,21 @@ const CannonCoin = forwardRef<any, any>(
       const coinGeometry = new THREE.CylinderGeometry(1, 1, 0.2, 64);
 
       const coinMaterials = [
-        new THREE.MeshBasicMaterial({
-          color: 0x7d6c41,
-          map: createCoinSideTexture()
+        new THREE.MeshStandardMaterial({
+          color: 0xbdaa7a, // Even brighter gold color
+          map: createCoinSideTexture(),
+          metalness: 0.3,
+          roughness: 0.4
         }),
 
         new THREE.MeshBasicMaterial({
-          map: loadCoinFaceTexture("/new-btc/coins/dolla-s.png")
+          map: loadCoinFaceTexture("/new-btc/coins/dolla-s.png"),
+          transparent: false
         }),
 
         new THREE.MeshBasicMaterial({
-          map: loadCoinFaceTexture(coin.backgroundImage)
+          map: loadCoinFaceTexture(coin.backgroundImage),
+          transparent: false
         })
       ];
 
@@ -419,6 +423,15 @@ const createCoinSideTexture = () => {
 const loadCoinFaceTexture = (imagePath: string) => {
   const loader = new THREE.TextureLoader();
   const texture = loader.load(imagePath);
+
+  // Improve texture quality
   texture.flipY = true;
+  texture.generateMipmaps = true;
+  texture.minFilter = THREE.LinearMipmapLinearFilter;
+  texture.magFilter = THREE.LinearFilter;
+  texture.anisotropy = 64; // Improve texture sharpness at angles
+  texture.format = THREE.RGBAFormat;
+  texture.colorSpace = THREE.SRGBColorSpace; // Correct color space for images
+
   return texture;
 };

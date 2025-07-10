@@ -63,7 +63,12 @@ const CannonCoins: React.FC = () => {
     camera.lookAt(0, 0, 0);
     cameraRef.current = camera;
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    const renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: true,
+      preserveDrawingBuffer: false,
+      powerPreference: "high-performance"
+    });
 
     renderer.setSize(
       mountRef.current.clientWidth,
@@ -71,6 +76,10 @@ const CannonCoins: React.FC = () => {
     );
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.outputColorSpace = THREE.SRGBColorSpace; // Better color accuracy
+    renderer.toneMapping = THREE.NoToneMapping;
+    renderer.toneMappingExposure = 1.0;
+    renderer.setClearColor(0x000000, 0); // Transparent background
     rendererRef.current = renderer;
     mountRef.current.appendChild(renderer.domElement);
 
@@ -95,42 +104,6 @@ const CannonCoins: React.FC = () => {
     groundBody.position.set(0, 0, -2);
     groundBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), 0);
     world.addBody(groundBody);
-
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-    _scene.add(ambientLight);
-
-    // Add directional light
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
-    directionalLight.position.set(5, 10, 5);
-    directionalLight.castShadow = true;
-    directionalLight.shadow.mapSize.width = mountRef.current.clientWidth;
-    directionalLight.shadow.mapSize.height = mountRef.current.clientHeight;
-    directionalLight.shadow.camera.near = 0.5;
-    directionalLight.shadow.camera.far = 50;
-    directionalLight.shadow.camera.left = -10;
-    directionalLight.shadow.camera.right = 10;
-    directionalLight.shadow.camera.top = 10;
-    directionalLight.shadow.camera.bottom = -10;
-    _scene.add(directionalLight);
-
-    // Add point lights
-    const pointLight1 = new THREE.PointLight(0xffffff, 1.0, 20);
-    pointLight1.position.set(-5, 5, 5);
-    _scene.add(pointLight1);
-
-    const pointLight2 = new THREE.PointLight(0xffffff, 1.0, 20);
-    pointLight2.position.set(5, 5, -5);
-    _scene.add(pointLight2);
-
-    // Add top fill light
-    const topLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    topLight.position.set(0, 15, 0);
-    _scene.add(topLight);
-
-    // Add front fill light
-    const frontLight = new THREE.DirectionalLight(0xffffff, 0.6);
-    frontLight.position.set(0, 0, 10);
-    _scene.add(frontLight);
 
     // Global physics animation loop
     const animate = () => {
