@@ -36,6 +36,18 @@
   font-weight: 400;
 }
 
+@font-face {
+  font-family: "BlackHanSans";
+  src: url("/fonts/BlackHanSans-Regular.ttf");
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "DelaGothicOne";
+  src: url("/fonts/DelaGothicOne-Regular.ttf");
+  font-weight: 400;
+}
+
 body {
   font-family: "SpaceGrotesk" !important;
   background-color: #0d0f12;
@@ -45,6 +57,20 @@ body {
 input {
   outline: none;
   background: transparent;
+}
+
+/* Remove number input spinners (controllers) in all browsers */
+
+/* Chrome, Safari, Edge, Opera */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 /* Scrollbar */

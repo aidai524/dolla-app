@@ -40,7 +40,7 @@ const Content = () => {
             {/* <Tips purchase={homeData?.latest_purchase} /> */}
             <div className="flex items-center gap-[28px]">
               <img
-                src="/logo.png"
+                src="/logo.svg"
                 alt="dolla"
                 className="w-[78px] h-[39px] ml-[10px]"
               />

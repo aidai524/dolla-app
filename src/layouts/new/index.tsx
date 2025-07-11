@@ -11,7 +11,7 @@ export default function NewLayout() {
       {/* header */}
       <>
         <img
-          src="/logo.png"
+          src="/logo.svg"
           alt="dolla"
           className="w-[78px] h-[39px] absolute left-[10px] top-[4px] z-[20]"
         />
