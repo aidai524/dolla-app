@@ -1,71 +1,32 @@
-import BTCTop from "./top";
-import BTCBid from "./bid";
-import ProbabiltyChart from "../nft/probabilty-chart";
-import PlayerDistribution from "../nft/player-distribution";
-import MoreMarketsBtn from "./markets/more-markets-btn";
-import BTCMarkets from "./markets";
-import ShareBtn from "./share-btn";
-import { useMemo, useRef, useState } from "react";
-import usePoolRecommend from "../../hooks/use-pool-recommend";
-import { formatNumber } from "@/utils/format/number";
-import { getAnchorPrice } from "@/utils/pool";
+import { CannonCoinsProvider } from "./context";
+// import WildTimeBid from "@/sections/wild-time/bid";
+import MoreMarkets from "./components/more-markets";
+import Header from "./components/header";
+import BidSelection from "./components/bid-selection";
+import BidsInfo from "./components/bids-info";
+import MarketInfo from "./components/market-info";
+import Grand from "./grand";
+import BidBtn from "./components/bid-btn";
+import WildTimeBid from "@/sections/wild-time/bid";
 
-export default function BTC() {
-  const marketsRef = useRef<any>(null);
-  const { data } = usePoolRecommend(0);
-  const [selectedMarket, setSelectedMarket] = useState<any>(null);
-  const [selectedBid, setSelectedBid] = useState(1);
-  const pool = useMemo(() => {
-    return selectedMarket || data;
-  }, [selectedMarket, data]);
-
+export default function NewBTC() {
   return (
-    <div className="relative w-full h-full">
-      <BTCMarkets
-        ref={marketsRef}
-        onSelectMarket={(market: any) => {
-          setSelectedMarket(market);
-        }}
-      />
-      <div className="relative z-[2] w-[928px] mx-auto">
-        <BTCTop data={pool} />
-        <BTCBid
-          className="mt-[-40px]"
-          data={pool}
-          selectedBid={selectedBid}
-          setSelectedBid={(val: number) => {
-            setSelectedBid(val);
-          }}
-        />
-        <div className="absolute top-[25px] right-0 flex items-center gap-[14px]">
-          <ShareBtn data={pool} />
-          <MoreMarketsBtn onClick={() => marketsRef.current?.open()} />
-        </div>
+    <CannonCoinsProvider>
+      <div className=""></div>
+      <div className="h-screen overflow-hidden bg-[radial-gradient(50%_50%_at_50%_50%,rgba(0,0,0,0)_0%,#000_100%),url('/new-btc/bg.gif')] bg-cover bg-center relative">
+        <Header className="h-[214px]" />
+        {/* 
+        <Bid className="h-[106px]" />
+        <Players className="h-[148px] mt-[-1px]" />
+        <WildTimeBid /> */}
+        <Grand className="h-[calc(100vh-456px)] mt-[25px]" />
+        <BidSelection />
+        <BidsInfo />
+        <MarketInfo />
+        <MoreMarkets />
+        <BidBtn />
+        {/* <WildTimeBid /> */}
       </div>
-      <div className="flex items-center gap-[12px] w-[928px] mx-auto mt-[40px]">
-        <div className="h-[40px] p-[13px] flex items-center gap-[20px] text-[14px] bg-[#1A1E24] rounded-[6px]">
-          <span className="text-[#ADBCCF]">Participants</span>
-          <span className="text-white font-bold">{pool?.participants}</span>
-        </div>
-        <div className="h-[40px] p-[13px] flex items-center gap-[20px] text-[14px] bg-[#1A1E24] rounded-[6px]">
-          <span className="text-[#ADBCCF]">Accumulative Bids</span>
-          <span className="text-white font-bold">
-            {formatNumber(pool?.accumulative_bids, 0, true)}
-          </span>
-        </div>
-      </div>
-      <div className="mt-[8px] flex gap-[14px] justify-center">
-        <div className="w-[566px] h-[326px]">
-          <ProbabiltyChart
-            anchorPrice={getAnchorPrice(pool)}
-            selectedBids={selectedBid}
-            totalBids={data?.accumulative_bids || 0}
-          />
-        </div>
-        <div className="w-[348px] h-[326px]">
-          <PlayerDistribution data={pool} />
-        </div>
-      </div>
-    </div>
+    </CannonCoinsProvider>
   );
 }

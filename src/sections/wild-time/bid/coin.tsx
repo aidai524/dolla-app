@@ -1,5 +1,6 @@
 import { useState, useImperativeHandle, forwardRef } from "react";
 import clsx from "clsx";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface CoinProps {
   className?: string;
@@ -9,7 +10,7 @@ interface CoinProps {
 }
 
 const Coin = forwardRef<any, CoinProps>(
-  ({ onFlipComplete, disabled, size = 80 }, ref) => {
+  ({ onFlipComplete, disabled, size = 200 }, ref) => {
     const [isFlipped, setIsFlipped] = useState(false);
     const [isAnimating, setIsAnimating] = useState(false);
 
@@ -25,7 +26,7 @@ const Coin = forwardRef<any, CoinProps>(
         if (onFlipComplete) {
           onFlipComplete(isFlipped ? "heads" : "tails");
         }
-      }, 1000);
+      }, 600); // Reduced from 1000ms to 600ms to start exit animation earlier
     };
 
     useImperativeHandle(ref, () => ({
@@ -46,6 +47,24 @@ const Coin = forwardRef<any, CoinProps>(
         }}
         onClick={onFlip}
       >
+        <AnimatePresence>
+          {isAnimating && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{
+                opacity: 1,
+                rotate: 360,
+                scale: 1
+              }}
+              exit={{ opacity: 0, scale: 0.2 }}
+              transition={{
+                duration: 0.6,
+                ease: "easeInOut"
+              }}
+              className="w-[434px] h-[434px] absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] bg-[url('/new-btc/wild-flip.png')] bg-cover bg-center pointer-events-none"
+            />
+          )}
+        </AnimatePresence>
         <div
           className="relative w-full h-full transition-transform duration-1000 ease-in-out preserve-3d"
           style={{
@@ -57,7 +76,7 @@ const Coin = forwardRef<any, CoinProps>(
           <div
             className="absolute top-0 left-0 w-full h-full bg-cover bg-center rounded-full backface-hidden"
             style={{
-              backgroundImage: "url('/new-btc/coins/dolla-s.png')",
+              backgroundImage: "url('/new-btc/wild.png')",
               transform: `translateZ(${thickness}px)`
             }}
           />
@@ -66,7 +85,7 @@ const Coin = forwardRef<any, CoinProps>(
           <div
             className="absolute top-0 left-0 w-full h-full bg-cover bg-center rounded-full backface-hidden"
             style={{
-              backgroundImage: "url('/new-btc/coins/dolla-eth.png')",
+              backgroundImage: "url('/new-btc/coins/dolla-s.png')",
               transform: `rotateY(180deg) translateZ(${thickness}px)`
             }}
           />
