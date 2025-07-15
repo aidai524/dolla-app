@@ -17,6 +17,7 @@ import {
 import { createHash } from "crypto";
 import { Buffer } from "buffer";
 import * as sb from "@switchboard-xyz/on-demand";
+import axios from "axios";
 
 export function getState(program: anchor.Program) {
   const [globalBalPda, bump] = anchor.web3.PublicKey.findProgramAddressSync(
@@ -78,6 +79,47 @@ export async function getPool(
     pool = await program.account.poolState.fetch(pda);
   }
   return { pda: pda, bump: bump, pool: pool };
+}
+
+export async function getAccountsInfo(pairs: string[][], provider: any) {
+  const accounts = pairs.map((pair) =>
+    getAssociatedTokenAddressSync(
+      new PublicKey(pair[0]),
+      new PublicKey(pair[1]),
+      true // Allow off-curve addresses for PDAs
+    )
+  );
+  const response = await axios.post(import.meta.env.VITE_SOLANA_RPC_URL, {
+    jsonrpc: "2.0",
+    id: 1,
+    method: "getMultipleAccounts",
+    params: [
+      accounts,
+      {
+        encoding: "base64",
+        commitment: "finalized"
+      }
+    ]
+  });
+
+  const accountsInfo = accounts.map((account, i) => {
+    if (response.data.result.value[i]) {
+      return {
+        address: account.toString()
+      };
+    }
+
+    return {
+      instruction: createAssociatedTokenAccountInstruction(
+        provider.publicKey!,
+        account,
+        new PublicKey(pairs[i][0]),
+        new PublicKey(pairs[i][1])
+      )
+    };
+  });
+
+  return accountsInfo;
 }
 
 export async function getAssociatedTokenAddress(
@@ -152,19 +194,14 @@ export async function getBuyState(
     [Buffer.from("dolla_buyer_state"), poolState.toBuffer(), user.toBuffer()],
     program.programId
   );
-  console.log(
-    "getPool ==== bump:" + bump + ";program.programId:" + program.programId
-  );
+
   // query pool info
   const stateExist = await accountExists(pda, provider.connection);
   let buyerState = null;
-  console.log("buyerState stateExist:" + stateExist);
+
   if (stateExist) {
-    console.log("before query buyerState");
     // @ts-ignore
     buyerState = await program.account.buyerState.fetch(pda);
-    console.log("before after buyerState");
-    console.log("pool:" + JSON.stringify(buyerState));
   }
   return { pda: pda, bump: bump, buyerState: buyerState };
 }
@@ -199,7 +236,7 @@ export function getRandomnessAccount(payer: any) {
   return keypair;
 }
 
-export async function setupQueue(): Promise<PublicKey> {
+export function setupQueue() {
   return new PublicKey("EYiAmGSdsQTuCw413V5BzaruWuCCSDgTPtBGvLkXHbe7");
 }
 

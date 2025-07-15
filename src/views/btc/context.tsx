@@ -1,4 +1,6 @@
-import { createContext, useContext, useRef, useState } from "react";
+import { createContext, useContext, useMemo, useRef, useState } from "react";
+import usePoolRecommend from "@/hooks/use-pool-recommend";
+import useBasicInfo from "@/hooks/solana/use-basic";
 
 export const CannonCoinsContext = createContext<{
   manualFlip: () => void;
@@ -10,6 +12,8 @@ export const CannonCoinsContext = createContext<{
   updateCoinFlipResult: (index: number, result: "heads" | "tails") => void;
   bids: number;
   setBids: (bids: number) => void;
+  pool: any;
+  sbProgramRef: any;
 }>({
   manualFlip: () => {},
   isFlipping: false,
@@ -19,7 +23,9 @@ export const CannonCoinsContext = createContext<{
   getFlipResult: () => "heads",
   updateCoinFlipResult: () => {},
   bids: 1,
-  setBids: () => {}
+  setBids: () => {},
+  pool: null,
+  sbProgramRef: null
 });
 
 export const CannonCoinsProvider = ({
@@ -33,6 +39,7 @@ export const CannonCoinsProvider = ({
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const coinFlipInProgressRef = useRef<{ [key: number]: boolean }>({});
   const [bids, setBids] = useState(1);
+  const { sbProgramRef } = useBasicInfo();
   const [flipResults, setFlipResults] = useState<("heads" | "tails")[]>([
     "tails",
     "tails",
@@ -40,6 +47,11 @@ export const CannonCoinsProvider = ({
     "heads",
     "heads"
   ]);
+  const { data } = usePoolRecommend(0);
+  const [selectedMarket, setSelectedMarket] = useState<any>(null);
+  const pool = useMemo(() => {
+    return selectedMarket || data;
+  }, [selectedMarket, data]);
 
   const updateCoinFlipResult = (index: number, result: "heads" | "tails") => {
     // Update the flip result for a specific coin during the flip animation
@@ -49,6 +61,8 @@ export const CannonCoinsProvider = ({
     }
   };
 
+  console.log("pool", pool);
+
   return (
     <CannonCoinsContext.Provider
       value={{
@@ -56,7 +70,9 @@ export const CannonCoinsProvider = ({
         coinsRef,
         flipResults,
         bids,
+        pool,
         setBids,
+        sbProgramRef,
         manualFlip: () => {
           flipNumberRef.current = 0;
           setIsFlipping(true);

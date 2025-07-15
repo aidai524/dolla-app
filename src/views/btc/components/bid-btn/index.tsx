@@ -2,10 +2,14 @@ import { useBtcContext } from "../../context";
 import { motion, AnimatePresence } from "framer-motion";
 import clsx from "clsx";
 import { useState } from "react";
+import useBid from "@/hooks/solana/use-bid";
 
 export default function BidBtn() {
-  const { isFlipping, manualFlip } = useBtcContext();
+  const { isFlipping, manualFlip, pool } = useBtcContext();
   const [isHovered, setIsHovered] = useState(false);
+  const { onBid, bidding } = useBid(11, (isWinner) => {
+    console.log("bidding", isWinner);
+  });
 
   return (
     <AnimatePresence>
@@ -27,7 +31,11 @@ export default function BidBtn() {
           <div
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
-            onClick={manualFlip}
+            onClick={() => {
+              // onBid(pool.id, 1);
+              onBid(1);
+              manualFlip();
+            }}
             className="cursor-pointer w-[200px] h-[200px] flex items-center justify-center absolute top-[50%] translate-y-[-50%] left-[50%] translate-x-[-50%]"
           >
             <span

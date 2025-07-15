@@ -13,6 +13,7 @@ import "react-toastify/dist/ReactToastify.css";
 import MainLayout from "./layouts/main";
 
 const LazyNewBTC = lazy(() => import("./views/btc"));
+const LazyBtcCreate = lazy(() => import("./views/btc-create"));
 
 const router = createBrowserRouter([
   {
@@ -28,6 +29,10 @@ const router = createBrowserRouter([
         index: true,
         path: "btc",
         element: <LazyNewBTC />
+      },
+      {
+        path: "btc/create",
+        element: <LazyBtcCreate />
       }
     ]
   },

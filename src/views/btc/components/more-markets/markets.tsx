@@ -3,12 +3,24 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import Market from "./market";
 import MoreMarketBtn from "./btn";
+import MarketLoading from "./market-loading";
 
 export default function Markets({ onClose }: { onClose: () => void }) {
   const [prizeSize, setPrizeSize] = useState(0);
   const [sortBy, setSortBy] = useState("");
 
   const maxLength = Math.floor(window.innerWidth / 300);
+
+  // const {
+  //   poolList,
+  //   loading,
+  //   onQueryPoolList,
+  //   sortField,
+  //   setSortField,
+  //   sortOrder,
+  //   setSortOrder,
+  //   hasMore
+  // } = usePoolList();
 
   return (
     <motion.div
@@ -99,6 +111,7 @@ export default function Markets({ onClose }: { onClose: () => void }) {
                 }}
               />
             ))}
+            {/* <MarketLoading /> */}
             <NextBtn
               onClick={() => {}}
               className={clsx("absolute right-0 bottom-[-20px]", "button")}
