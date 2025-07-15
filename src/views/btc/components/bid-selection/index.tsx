@@ -3,6 +3,7 @@ import AddBtn from "./add-btn";
 import { BalanceBg, Bg1, Bg100, Bg10, Bg5, Bg50, ProvablyFairBg } from "./bgs";
 import Cashier from "@/sections/cashier/modal";
 import { useState } from "react";
+import { useBtcContext } from "../../context";
 
 interface BidSelectionProps {
   progress?: number;
@@ -12,6 +13,7 @@ export default function BidSelection({ progress = 50 }: BidSelectionProps) {
   const circumference = 2 * Math.PI * 50;
   const progressOffset = circumference - (progress / 100) * circumference;
   const [showCashier, setShowCashier] = useState(false);
+  const { bids, setBids } = useBtcContext();
   return (
     <div className="absolute bottom-0 left-0 w-full h-[202px] flex items-center justify-center">
       <div className="w-[192px] h-[53px] relative top-[10px] flex items-center justify-center font-[BlackHanSans]">
@@ -106,23 +108,43 @@ export default function BidSelection({ progress = 50 }: BidSelectionProps) {
       >
         <div className="w-[139px] h-[73px] relative flex items-center justify-center button">
           <Bg100 />
-          <span className={clsx("relative z-[2]", "text-[#3E2B2B]")}>$100</span>
+          <span
+            className={clsx("relative z-[2]", bids === 100 && "text-[#3E2B2B]")}
+          >
+            $100
+          </span>
         </div>
         <div className="w-[133px] h-[68px] relative flex items-center justify-center button">
           <Bg50 />
-          <span className="relative z-[2]">$50</span>
+          <span
+            className={clsx("relative z-[2]", bids === 50 && "text-[#3E2B2B]")}
+          >
+            $50
+          </span>
         </div>
         <div className="w-[120px] h-[62px] relative flex items-center justify-center button">
           <Bg10 />
-          <span className="relative z-[2]">$10</span>
+          <span
+            className={clsx("relative z-[2]", bids === 10 && "text-[#3E2B2B]")}
+          >
+            $10
+          </span>
         </div>
         <div className="w-[118px] h-[56px] relative flex items-center justify-center button">
           <Bg5 />
-          <span className="relative z-[2]">$5</span>
+          <span
+            className={clsx("relative z-[2]", bids === 5 && "text-[#3E2B2B]")}
+          >
+            $5
+          </span>
         </div>
         <div className="w-[110px] h-[47px] relative flex items-center justify-center button">
-          <Bg1 />
-          <span className="relative z-[2]">$1</span>
+          {bids === 1 ? <Bg1 /> : <Bg1 />}
+          <span
+            className={clsx("relative z-[2]", bids === 1 && "text-[#3E2B2B]")}
+          >
+            $1
+          </span>
         </div>
       </div>
       <Cashier open={showCashier} onClose={() => setShowCashier(false)} />

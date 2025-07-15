@@ -8,6 +8,8 @@ export const CannonCoinsContext = createContext<{
   flipResults: string[];
   getFlipResult: (index: number) => "heads" | "tails";
   updateCoinFlipResult: (index: number, result: "heads" | "tails") => void;
+  bids: number;
+  setBids: (bids: number) => void;
 }>({
   manualFlip: () => {},
   isFlipping: false,
@@ -15,7 +17,9 @@ export const CannonCoinsContext = createContext<{
   flipComplete: () => {},
   flipResults: [],
   getFlipResult: () => "heads",
-  updateCoinFlipResult: () => {}
+  updateCoinFlipResult: () => {},
+  bids: 1,
+  setBids: () => {}
 });
 
 export const CannonCoinsProvider = ({
@@ -28,9 +32,10 @@ export const CannonCoinsProvider = ({
   const coinsRef = useRef<any[]>([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const coinFlipInProgressRef = useRef<{ [key: number]: boolean }>({});
+  const [bids, setBids] = useState(1);
   const [flipResults, setFlipResults] = useState<("heads" | "tails")[]>([
-    "heads",
-    "heads",
+    "tails",
+    "tails",
     "heads",
     "heads",
     "heads"
@@ -47,12 +52,13 @@ export const CannonCoinsProvider = ({
   return (
     <CannonCoinsContext.Provider
       value={{
+        isFlipping,
+        coinsRef,
+        flipResults,
+        bids,
+        setBids,
         manualFlip: () => {
           flipNumberRef.current = 0;
-          setTimeout(() => {
-            updateCoinFlipResult(0, "tails");
-            updateCoinFlipResult(1, "tails");
-          }, 1500);
           setIsFlipping(true);
           coinsRef.current?.forEach((coinRef: any, index: number) => {
             if (coinRef && typeof coinRef.flipCoin === "function") {
@@ -61,9 +67,6 @@ export const CannonCoinsProvider = ({
             }
           });
         },
-        isFlipping,
-        coinsRef,
-        flipResults,
         flipComplete: (coin: any) => {
           flipNumberRef.current++;
 

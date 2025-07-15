@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { useMemo, useState } from "react";
 import { CopyBtn, ExitBtn, AddBtn } from "./action-btns";
 import Modal from "@/components/modal";
-import Recharge from "@/components/cashier/panels/recharge";
+import Recharge from "@/sections/cashier/panels/recharge";
 import PriceChart from "../nft-create/price-chart";
 import { useAuth } from "@/contexts/auth";
 import useCopy from "@/hooks/use-copy";

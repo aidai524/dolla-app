@@ -1,3 +1,5 @@
+import clsx from "clsx";
+
 export const ProvablyFairBg = () => {
   return (
     <svg
@@ -100,27 +102,45 @@ export const Bg100 = () => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="135"
+      width="139"
       height="73"
-      viewBox="0 0 135 73"
+      viewBox="0 0 139 73"
       fill="none"
       className="absolute top-0 left-0"
     >
       <path
-        d="M18.7154 7.25099C20.0656 2.96586 24.1077 0.107163 28.5979 0.261995L129.192 3.73076C133.133 3.86665 135.873 7.7019 134.725 11.4742L118.157 65.9116C116.876 70.1223 112.992 73 108.591 73H6.18117C2.12745 73 -0.759676 69.0633 0.458491 65.197L18.7154 7.25099Z"
-        fill="url(#paint0_linear_1611_386)"
+        d="M18.2318 8.01187C19.2703 4.48109 22.5836 2.11432 26.2604 2.27701L122.878 6.55212C128.042 6.7806 131.636 11.7723 130.217 16.7421L116.658 64.1978C115.677 67.6322 112.537 70 108.966 70H10.6918C5.35092 70 1.50985 64.8665 3.01686 59.7427L18.2318 8.01187Z"
+        fill="url(#paint0_linear_1611_368)"
+        fill-opacity="0.2"
+      />
+      <path
+        d="M26.3047 1.27832L122.922 5.55273C128.731 5.80977 132.775 11.4256 131.178 17.0166L117.619 64.4727C116.515 68.3362 112.984 70.9999 108.966 71H10.6914C4.68326 70.9998 0.362558 65.225 2.05762 59.4609L17.2725 7.72949C18.4408 3.75748 22.1684 1.0953 26.3047 1.27832Z"
+        stroke="url(#paint1_linear_1611_368)"
+        stroke-opacity="0.6"
+        stroke-width="2"
       />
       <defs>
         <linearGradient
-          id="paint0_linear_1611_386"
-          x1="63.5"
-          y1="0"
-          x2="63.5"
-          y2="73"
+          id="paint0_linear_1611_368"
+          x1="66.5"
+          y1="4.26667"
+          x2="66.5"
+          y2="70"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#FFF698" />
-          <stop offset="1" stop-color="#FFC42F" />
+          <stop stopColor="#FFC42F" />
+          <stop offset="1" stopColor="#FFEF43" stopOpacity="0" />
+        </linearGradient>
+        <linearGradient
+          id="paint1_linear_1611_368"
+          x1="66.5"
+          y1="4.26667"
+          x2="66.5"
+          y2="70"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stopColor="#FFEF43" />
+          <stop offset="1" stopColor="#FFEF43" stopOpacity="0" />
         </linearGradient>
       </defs>
     </svg>
