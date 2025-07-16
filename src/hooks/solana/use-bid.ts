@@ -304,7 +304,7 @@ export default function useBid(
   const getRandomnessAccount = async () => {
     if (
       randomnessStore.randomnessAccount &&
-      Date.now() - randomnessStore.updateTime < 1000 * 30
+      Date.now() - randomnessStore.updateTime < 1000 * 60 * 2
     ) {
       return {
         randomnessAccount: randomnessStore.randomnessAccount,
@@ -351,7 +351,7 @@ export default function useBid(
     }
     randomnessTimerRef.current = setTimeout(() => {
       getRandomnessAccount();
-    }, 1000 * 30);
+    }, 1000 * 60 * 2);
     return {
       randomnessAccount,
       randomnessCreateIx

@@ -32,15 +32,18 @@ export async function getNextOrderId(
   provider: anchor.AnchorProvider,
   statePda: anchor.web3.PublicKey
 ) {
-  const stateExist = await accountExists(statePda, provider.connection);
-  let dollaState = null;
-  console.log("state exist:" + stateExist);
-  if (stateExist) {
-    // @ts-ignore
-    dollaState = await program.account.dollaState.fetch(statePda);
-    return dollaState.nextOrderId;
-  }
-  return 0;
+  // const stateExist = await accountExists(statePda, provider.connection);
+  // let dollaState = null;
+  // console.log("state exist:" + stateExist);
+  // if (stateExist) {
+  //   // @ts-ignore
+  //   dollaState = await program.account.dollaState.fetch(statePda);
+  //   return dollaState.nextOrderId;
+  // }
+  // @ts-ignore
+  const dollaState = await program.account.dollaState.fetch(statePda);
+  return dollaState?.nextOrderId || 0;
+  // return 0;
 }
 
 export async function accountExists(
@@ -71,13 +74,16 @@ export async function getPool(
     program.programId
   );
 
-  // query pool info
-  const stateExist = await accountExists(pda, provider.connection);
-  let pool = null;
-  if (stateExist) {
-    // @ts-ignore
-    pool = await program.account.poolState.fetch(pda);
-  }
+  // // query pool info
+  // const stateExist = await accountExists(pda, provider.connection);
+  // let pool = null;
+  // if (stateExist) {
+  //   // @ts-ignore
+  //   pool = await program.account.poolState.fetch(pda);
+  // }
+
+  // @ts-ignore
+  const pool = await program.account.poolState.fetch(pda);
   return { pda: pda, bump: bump, pool: pool };
 }
 
@@ -196,13 +202,15 @@ export async function getBuyState(
   );
 
   // query pool info
-  const stateExist = await accountExists(pda, provider.connection);
-  let buyerState = null;
+  // const stateExist = await accountExists(pda, provider.connection);
+  // let buyerState = null;
 
-  if (stateExist) {
-    // @ts-ignore
-    buyerState = await program.account.buyerState.fetch(pda);
-  }
+  // if (stateExist) {
+  //   // @ts-ignore
+  //   buyerState = await program.account.buyerState.fetch(pda);
+  // }
+  // @ts-ignore
+  const buyerState = await program.account.buyerState.fetch(pda);
   return { pda: pda, bump: bump, buyerState: buyerState };
 }
 

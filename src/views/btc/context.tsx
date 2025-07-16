@@ -61,8 +61,6 @@ export const CannonCoinsProvider = ({
     }
   };
 
-  console.log("pool", pool);
-
   return (
     <CannonCoinsContext.Provider
       value={{
@@ -99,6 +97,10 @@ export const CannonCoinsProvider = ({
               coinsRef.current.forEach((coinRef: any, index: number) => {
                 if (!coinFlipInProgressRef.current[index]) {
                   coinRef.forceStop();
+                  setIsFlipping(false);
+                  if (timerRef.current) {
+                    clearTimeout(timerRef.current);
+                  }
                 }
               });
             }, 1000);
