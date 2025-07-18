@@ -1,115 +1,90 @@
-import { createContext, useContext, useMemo, useRef, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from "react";
 import usePoolRecommend from "@/hooks/use-pool-recommend";
 import useBasicInfo from "@/hooks/solana/use-basic";
 
-export const CannonCoinsContext = createContext<{
-  manualFlip: () => void;
-  isFlipping: boolean;
-  coinsRef: React.RefObject<any[]>;
-  flipComplete: (index: number) => void;
-  flipResults: string[];
-  getFlipResult: (index: number) => "heads" | "tails";
-  updateCoinFlipResult: (index: number, result: "heads" | "tails") => void;
-  bids: number;
-  setBids: (bids: number) => void;
-  pool: any;
-  sbProgramRef: any;
-}>({
-  manualFlip: () => {},
-  isFlipping: false,
-  coinsRef: { current: [] },
-  flipComplete: () => {},
-  flipResults: [],
-  getFlipResult: () => "heads",
-  updateCoinFlipResult: () => {},
-  bids: 1,
-  setBids: () => {},
-  pool: null,
-  sbProgramRef: null
-});
+export const CannonCoinsContext = createContext<any>({});
 
 export const CannonCoinsProvider = ({
   children
 }: {
   children: React.ReactNode;
 }) => {
-  const [isFlipping, setIsFlipping] = useState(false);
-  const flipNumberRef = useRef(0);
-  const coinsRef = useRef<any[]>([]);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const coinFlipInProgressRef = useRef<{ [key: number]: boolean }>({});
+  const [flipStatus, setFlipStatus] = useState(0); // 0: not flipping, 1: bidding, 2: bid success, 3: waiting, 4: bid complete, 5: auto flipping, 6: complete
   const [bids, setBids] = useState(1);
   const { sbProgramRef } = useBasicInfo();
-  const [flipResults, setFlipResults] = useState<("heads" | "tails")[]>([
-    "tails",
-    "tails",
-    "heads",
-    "heads",
-    "heads"
-  ]);
+  const coinsRef = useRef<any>({});
+  const flipedNumberRef = useRef(0);
+  const [bidResult, setBidResult] = useState<any>(null);
+  const [showTicket, setShowTicket] = useState(false);
+
   const { data } = usePoolRecommend(0);
   const [selectedMarket, setSelectedMarket] = useState<any>(null);
   const pool = useMemo(() => {
     return selectedMarket || data;
   }, [selectedMarket, data]);
 
-  const updateCoinFlipResult = (index: number, result: "heads" | "tails") => {
-    // Update the flip result for a specific coin during the flip animation
-    const coinRef = coinsRef.current[index];
-    if (coinRef && typeof coinRef.updateFlipResult === "function") {
-      coinRef.updateFlipResult(result);
+  useEffect(() => {
+    if (flipStatus === 1 || flipStatus === 0) {
+      flipedNumberRef.current = 0;
     }
-  };
+    if (flipStatus === 2) {
+      for (let i = 0; i < bids; i++) {
+        coinsRef.current[i].collect();
+      }
+      setTimeout(() => {
+        setFlipStatus(3);
+      }, 600);
+    }
+
+    if (flipStatus === 4) {
+      for (let i = 0; i < bids; i++) {
+        coinsRef.current[i].revert();
+      }
+    }
+
+    if (flipStatus === 5) {
+      coinsRef.current[0].flip();
+    }
+  }, [flipStatus]);
 
   return (
     <CannonCoinsContext.Provider
       value={{
-        isFlipping,
-        coinsRef,
-        flipResults,
-        bids,
+        flipStatus,
         pool,
-        setBids,
         sbProgramRef,
-        manualFlip: () => {
-          flipNumberRef.current = 0;
-          setIsFlipping(true);
-          coinsRef.current?.forEach((coinRef: any, index: number) => {
-            if (coinRef && typeof coinRef.flipCoin === "function") {
-              coinRef.flipCoin(flipResults[index]);
-              coinFlipInProgressRef.current[index] = false;
-            }
-          });
-        },
-        flipComplete: (coin: any) => {
-          flipNumberRef.current++;
-
-          coinFlipInProgressRef.current[coin.key] = true;
-          if (flipNumberRef.current === coinsRef.current.length) {
-            setIsFlipping(false);
-            if (timerRef.current) {
-              clearTimeout(timerRef.current);
-            }
+        bids,
+        setBids,
+        setFlipStatus,
+        coinsRef,
+        bidResult,
+        showTicket,
+        setShowTicket,
+        setBidResult,
+        flipComplete: (index: number) => {
+          flipedNumberRef.current++;
+          if (flipedNumberRef.current === bids) {
+            setFlipStatus(flipStatus !== 6 ? 6 : 1);
+            flipedNumberRef.current = 0;
             return;
           }
-          if (flipNumberRef.current === 4) {
-            timerRef.current = setTimeout(() => {
-              coinsRef.current.forEach((coinRef: any, index: number) => {
-                if (!coinFlipInProgressRef.current[index]) {
-                  coinRef.forceStop();
-                  setIsFlipping(false);
-                  if (timerRef.current) {
-                    clearTimeout(timerRef.current);
-                  }
-                }
-              });
-            }, 1000);
+          if (flipStatus === 5 && index < bids - 1) {
+            coinsRef.current[index + 1].flip();
           }
         },
-        getFlipResult: (index: number) => {
-          return flipResults[index];
-        },
-        updateCoinFlipResult
+        onReset: () => {
+          flipedNumberRef.current = 0;
+          for (let i = 0; i < bids; i++) {
+            coinsRef.current[i].flip(true);
+          }
+        }
       }}
     >
       {children}

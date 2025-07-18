@@ -2,7 +2,7 @@ import Loading from "../icons/loading";
 
 export default function Toast({ type, title, text, closeToast }: any) {
   return (
-    <div className="rounded-2xl border border-black bg-[#191817] p-[18px] flex gap-[10px] w-[288px] items-center md:w-[288px] max-md:w-[calc(100vw-32px)]">
+    <div className="rounded-[12px] border border-[#FFE9B2] bg-black p-[18px] flex gap-[10px] w-[288px] items-center md:w-[288px] max-md:w-[calc(100vw-32px)]">
       <div className="flex-shrink-0">
         {type === "success" && (
           <svg

@@ -1,10 +1,27 @@
 import clsx from "clsx";
 import HeaderBg from "./bg";
+import Light from "./light";
+import { useBtcContext } from "../../context";
+import { formatNumber } from "@/utils/format/number";
+import { useMemo } from "react";
+import Big from "big.js";
 
 export default function Header({ className }: { className?: string }) {
+  const { bids, pool } = useBtcContext();
+
+  const [amount] = useMemo(() => {
+    const reward_amount = pool.reward_amount || 0;
+    const decimals = pool.reward_token_info?.[0]?.decimals || 1;
+    const _a = formatNumber(Big(reward_amount).div(10 ** decimals), 2, true);
+    return [_a];
+  }, [pool]);
+
   return (
     <div className={clsx("w-full relative", className)}>
       <HeaderBg className="absolute top-[0px] left-[0px] z-[2] pointer-events-none" />
+      {bids === 1 && (
+        <Light className="absolute top-[0px] left-[50%] translate-x-[-50%] z-[1] pointer-events-none" />
+      )}
       <div
         className="text-[#FFF79E] absolute top-[76px] z-[2] w-full text-center font-[DelaGothicOne]"
         style={{
@@ -18,7 +35,7 @@ export default function Header({ className }: { className?: string }) {
               WebkitTextFillColor: "transparent"
             }}
           >
-            $11,147.2
+            ${formatNumber(pool.value, 2, true)}
           </span>
           <div className="absolute left-[-180px] top-[-20px] flex items-center gap-[8px]">
             <TriIcon
@@ -46,7 +63,7 @@ export default function Header({ className }: { className?: string }) {
               WebkitTextFillColor: "transparent"
             }}
           >
-            1 DOLLA FOR 0.1 BTC
+            1 DOLLA FOR {amount} BTC
           </span>
         </div>
       </div>

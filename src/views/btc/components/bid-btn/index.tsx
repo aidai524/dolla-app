@@ -1,83 +1,99 @@
 import { useBtcContext } from "../../context";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import clsx from "clsx";
 import { useState } from "react";
 import useBid from "@/hooks/solana/use-bid";
 
 export default function BidBtn() {
-  const { isFlipping, manualFlip, pool } = useBtcContext();
+  const { setFlipStatus, flipStatus, setBidResult, bids, onReset } =
+    useBtcContext();
   const [isHovered, setIsHovered] = useState(false);
-  const { onBid, bidding } = useBid(11, (isWinner) => {
-    console.log("bidding", isWinner);
-  });
+  const { onBid, bidding } = useBid(
+    11,
+    (result) => {
+      console.log("complete success");
+      setFlipStatus(4);
+      setBidResult(result);
+    },
+    () => {
+      console.log("bid success");
+      setFlipStatus(2);
+    },
+    () => {
+      console.log("bid fail");
+      setTimeout(() => {
+        setFlipStatus(0);
+      }, 30);
+    }
+  );
 
   return (
-    <AnimatePresence>
-      {!isFlipping && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.8 }}
-          transition={{ duration: 0.3, ease: "easeInOut" }}
-          className="flex items-center justify-center w-[200px] h-[200px] absolute top-[50%] translate-y-[-50%] left-[50%] translate-x-[-50%]"
-        >
-          <Circle
-            className="w-[254px] h-[254px] pointer-events-none"
-            hoverScale={0.85}
-            duration={2}
-            delay={0}
-            isHovered={isHovered}
-          />
-          <div
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-            onClick={() => {
-              // onBid(pool.id, 1);
-              onBid(1);
-              manualFlip();
-            }}
-            className="cursor-pointer w-[200px] h-[200px] flex items-center justify-center absolute top-[50%] translate-y-[-50%] left-[50%] translate-x-[-50%]"
-          >
-            <span
-              className="relative z-[2] text-[40px] text-[#3E2B2B] font-[DelaGothicOne] uppercase"
-              style={{
-                WebkitTextStroke: "1px #DD9000"
-              }}
-            >
-              Bid!
-            </span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="200"
-              height="200"
-              viewBox="0 0 200 200"
-              fill="none"
-              className="absolute top-[50%] translate-y-[-50%] left-[50%] translate-x-[-50%]"
-            >
-              <circle
-                cx="100"
-                cy="100"
-                r="100"
-                fill="url(#paint0_radial_1634_6263)"
-              />
-              <defs>
-                <radialGradient
-                  id="paint0_radial_1634_6263"
-                  cx="0"
-                  cy="0"
-                  r="1"
-                  gradientUnits="userSpaceOnUse"
-                  gradientTransform="translate(100 138.528) rotate(90) scale(61.4719 100)"
-                >
-                  <stop stopColor="#FFEF43" />
-                  <stop offset="1" stopColor="#FFC42F" />
-                </radialGradient>
-              </defs>
-            </svg>
-          </div>
-        </motion.div>
+    <div
+      className={clsx(
+        "flex items-center justify-center w-[128px] h-[128px] relative",
+        flipStatus !== 0 && flipStatus !== 6 && "opacity-50"
       )}
-    </AnimatePresence>
+    >
+      {(flipStatus === 0 || flipStatus === 6) && (
+        <Circle
+          className="w-full h-full pointer-events-none"
+          hoverScale={1.1}
+          duration={2}
+          delay={0}
+          isHovered={isHovered}
+        />
+      )}
+      <div
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onClick={() => {
+          if (flipStatus === 6) {
+            onReset();
+          }
+          setBidResult(null);
+          setFlipStatus(1);
+          onBid(bids);
+        }}
+        className="cursor-pointer w-full h-full flex items-center justify-center absolute top-[50%] translate-y-[-50%] left-[50%] translate-x-[-50%]"
+      >
+        <span
+          className="relative z-[2] text-[32px] text-[#3E2B2B] font-[DelaGothicOne] uppercase"
+          style={{
+            WebkitTextStroke: "1px #DD9000"
+          }}
+        >
+          Bid!
+        </span>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="100%"
+          height="100%"
+          viewBox="0 0 200 200"
+          fill="none"
+          className="absolute top-[50%] translate-y-[-50%] left-[50%] translate-x-[-50%]"
+        >
+          <circle
+            cx="100"
+            cy="100"
+            r="100"
+            fill="url(#paint0_radial_1634_6263)"
+          />
+          <defs>
+            <radialGradient
+              id="paint0_radial_1634_6263"
+              cx="0"
+              cy="0"
+              r="1"
+              gradientUnits="userSpaceOnUse"
+              gradientTransform="translate(100 138.528) rotate(90) scale(61.4719 100)"
+            >
+              <stop stopColor="#FFEF43" />
+              <stop offset="1" stopColor="#FFC42F" />
+            </radialGradient>
+          </defs>
+        </svg>
+      </div>
+    </div>
   );
 }
 
@@ -106,8 +122,8 @@ const Circle = ({
         className
       )}
       animate={{
-        scale: isHovered ? hoverScale : [1, 2, 4, 6],
-        opacity: isHovered ? 1 : [1, 0]
+        scale: isHovered ? hoverScale : [1, 1.5, 2],
+        opacity: isHovered ? 1 : [1, 0.5, 0]
       }}
       transition={{
         duration: isHovered ? 0.3 : duration,

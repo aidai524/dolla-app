@@ -4,23 +4,23 @@ import { motion } from "framer-motion";
 import Market from "./market";
 import MoreMarketBtn from "./btn";
 import MarketLoading from "./market-loading";
+import usePoolList from "@/hooks/use-pool-list";
 
 export default function Markets({ onClose }: { onClose: () => void }) {
   const [prizeSize, setPrizeSize] = useState(0);
   const [sortBy, setSortBy] = useState("");
 
-  const maxLength = Math.floor(window.innerWidth / 300);
-
-  // const {
-  //   poolList,
-  //   loading,
-  //   onQueryPoolList,
-  //   sortField,
-  //   setSortField,
-  //   sortOrder,
-  //   setSortOrder,
-  //   hasMore
-  // } = usePoolList();
+  const {
+    poolList,
+    loading,
+    onQueryPoolList,
+    sortField,
+    setSortField,
+    sortOrder,
+    setSortOrder,
+    hasMore,
+    pageRef
+  } = usePoolList();
 
   return (
     <motion.div
@@ -99,28 +99,32 @@ export default function Markets({ onClose }: { onClose: () => void }) {
             </div>
           </div>
           <div className="flex items-center justify-center gap-[20px] py-[50px] px-[20px]">
-            {[...Array(maxLength)].map((item: number) => (
-              <Market
-                key={item}
-                data={{
-                  reward_token_info: [
-                    { icon: "/logo.svg", name: "BTC", symbol: "BTC" }
-                  ],
-                  value: 100,
-                  participants: 100
-                }}
-              />
+            {poolList.map((item: any) => (
+              <Market key={item.id} data={item} />
             ))}
-            {/* <MarketLoading /> */}
+            {loading && (
+              <>
+                <MarketLoading />
+                <MarketLoading />
+              </>
+            )}
             <NextBtn
-              onClick={() => {}}
-              className={clsx("absolute right-0 bottom-[-20px]", "button")}
-            />
-            <NextBtn
-              onClick={() => {}}
+              onClick={() => {
+                onQueryPoolList(-1);
+              }}
               className={clsx(
                 "absolute left-0 bottom-[-20px] rotate-180",
-                "button"
+
+                pageRef.current !== 0 ? "button" : "opacity-50"
+              )}
+            />
+            <NextBtn
+              onClick={() => {
+                onQueryPoolList(1);
+              }}
+              className={clsx(
+                "absolute right-0 bottom-[-20px]",
+                hasMore ? "button" : "opacity-50"
               )}
             />
           </div>

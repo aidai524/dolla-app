@@ -5,6 +5,7 @@ import clsx from "clsx";
 import { useNavigate } from "react-router-dom";
 import { INVATE_ACTIVE } from "@/config";
 import useCopy from "@/hooks/use-copy";
+import { useUser } from "@privy-io/react-auth";
 
 const MENU = [
   INVATE_ACTIVE && {
@@ -65,9 +66,11 @@ const MENU = [
 ];
 
 export default function AvatarAction() {
-  const { address, userInfo, logout } = useAuth();
+  const { userInfo, logout } = useAuth();
   const navigate = useNavigate();
   const { onCopy } = useCopy();
+  const { user } = useUser();
+
   return (
     <div className="relative group">
       {userInfo?.icon && (
@@ -77,13 +80,17 @@ export default function AvatarAction() {
         <div className="p-[10px] flex gap-[8px] items-center border-b border-[#303742]">
           <Avatar size={32} src={userInfo?.icon} className="shrink-0" />
           <div>
-            <span className="text-[16px] font-medium">dolla@gmail.com</span>
+            <span className="text-[16px] font-medium">
+              {user?.email?.address}
+            </span>
             <div className="flex items-center gap-[3px]">
-              <span className="text-[12px]">{formatAddress(address)}</span>
+              <span className="text-[12px]">
+                {formatAddress(userInfo?.sol_user)}
+              </span>
               <button
                 className="button"
                 onClick={() => {
-                  onCopy(address);
+                  onCopy(userInfo?.sol_user);
                 }}
               >
                 <svg

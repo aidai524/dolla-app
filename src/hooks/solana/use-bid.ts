@@ -34,7 +34,9 @@ import { useAuth } from "@/contexts/auth";
 
 export default function useBid(
   poolId: number,
-  onSuccess: (isWinner: boolean) => void
+  onSuccess: (result: any) => void,
+  onTxSuccess: () => void,
+  onTxFail: () => void
 ) {
   const [bidding, setBidding] = useState(false);
   const toast = useToast();
@@ -156,7 +158,11 @@ export default function useBid(
       //   connection: provider.connection
       // });
       console.timeEnd("prepare tx");
+      console.log("tx", tx);
       const result = await sendSolanaTransaction(tx, "bid");
+
+      onTxSuccess();
+      setBidding(false);
 
       let bidResponse = null;
       let timer: any = null;
@@ -165,9 +171,14 @@ export default function useBid(
         bidResponse = await axiosInstance.get(
           `/api/v1/user/prize/bid?hash=${result.data.data.hash}`
         );
-        if (bidResponse.data.data.shard !== null) {
+        if (
+          bidResponse.data.data.bid !== null &&
+          bidResponse.data.data.bid.status !== 0
+        ) {
+          console.log("result", bidResponse.data.data);
           console.timeEnd("bid time");
           console.timeEnd("bid loop");
+          onSuccess(bidResponse.data.data);
           return;
         }
         if (timer) {
@@ -189,7 +200,7 @@ export default function useBid(
       // });
 
       toast.success({ title: "Bid placed successfully!" });
-      onSuccess(false);
+
       // const pb = new PublicKey("7qKtiPPkK1ZYqVFujVJjsTuGSJNXAvVhLj41HxtQDsTG");
       // const userBaseAccount = await getAssociatedTokenAddress(
       //   new PublicKey(BASE_TOKEN.address),
@@ -246,13 +257,13 @@ export default function useBid(
       // console.log("settleReceipt:", settleReceipt);
     } catch (error) {
       console.error("Bid error:", error);
+      setBidding(false);
       toast.fail({
         title: "Bid failed",
         description:
           error instanceof Error ? error.message : "Unknown error occurred"
       });
-    } finally {
-      setBidding(false);
+      onTxFail();
     }
   };
 
@@ -302,15 +313,16 @@ export default function useBid(
   };
 
   const getRandomnessAccount = async () => {
-    if (
-      randomnessStore.randomnessAccount &&
-      Date.now() - randomnessStore.updateTime < 1000 * 60 * 2
-    ) {
-      return {
-        randomnessAccount: randomnessStore.randomnessAccount,
-        randomnessCreateIx: randomnessStore.randomnessCreateIx
-      };
-    }
+    // const expiredTime = 1000 * 30;
+    // if (
+    //   randomnessStore.randomnessAccount &&
+    //   Date.now() - randomnessStore.updateTime < expiredTime
+    // ) {
+    //   return {
+    //     randomnessAccount: randomnessStore.randomnessAccount,
+    //     randomnessCreateIx: randomnessStore.randomnessCreateIx
+    //   };
+    // }
     console.time("randomness");
     const randomnessAccountResult = await axiosInstance.get(
       `/api/v1/paygas/sol/randomnessaccount`
@@ -349,9 +361,9 @@ export default function useBid(
     if (randomnessTimerRef.current) {
       clearTimeout(randomnessTimerRef.current);
     }
-    randomnessTimerRef.current = setTimeout(() => {
-      getRandomnessAccount();
-    }, 1000 * 60 * 2);
+    // randomnessTimerRef.current = setTimeout(() => {
+    //   getRandomnessAccount();
+    // }, expiredTime);
     return {
       randomnessAccount,
       randomnessCreateIx

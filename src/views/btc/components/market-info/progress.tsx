@@ -1,6 +1,14 @@
+import { formatNumber } from "@/utils/format/number";
 import { motion } from "framer-motion";
+import { useMemo } from "react";
 
-export default function Progress({ progress }: { progress: number }) {
+export default function Progress({ data }: any) {
+  const [progress] = useMemo(() => {
+    const _p = (data.accumulative_bids / data.value) * 100;
+
+    return [_p];
+  }, [data]);
+
   return (
     <div className="w-[292px] h-[12px] rounded-[30px] border border-[#FFE9B2] bg-[#FFFFFF1A]">
       <div className="h-[10px] rounded-[10px] p-[1px]">
@@ -40,18 +48,24 @@ export default function Progress({ progress }: { progress: number }) {
               ></motion.div>
             </>
           )}
-          <Label />
+          <Label amount={data.accumulative_bids} />
         </div>
       </div>
     </div>
   );
 }
 
-const Label = () => {
+const Label = ({ amount }: { amount: number }) => {
   return (
-    <div className="absolute top-[10px] right-[-45px] w-[90px] h-[42px]">
+    <div
+      className="absolute top-[10px] right-[-45px] w-[90px] h-[42px]"
+      style={{
+        transform: "rotate(-20deg)",
+        right: "-54px"
+      }}
+    >
       <span className="absolute top-[18px] left-[0px] w-full z-[2] text-[#3E2B2B] text-center  font-['DelaGothicOne'] text-[14px]  leading-[14px] rotate-[-5deg]">
-        $9.35K
+        ${formatNumber(amount, 2, true)}
       </span>
       <svg
         xmlns="http://www.w3.org/2000/svg"

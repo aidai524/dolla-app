@@ -1,10 +1,12 @@
 import { useCallback, useState } from "react";
 import axios from "@/libs/axios";
 import { useUsers } from "@/stores/use-users";
+import useUserPrize from "@/hooks/use-user-prize";
 
 export default function useUserInfo(address?: string) {
   const [info, setInfo] = useState<any>();
   const [loading, setLoading] = useState(false);
+  const { getUserPrize } = useUserPrize();
   const usersStore = useUsers();
 
   const onQueryUserInfo = useCallback(async () => {
@@ -31,6 +33,7 @@ export default function useUserInfo(address?: string) {
         }
       }
       setInfo(res.data.data);
+      getUserPrize();
     } catch (err) {
       console.log("err", err);
       setInfo(null);

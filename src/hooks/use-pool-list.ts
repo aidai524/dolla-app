@@ -3,7 +3,6 @@ import axiosInstance from "@/libs/axios";
 import { HOST_API } from "@/config";
 import { useAuth } from "@/contexts/auth";
 
-const LIMIT = 10;
 export default function usePoolList() {
   const [poolList, setPoolList] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -12,8 +11,26 @@ export default function usePoolList() {
   const [hasMore, setHasMore] = useState(true);
   const pageRef = useRef(0);
   const { userInfo } = useAuth();
+  const LIMIT = Math.floor(window.innerWidth / 300);
 
-  const onQueryPoolList = async () => {
+  const cachedList = useRef<any[]>([]);
+
+  const onQueryPoolList = async (step: number) => {
+    if (
+      step === -1 ||
+      step + pageRef.current < cachedList.current.length / LIMIT
+    ) {
+      setPoolList(
+        cachedList.current.slice(
+          step + pageRef.current,
+          (step + pageRef.current + 1) * LIMIT
+        )
+      );
+      setLoading(false);
+      return;
+    }
+    pageRef.current += step;
+    setPoolList([]);
     try {
       setLoading(true);
       const res = await axiosInstance.get(
@@ -22,15 +39,21 @@ export default function usePoolList() {
         }&sort_field=${sortField}&sort_order=${sortOrder}&status=1&token_status=0`
       );
 
-      setPoolList((prev) =>
+      // setPoolList((prev) =>
+      //   pageRef.current === 0
+      //     ? res.data.data.list
+      //     : [...prev, ...res.data.data.list]
+      // );
+      setPoolList(res.data.data.list);
+      cachedList.current =
         pageRef.current === 0
           ? res.data.data.list
-          : [...prev, ...res.data.data.list]
-      );
-      setHasMore(res.data.data.list.length === LIMIT);
-      if (res.data.data.list.length === LIMIT) {
-        pageRef.current++;
-      }
+          : [...cachedList.current, ...res.data.data.list];
+
+      setHasMore(res.data.data.has_next_page);
+      // if (res.data.data.list.length === LIMIT) {
+      //   pageRef.current++;
+      // }
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -41,7 +64,7 @@ export default function usePoolList() {
     if (userInfo?.user) {
       pageRef.current = 0;
       setPoolList([]);
-      onQueryPoolList();
+      onQueryPoolList(0);
     }
   }, [userInfo, sortOrder, sortField]);
 
@@ -53,6 +76,7 @@ export default function usePoolList() {
     setSortField,
     sortOrder,
     setSortOrder,
-    hasMore
+    hasMore,
+    pageRef
   };
 }
