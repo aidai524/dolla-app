@@ -176,16 +176,14 @@ export const AuthProvider: React.FC<{
       updateAccount();
     }
 
+    (window as any).sign = sign;
+
     clearTimeout(timer.current);
 
     return () => {
       clearTimeout(timer.current);
     };
   }, [privyWallet?.address, ready, user, isLoggedOut]);
-
-  useEffect(() => {
-    (window as any).sign = sign;
-  }, []);
 
   return (
     <AuthContext.Provider

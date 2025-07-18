@@ -13,6 +13,17 @@ const axiosInstance = axios.create({
   }
 });
 
+const signFn = () => {
+  clearTimeout((window as any).signTimer);
+  if (typeof (window as any).sign === "function") {
+    (window as any).sign();
+  } else {
+    (window as any).signTimer = setTimeout(() => {
+      signFn();
+    }, 1000);
+  }
+};
+
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = JSON.parse(localStorage.getItem("_AK_TOKEN_") || "{}").token;
@@ -38,26 +49,14 @@ axiosInstance.interceptors.response.use(
   (error) => {
     console.log("axios error:", error);
 
-    // Handle CORS errors (error.response is null)
-    if (!error.response) {
-      console.error("CORS error or network issue:", error.message);
-      // You can handle CORS errors here, e.g., show a user-friendly message
-      return Promise.reject({
-        message: "Network error or CORS issue. Please check your connection.",
-        isCorsError: true
-      });
-    }
-
     // Check if error has response and status is 401
-    if (error.code === 401 || error.code === -401) {
+    if (error.status === 401) {
       console.log("401 Unauthorized detected, clearing token and signing out");
       // Clear token from localStorage
       localStorage.removeItem("_AK_TOKEN_");
 
       // Call sign out function if available
-      if (typeof (window as any).sign === "function") {
-        (window as any).sign();
-      }
+      signFn();
     }
 
     return Promise.reject(
