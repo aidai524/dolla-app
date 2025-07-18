@@ -1,13 +1,15 @@
 import { useBtcContext } from "../../context";
 import { motion } from "framer-motion";
 import clsx from "clsx";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import useBid from "@/hooks/solana/use-bid";
+import { useAuth } from "@/contexts/auth";
 
-export default function BidBtn() {
+export default function BidBtn({ tokenBalance }: { tokenBalance: string }) {
   const { setFlipStatus, flipStatus, setBidResult, bids, onReset } =
     useBtcContext();
   const [isHovered, setIsHovered] = useState(false);
+  const { userInfo } = useAuth();
   const { onBid, bidding } = useBid(
     11,
     (result) => {
@@ -27,14 +29,27 @@ export default function BidBtn() {
     }
   );
 
+  const disabled = useMemo(() => {
+    if (!userInfo?.user) {
+      return true;
+    }
+    if (Number(tokenBalance) < bids) {
+      return true;
+    }
+    if (flipStatus === 0 || flipStatus === 6) {
+      return false;
+    }
+    return true;
+  }, [flipStatus, userInfo, tokenBalance, bids]);
+
   return (
     <div
       className={clsx(
         "flex items-center justify-center w-[128px] h-[128px] relative",
-        flipStatus !== 0 && flipStatus !== 6 && "opacity-50"
+        disabled && "opacity-50"
       )}
     >
-      {(flipStatus === 0 || flipStatus === 6) && (
+      {!disabled && (
         <Circle
           className="w-full h-full pointer-events-none"
           hoverScale={1.1}

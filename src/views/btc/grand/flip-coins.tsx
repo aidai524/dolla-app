@@ -22,7 +22,8 @@ export default function FlipCoins() {
     bidResult,
     showTicket,
     setShowTicket,
-    setFlipStatus
+    setFlipStatus,
+    onReset
   } = useBtcContext();
   const coinContainerRef = useRef<any>(null);
 
@@ -97,6 +98,7 @@ export default function FlipCoins() {
           tickets={sumTickets}
           onClose={() => {
             setFlipStatus(0);
+            onReset();
           }}
         />
       )}

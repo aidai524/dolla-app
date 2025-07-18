@@ -6,15 +6,24 @@ import { useState } from "react";
 import { useBtcContext } from "../../context";
 import BidBtn from "../bid-btn";
 import AutoBtn from "./auto-btn";
+import { addThousandSeparator } from "@/utils/format/number";
+import { QUOTE_TOKEN } from "@/config/btc";
+import useTokenBalance from "@/hooks/solana/use-token-balance";
 
 export default function BidSelection() {
+  const { tokenBalance } = useTokenBalance({
+    address: QUOTE_TOKEN.address,
+    decimals: QUOTE_TOKEN.decimals
+  });
   const [showCashier, setShowCashier] = useState(false);
   const { bids, setBids, flipStatus } = useBtcContext();
   const onChangeBids = (bids: number) => {
     if (flipStatus === 1) return;
     setBids(bids);
   };
+
   const isDisabled = flipStatus !== 0 && flipStatus !== 6;
+
   return (
     <div className="absolute bottom-0 left-[3%] w-full h-[202px] flex items-center justify-center">
       <div className="w-[192px] h-[53px] relative top-[10px] flex items-center justify-center font-[BlackHanSans]">
@@ -28,13 +37,13 @@ export default function BidSelection() {
         <div className="flex items-center justify-between relative z-[2] mt-[26px] w-[80%] mx-auto">
           <div className="text-white text-[16px]">BALANCE</div>
           <div className="text-white text-[20px] flex items-center gap-[10px]">
-            <span>$2,000</span>
-            <AddBtn onClick={() => setShowCashier(true)} />
+            <span>${addThousandSeparator(tokenBalance || "0")}</span>
+            {/* <AddBtn onClick={() => setShowCashier(true)} /> */}
           </div>
         </div>
       </div>
       <div className="mx-[20px] relative flex flex-col items-center justify-center">
-        {flipStatus !== 4 && <BidBtn />}
+        {flipStatus !== 4 && <BidBtn tokenBalance={tokenBalance} />}
         {flipStatus === 4 && <AutoBtn />}
       </div>
       <div className="flex items-center text-white text-[22px] font-normal leading-[100%] uppercase font-[DelaGothicOne]">

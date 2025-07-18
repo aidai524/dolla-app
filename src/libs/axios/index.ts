@@ -26,14 +26,26 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-// Add response interceptor to handle 401 errors
+// Add response interceptor to handle 401 errors and CORS issues
 axiosInstance.interceptors.response.use(
   (response) => {
     return response;
   },
   (error) => {
+    console.log("Axios error:", error);
+
+    // Handle CORS errors (error.response is null)
+    if (!error.response) {
+      console.error("CORS error or network issue:", error.message);
+      // You can handle CORS errors here, e.g., show a user-friendly message
+      return Promise.reject({
+        message: "Network error or CORS issue. Please check your connection.",
+        isCorsError: true
+      });
+    }
+
     // Check if error has response and status is 401
-    if (error.response && error.response.status === 401) {
+    if (error.code === -401) {
       // Clear token from localStorage
       localStorage.removeItem("_AK_TOKEN_");
 

@@ -27,5 +27,14 @@ export default defineConfig({
       }
     },
     include: ["buffer", "process", "https-browserify", "stream-http"]
+  },
+  server: {
+    proxy: {
+      "/api": {
+        target: "https://test-api.dolla.market",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, "")
+      }
+    }
   }
 });

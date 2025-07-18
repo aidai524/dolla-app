@@ -71,7 +71,7 @@ export const CannonCoinsProvider = ({
         flipComplete: (index: number) => {
           flipedNumberRef.current++;
           if (flipedNumberRef.current === bids) {
-            setFlipStatus(flipStatus !== 6 ? 6 : 1);
+            setFlipStatus(flipStatus !== 6 ? 6 : 0);
             flipedNumberRef.current = 0;
             return;
           }

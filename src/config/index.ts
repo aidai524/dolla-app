@@ -1,6 +1,6 @@
-// Use relative path in development to avoid CORS issues
+// Use proxy in development to avoid CORS issues
 export const HOST_API = import.meta.env.DEV
-  ? "https://test-api.dolla.market"
+  ? "/api"
   : "https://test-api.dolla.market";
 
 export const BETTING_CONTRACT_ADDRESS =
