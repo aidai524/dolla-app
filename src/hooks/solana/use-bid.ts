@@ -58,12 +58,15 @@ export default function useBid(
       return;
     }
 
+    let toastId = toast.loading({ title: "Submit Transaction..." });
+
     const payer = wallets[0];
     setBidding(true);
     try {
       if (!poolInfoRef.current) {
         await fetchPoolInfo();
       }
+
       const state = getState(program);
       // Use the actual poolId parameter instead of hardcoded value
       const poolIdBN = new anchor.BN(poolId);
@@ -159,8 +162,10 @@ export default function useBid(
       // });
       console.timeEnd("prepare tx");
       console.log("tx", tx);
-      const result = await sendSolanaTransaction(tx, "bid");
 
+      const result = await sendSolanaTransaction(tx, "bid");
+      toast.dismiss(toastId);
+      toastId = toast.success({ title: "Bid placed successfully!" });
       onTxSuccess();
       setBidding(false);
 
@@ -198,8 +203,6 @@ export default function useBid(
       //   hash: result.data.data.hash,
       //   block_number: blockhash
       // });
-
-      toast.success({ title: "Bid placed successfully!" });
 
       // const pb = new PublicKey("7qKtiPPkK1ZYqVFujVJjsTuGSJNXAvVhLj41HxtQDsTG");
       // const userBaseAccount = await getAssociatedTokenAddress(
@@ -258,6 +261,7 @@ export default function useBid(
     } catch (error) {
       console.error("Bid error:", error);
       setBidding(false);
+      toast.dismiss(toastId);
       toast.fail({
         title: "Bid failed",
         description:

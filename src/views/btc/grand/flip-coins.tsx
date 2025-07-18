@@ -29,7 +29,7 @@ export default function FlipCoins() {
 
   const [points, tickets, sumPoints, sumTickets] = useMemo(() => {
     if (!bidResult) {
-      return [[0, 100, 200, 500, 1000], ["0", "0", "0", "0", "0"], 0, 0];
+      return [[0, 100, 200, 500, 1000], ["-1", "-1", "-1", "-1", "-1"], 0, 0];
     }
     const _p = bidResult.point.wild_coin_ev_result.split(",");
     const _t = bidResult.ticket.result.split(",");
@@ -37,7 +37,10 @@ export default function FlipCoins() {
       _p,
       _t,
       _p.reduce((acc: number, curr: string) => acc + Number(curr), 0),
-      _t.reduce((acc: number, curr: string) => acc + Number(curr), 0)
+      _t.reduce(
+        (acc: number, curr: string) => acc + Number(curr === "0" ? 1 : 0),
+        0
+      )
     ];
   }, [bidResult]);
 

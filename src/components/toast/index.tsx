@@ -40,7 +40,7 @@ export default function Toast({ type, title, text, closeToast }: any) {
         )}
       </div>
       {type === "pending" && <Loading />}
-      <div className="flex justify-between flex-grow mt-[5px] text-white">
+      <div className="flex justify-between flex-grow text-white">
         <div className="flex flex-col gap-[5px]">
           <div className="text-[16px] font-semibold leading-normal items-center">
             {title}

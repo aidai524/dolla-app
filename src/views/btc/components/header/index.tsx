@@ -9,11 +9,27 @@ import Big from "big.js";
 export default function Header({ className }: { className?: string }) {
   const { bids, pool } = useBtcContext();
 
-  const [amount] = useMemo(() => {
+  const [amount, prev, next] = useMemo(() => {
     const reward_amount = pool.reward_amount || 0;
     const decimals = pool.reward_token_info?.[0]?.decimals || 1;
-    const _a = formatNumber(Big(reward_amount).div(10 ** decimals), 2, true);
-    return [_a];
+    const _an = Big(reward_amount).div(10 ** decimals);
+    const _a = formatNumber(_an, 3, true);
+    let prev = 0;
+    let next = 0;
+    if (_an.eq(0.001)) {
+      prev = 0;
+      next = 0.01;
+    } else if (_an.eq(0.01)) {
+      prev = 0.001;
+      next = 0.1;
+    } else if (_an.eq(0.1)) {
+      prev = 0.01;
+      next = 1;
+    } else if (_an.eq(1)) {
+      prev = 0.1;
+      next = 0;
+    }
+    return [_a, prev, next];
   }, [pool]);
 
   return (
@@ -37,24 +53,28 @@ export default function Header({ className }: { className?: string }) {
           >
             ${formatNumber(pool.value, 2, true)}
           </span>
-          <div className="absolute left-[-180px] top-[-20px] flex items-center gap-[8px]">
-            <TriIcon
-              className="button"
-              onClick={() => {
-                console.log(123);
-              }}
-            />
-            <span className="text-[20px] text-[#FFEF43]">0.01 BTC</span>
-          </div>
-          <div className="absolute right-[-180px] top-[-20px] flex items-center gap-[8px]">
-            <span className="text-[20px] text-[#FFEF43]">0.1 BTC</span>
-            <TriIcon
-              className="rotate-y-[180deg] button"
-              onClick={() => {
-                console.log(456);
-              }}
-            />
-          </div>
+          {prev && (
+            <div className="absolute left-[-180px] top-[-20px] flex items-center gap-[8px]">
+              <TriIcon
+                className="button"
+                onClick={() => {
+                  console.log(123);
+                }}
+              />
+              <span className="text-[20px] text-[#FFEF43]">{prev} BTC</span>
+            </div>
+          )}
+          {next && (
+            <div className="absolute right-[-180px] top-[-20px] flex items-center gap-[8px]">
+              <span className="text-[20px] text-[#FFEF43]">{next} BTC</span>
+              <TriIcon
+                className="rotate-y-[180deg] button"
+                onClick={() => {
+                  console.log(456);
+                }}
+              />
+            </div>
+          )}
         </div>
         <div />
         <div className="bg-clip-text mt-[-8px] inline-block relative text-[26px] bg-[radial-gradient(50%_50%_at_50%_50%,#FFEF43_0%,#FFC42F_100%)]">

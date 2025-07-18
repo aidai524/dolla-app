@@ -11,7 +11,7 @@ export default function MarketInfo() {
   const [amount] = useMemo(() => {
     const reward_amount = pool.reward_amount || 0;
     const decimals = pool.reward_token_info?.[0]?.decimals || 1;
-    const _a = formatNumber(Big(reward_amount).div(10 ** decimals), 2, true);
+    const _a = formatNumber(Big(reward_amount).div(10 ** decimals), 3, true);
     return [_a];
   }, [pool]);
 

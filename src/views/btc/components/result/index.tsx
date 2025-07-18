@@ -28,7 +28,7 @@ const Config = {
   3: {
     gifHeight: 222,
     gifSrc: "/btc/level3.gif",
-    title: "Congrats!",
+    title: "Good Job!",
     desc: "You’ve got",
     key: 3
   }
@@ -43,7 +43,7 @@ export default function Result({ points, tickets, onClose }: any) {
       return Config[1];
     }
 
-    return points > 50 ? Config[3] : Config[2];
+    return points > 10000 ? Config[3] : Config[2];
   }, [points, tickets]);
 
   return (
