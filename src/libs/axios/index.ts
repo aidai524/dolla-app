@@ -7,7 +7,6 @@ import { HOST_API } from "@/config";
 const axiosInstance = axios.create({
   baseURL: HOST_API,
   timeout: 30000, // 30 seconds timeout
-  withCredentials: true, // Enable credentials for CORS
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json"
@@ -37,7 +36,7 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   (error) => {
-    console.log("Axios error:", error);
+    console.log("axios error:", error);
 
     // Handle CORS errors (error.response is null)
     if (!error.response) {
@@ -50,7 +49,7 @@ axiosInstance.interceptors.response.use(
     }
 
     // Check if error has response and status is 401
-    if (error.code === 401) {
+    if (error.response && error.response.status === 401) {
       console.log("401 Unauthorized detected, clearing token and signing out");
       // Clear token from localStorage
       localStorage.removeItem("_AK_TOKEN_");
