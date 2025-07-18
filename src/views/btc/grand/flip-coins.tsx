@@ -69,6 +69,7 @@ export default function FlipCoins() {
           onFlipComplete={flipComplete}
           coinContainerRef={coinContainerRef}
           setShowTicket={setShowTicket}
+          setFlipStatus={setFlipStatus}
         />
       ))}
       {showTicket && (

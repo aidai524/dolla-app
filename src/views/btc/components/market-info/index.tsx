@@ -76,7 +76,7 @@ export default function MarketInfo() {
             WebkitTextFillColor: "transparent"
           }}
         >
-          ${formatNumber(pool.value, 2, true)}
+          ${formatNumber(pool.value, 0, true)}
         </div>
       </div>
       <Progress data={pool} />

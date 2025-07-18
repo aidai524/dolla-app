@@ -2,12 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import axiosInstance from "@/libs/axios";
 import { HOST_API } from "@/config";
 import { useAuth } from "@/contexts/auth";
+import { BASE_TOKEN } from "@/config/btc";
 
 export default function usePoolList() {
   const [poolList, setPoolList] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [sortField, setSortField] = useState("value");
+  const [sortField, setSortField] = useState("time");
   const [sortOrder, setSortOrder] = useState("desc");
+  const [volume, setVolume] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const pageRef = useRef(0);
   const { userInfo } = useAuth();
@@ -22,11 +24,16 @@ export default function usePoolList() {
     ) {
       setPoolList(
         cachedList.current.slice(
-          step + pageRef.current,
+          (step + pageRef.current) * LIMIT,
           (step + pageRef.current + 1) * LIMIT
         )
       );
       setLoading(false);
+      pageRef.current += step;
+
+      setHasMore(
+        step + pageRef.current < Math.ceil(cachedList.current.length / LIMIT)
+      );
       return;
     }
     pageRef.current += step;
@@ -36,7 +43,11 @@ export default function usePoolList() {
       const res = await axiosInstance.get(
         `${HOST_API}/api/v1/pool/list?limit=${LIMIT}&offset=${
           pageRef.current * LIMIT
-        }&sort_field=${sortField}&sort_order=${sortOrder}&status=1&token_status=0`
+        }&sort_field=${sortField}&sort_order=${sortOrder}&status=1&token_status=0&chain=${
+          BASE_TOKEN.chain
+        }&token=${BASE_TOKEN.address}${
+          volume > 0 ? "&volume=" + volume * 10 ** BASE_TOKEN.decimals : ""
+        }`
       );
 
       // setPoolList((prev) =>
@@ -63,10 +74,11 @@ export default function usePoolList() {
   useEffect(() => {
     if (userInfo?.user) {
       pageRef.current = 0;
+      cachedList.current = [];
       setPoolList([]);
       onQueryPoolList(0);
     }
-  }, [userInfo, sortOrder, sortField]);
+  }, [userInfo, sortOrder, sortField, volume]);
 
   return {
     poolList,
@@ -77,6 +89,9 @@ export default function usePoolList() {
     sortOrder,
     setSortOrder,
     hasMore,
-    pageRef
+    pageRef,
+    volume,
+    setVolume,
+    LIMIT
   };
 }

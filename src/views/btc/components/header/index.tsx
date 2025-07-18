@@ -51,9 +51,9 @@ export default function Header({ className }: { className?: string }) {
               WebkitTextFillColor: "transparent"
             }}
           >
-            ${formatNumber(pool.value, 2, true)}
+            ${formatNumber(pool.value, 0, true)}
           </span>
-          {prev && (
+          {!!prev && (
             <div className="absolute left-[-180px] top-[-20px] flex items-center gap-[8px]">
               <TriIcon
                 className="button"
@@ -64,7 +64,7 @@ export default function Header({ className }: { className?: string }) {
               <span className="text-[20px] text-[#FFEF43]">{prev} BTC</span>
             </div>
           )}
-          {next && (
+          {!!next && (
             <div className="absolute right-[-180px] top-[-20px] flex items-center gap-[8px]">
               <span className="text-[20px] text-[#FFEF43]">{next} BTC</span>
               <TriIcon

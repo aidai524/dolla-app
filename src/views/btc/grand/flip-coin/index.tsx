@@ -15,7 +15,8 @@ const Coin = forwardRef<any, any>(
       coinContainerRef,
       ticket,
       setShowTicket,
-      bids
+      bids,
+      setFlipStatus
     },
     ref
   ) => {
@@ -28,16 +29,21 @@ const Coin = forwardRef<any, any>(
     const isElementInViewport = (element: HTMLElement) => {
       return (
         element.offsetTop <
-        coinContainerRef.current?.clientHeight +
-          coinContainerRef.current?.scrollTop
+          coinContainerRef.current?.clientHeight +
+            coinContainerRef.current?.scrollTop &&
+        element.offsetTop > coinContainerRef.current?.scrollTop - 10
       );
     };
 
-    const onFlip = (force = false) => {
-      console.log("onFlip", force);
+    const onFlip = (force = false, notAuto = false) => {
       if ((disabled || isAnimating) && !force) return;
       if (isFlipped && !force) {
-        onFlipComplete?.(index);
+        onFlipComplete?.(index, false, notAuto);
+        return;
+      }
+
+      if (force) {
+        setIsFlipped(false);
         return;
       }
 
@@ -62,7 +68,7 @@ const Coin = forwardRef<any, any>(
       // Trigger callback after animation
       setTimeout(() => {
         setIsAnimating(false);
-        onFlipComplete?.(index);
+        onFlipComplete?.(index, true, notAuto);
       }, 600); // Reduced from 1000ms to 600ms to start exit animation earlier
     };
 
@@ -109,7 +115,8 @@ const Coin = forwardRef<any, any>(
           height: `${size}px`
         }}
         onClick={() => {
-          onFlip();
+          setFlipStatus(4);
+          onFlip(false, true);
         }}
         ref={coinRef}
       >

@@ -68,14 +68,15 @@ export const CannonCoinsProvider = ({
         showTicket,
         setShowTicket,
         setBidResult,
-        flipComplete: (index: number) => {
-          flipedNumberRef.current++;
+        flipComplete: (index: number, addNumber: boolean, notAuto = false) => {
+          if (addNumber) flipedNumberRef.current++;
+
           if (flipedNumberRef.current === bids) {
             setFlipStatus(flipStatus !== 6 ? 6 : 0);
             flipedNumberRef.current = 0;
             return;
           }
-          if (flipStatus === 5 && index < bids - 1) {
+          if (flipStatus === 5 && flipedNumberRef.current < bids && !notAuto) {
             coinsRef.current[index + 1].flip();
           }
         },
