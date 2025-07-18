@@ -49,7 +49,7 @@ axiosInstance.interceptors.response.use(
     }
 
     // Check if error has response and status is 401
-    if (error.response && error.response.status === 401) {
+    if (error.code === 401) {
       console.log("401 Unauthorized detected, clearing token and signing out");
       // Clear token from localStorage
       localStorage.removeItem("_AK_TOKEN_");
