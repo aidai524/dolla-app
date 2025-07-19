@@ -5,6 +5,7 @@ import { formatNumber } from "@/utils/format/number";
 import { useMemo } from "react";
 import Big from "big.js";
 import useCancelOrder from "@/hooks/evm/use-cancel-order";
+import ProfileButton from "../../ components/button";
 
 export default function CancelModal({
   open,
@@ -25,7 +26,7 @@ export default function CancelModal({
     cancelOrder,
     penalty: penaltyStr
   } = useCancelOrder({
-    poolId: order.pool_id,
+    poolId: order?.pool_id,
     onSuccess: () => {
       onClose();
       onSuccess();
@@ -33,102 +34,97 @@ export default function CancelModal({
   });
   const [penalty, finalRefund] = useMemo(() => {
     const _penalty = Big(penaltyStr || 0)
-      .div(10 ** order.purchase_token_info.decimals)
+      .div(10 ** order?.purchase_token_info?.decimals || 18)
       .toString();
-    return [_penalty, Big(order?.value).minus(_penalty).toString()];
+    return [_penalty, Big(order?.value || 0).minus(_penalty).toString()];
   }, [penaltyStr, order]);
 
   return (
     <Modal onClose={onClose} open={open}>
-      <div className="w-[370px] h-[414px] rounded-[6px] bg-[#232932] p-[20px]">
-        <div className="flex justify-between items-center mb-[14px]">
+      <div className="w-[396px] h-[460px] rounded-[16px] bg-[#35302B] border border-[#6A5D3A] text-[14px] font-[500] leading-[100%] text-white font-[SpaceGrotesk]">
+        <div className="w-full pt-[20px] pb-[13px] px-[24px] bg-black/20 flex justify-between items-center">
           <div className="text-[18px] font-medium text-white">
             Cancel Market
           </div>
           <button className="button" onClick={onClose}>
-            <CloseIcon />
+            <svg width="10" height="12" viewBox="0 0 10 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 4.57422L8 0.592773H10L6 5.90137L10 11.21H8L5 7.22852L2 11.21H0L4 5.90137L0 0.592773H2L5 4.57422Z" fill="#BBACA6" />
+            </svg>
+
           </button>
         </div>
-        <div className="flex items-center text-[14px] mb-[14px] gap-[10px]">
-          <span className="text-[#5E6B7D]">Market Amount</span>
-          <div className="grow border-b border-dashed border-[#303742]" />
-          <span className="text-white font-medium">
-            {formatNumber(
-              Big(order?.reward_amount || 0).div(
-                10 ** rewardTokenInfo.decimals
-              ),
-              2,
-              true
-            )}{" "}
-            {rewardTokenInfo.symbol}
-          </span>
-        </div>
-        <div className="flex items-center text-[14px] mb-[14px] gap-[10px]">
-          <span className="text-[#5E6B7D]">Valued</span>
-          <div className="grow border-b border-dashed border-[#303742]" />
-          <span className="text-white font-medium">
-            ${formatNumber(order?.value, 0, true)}
-          </span>
-        </div>
-        <div className="flex items-center text-[14px] mb-[14px] gap-[10px]">
-          <span className="text-[#5E6B7D]">Bid player</span>
-          <div className="grow border-b border-dashed border-[#303742]" />
-          <span className="text-white font-medium">
-            {formatNumber(order?.accumulative_bids, 0, true)}
-          </span>
-        </div>
-        <div className="flex items-center text-[14px] mb-[14px] gap-[10px]">
-          <span className="text-[#5E6B7D]">Total bid value</span>
-          <div className="grow border-b border-dashed border-[#303742]" />
-          <span className="text-white font-medium">
-            ${formatNumber(order?.accumulative_bids, 0, true)}
-          </span>
-        </div>
-        <div className="w-[330px] h-[86px] p-[10px] mb-[16px] mx-auto bg-[#FFC42F1A] rounded-[4px] border border-[#FFC42F]">
-          <div className="flex items-center gap-[2px]">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="13"
-              height="11"
-              viewBox="0 0 13 11"
-              fill="none"
-            >
-              <path
-                d="M5.63398 0.499999C6.01888 -0.166667 6.98113 -0.166667 7.36603 0.5L12.1292 8.75C12.5141 9.41667 12.0329 10.25 11.2631 10.25H1.73686C0.967059 10.25 0.485935 9.41667 0.870835 8.75L5.63398 0.499999Z"
-                fill="#FFC42F"
-              />
-            </svg>
-            <span className="text-[#FFC42F] text-[14px] font-medium">
-              Be careful!
+        <div className="w-full px-[24px] py-[20px]">
+          <div className="flex items-center text-[14px] mb-[20px] gap-[10px]">
+            <span className="text-[#BBACA6] font-[400]">Market Amount</span>
+            <div className="grow border-b border-dashed border-[#5E6B7D] opacity-50" />
+            <span className="text-white font-medium">
+              {formatNumber(
+                Big(order?.reward_amount || 0).div(
+                  10 ** (rewardTokenInfo.decimals || 18)
+                ),
+                2,
+                true
+              )}{" "}
+              {rewardTokenInfo.symbol}
             </span>
           </div>
-          <div className="text-[12px] text-white leading-[14px]">
-            If you cancel, platform will refund the bid amount of the player who
-            has already participated, and you need to pay 20% in demages.{" "}
+          <div className="flex items-center text-[14px] mb-[20px] gap-[10px]">
+            <span className="text-[#BBACA6] font-[400]">Valued</span>
+            <div className="grow border-b border-dashed border-[#5E6B7D] opacity-50" />
+            <span className="text-white font-medium">
+              ${formatNumber(order?.value, 0, true)}
+            </span>
+          </div>
+          <div className="flex items-center text-[14px] mb-[20px] gap-[10px]">
+            <span className="text-[#BBACA6] font-[400]">Bid player</span>
+            <div className="grow border-b border-dashed border-[#5E6B7D] opacity-50" />
+            <span className="text-white font-medium">
+              {formatNumber(order?.accumulative_bids, 0, true)}
+            </span>
+          </div>
+          <div className="flex items-center text-[14px] mb-[20px] gap-[10px]">
+            <span className="text-[#BBACA6] font-[400]">Total bid value</span>
+            <div className="grow border-b border-dashed border-[#5E6B7D] opacity-50" />
+            <span className="text-white font-medium">
+              ${formatNumber(order?.accumulative_bids, 0, true)}
+            </span>
+          </div>
+          <div className="w-full h-[86px] p-[10px] mt-[20px] mx-auto bg-[#FFC42F1A] rounded-[4px] border border-[#FFC42F]">
+            <div className="flex items-center gap-[2px]">
+              <img src="/profile/icon-warning.svg" alt="warning" className="w-[13px] h-[11px] shrink-0" />
+              <span className="text-[#FFC42F]">
+                Be careful!
+              </span>
+            </div>
+            <div className="text-[12px] font-[400] leading-[120%] mt-[7px]">
+              If you cancel, platform will refund the bid amount of the player who has already participated, and you need to pay 20% in demages.
+            </div>
+          </div>
+          <div className="mt-[10px]">
+            <div className="flex items-center text-[14px] mb-[20px] gap-[10px]">
+              <span className="text-[#BBACA6] font-[400]">Demage</span>
+              <div className="grow border-b border-dashed border-[#5E6B7D]" />
+              <span className="text-white font-medium">
+                ${formatNumber(penalty, 2, true)}
+              </span>
+            </div>
+            <div className="flex items-center text-[14px] mb-[20px] gap-[10px]">
+              <span className="text-[#BBACA6] font-[400]">Final refund</span>
+              <div className="grow border-b border-dashed border-[#5E6B7D]" />
+              <span className="text-[#FFC42F] font-medium">
+                ${formatNumber(finalRefund, 2, true)}
+              </span>
+            </div>
           </div>
         </div>
-        <div className="flex items-center text-[14px] mb-[14px] gap-[10px]">
-          <span className="text-[#5E6B7D]">Demage</span>
-          <div className="grow border-b border-dashed border-[#303742]" />
-          <span className="text-white font-medium">
-            ${formatNumber(penalty, 2, true)}
-          </span>
-        </div>
-        <div className="flex items-center text-[14px] mb-[10px] gap-[10px]">
-          <span className="text-[#5E6B7D]">Final refund</span>
-          <div className="grow border-b border-dashed border-[#303742]" />
-          <span className="text-white font-medium">
-            ${formatNumber(finalRefund, 2, true)}
-          </span>
-        </div>
-        <div className="flex justify-end">
-          <Button
-            className="w-[86px] h-[26px] text-[12px]"
+        <div className="flex justify-center mt-[0px]">
+          <ProfileButton
+            className="w-[220px] !h-[40px] !text-[16px]"
             loading={cancelling}
             onClick={cancelOrder}
           >
             Confirm
-          </Button>
+          </ProfileButton>
         </div>
       </div>
     </Modal>

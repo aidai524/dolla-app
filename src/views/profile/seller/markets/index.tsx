@@ -6,6 +6,8 @@ import MarketStatus, { EMarketStatus } from "../../ components/market-status";
 import dayjs from "dayjs";
 import Popover, { PopoverPlacement, PopoverTrigger } from "@/components/popover";
 import PopoverCard from "../../ components/popover-card";
+import CancelModal from "../cancel-modal";
+import { useState } from "react";
 
 const SellerMarkets = (props: any) => {
   const { className } = props;
@@ -51,6 +53,9 @@ const SellerMarkets = (props: any) => {
       created_at: "2021-01-03 17:30:00",
     },
   ];
+
+  const [cancelMarketVisible, setCancelMarketVisible] = useState(false);
+  const [cancelMarketOrder, setCancelMarketOrder] = useState({});
 
   return (
     <div className={clsx(
@@ -104,6 +109,9 @@ const SellerMarkets = (props: any) => {
                             <ProfileButton
                               type="default"
                               className="!h-[28px] !px-[11px] !rounded-[8px] !text-[14px] flex items-center gap-[3px]"
+                              onClick={() => {
+                                setCancelMarketVisible(true);
+                              }}
                             >
                               <div className="">Cancel</div>
                               <img src="/profile/icon-warning.svg" alt="warning" className="w-[13px] h-[11px] shrink-0" />
@@ -139,6 +147,16 @@ const SellerMarkets = (props: any) => {
           <Empty />
         )
       }
+      <CancelModal
+        open={cancelMarketVisible}
+        onClose={() => {
+          setCancelMarketVisible(false);
+        }}
+        onSuccess={() => {
+          setCancelMarketVisible(false);
+        }}
+        order={cancelMarketOrder}
+      />
     </div>
   );
 };
