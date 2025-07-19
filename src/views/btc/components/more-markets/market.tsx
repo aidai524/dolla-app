@@ -10,11 +10,15 @@ export default function Market({
   data,
   className,
   footer,
-  onClick = () => {}
+  header,
+  isAcitveBg = true,
+  onClick = () => { }
 }: {
   data: any;
   className?: string;
+  header?: React.ReactNode;
   footer?: React.ReactNode;
+  isAcitveBg?: boolean;
   onClick?: () => void;
 }) {
   const progress = useMemo(() => {
@@ -33,7 +37,12 @@ export default function Market({
       )}
       onClick={onClick}
     >
-      <MarketActiveBg />
+      {header}
+      {
+        isAcitveBg && (
+          <MarketActiveBg />
+        )
+      }
       <div className="relative z-[2]">
         <div className="flex items-center justify-between pt-[14px] px-[12px]">
           <div className="flex items-center gap-[6px]">
@@ -72,14 +81,14 @@ export default function Market({
             {data?.nft_ids
               ? 1
               : rewardTokenInfo?.decimals && data?.reward_amount
-              ? formatNumber(
+                ? formatNumber(
                   Big(data.reward_amount || 0).div(
                     10 ** rewardTokenInfo.decimals
                   ),
                   3,
                   true
                 )
-              : "-"}{" "}
+                : "-"}{" "}
             {rewardTokenInfo.symbol}{" "}
           </span>
           <span className="text-[16px] mt-[8px] font-semibold text-transparent bg-clip-text bg-[radial-gradient(50%_50%_at_50%_50%,#FFEF43_0%,#FFC42F_100%)]">
