@@ -3,27 +3,28 @@ import Switch from "@/components/switch";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import Recharge from "./panels/recharge";
-import Withdraw from "./panels/withdraw";
+import WithdrawSolana from "./panels/withdraw-solana";
 import Records from "./panels/records";
+import FundList from "./panels/fund-list";
 import { PURCHASE_TOKEN } from "@/config";
 
 export default function CashierModal({ open, onClose }: any) {
-  const [tab, setTab] = useState("recharge");
+  const [tab, setTab] = useState("fund");
   return (
     <Modal open={open} onClose={onClose}>
-      <div className="w-[700px] rounded-[6px] bg-[#232932]">
-        <div className="h-[46px] bg-[#191E27] rounded-t-[6px] relative">
+      <div className="w-[526px] rounded-[16px] bg-[#35302B] border border-[#6A5D3A]">
+        <div className="h-[46px] bg-[#191E27] rounded-t-[16px] relative">
           <Switch
             tabs={[
-              { label: "Recharge", value: "recharge" },
+              { label: "Fund", value: "fund" },
               { label: "Withdraw", value: "withdraw" },
-              { label: "Records", value: "records" }
+              // { label: "Records", value: "records" }
             ]}
             onChange={(value) => {
               setTab(value as string);
             }}
             tab={tab}
-            className="bg-transparent h-full w-[400px] px-[20px]"
+            className="bg-[#00000033] h-full w-full px-[20px] justify-center gap-[50px] rounded-t-[16px]"
             type="line"
           />
           <button
@@ -32,37 +33,28 @@ export default function CashierModal({ open, onClose }: any) {
               onClose();
             }}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="10"
-              height="9"
-              viewBox="0 0 10 9"
-              fill="none"
-            >
-              <path
-                d="M5 3.375L8 0H10L6 4.5L10 9H8L5 5.625L2 9H0L4 4.5L0 0H2L5 3.375Z"
-                fill="#5E6B7D"
-              />
+            <svg width="10" height="9" viewBox="0 0 10 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 3.375L8 0H10L6 4.5L10 9H8L5 5.625L2 9H0L4 4.5L0 0H2L5 3.375Z" fill="#BBACA6" />
             </svg>
           </button>
         </div>
-        {tab === "recharge" && (
+        {tab === "fund" && (
           <PanelWrapper className="px-[14px] pb-[20px]">
-            <Recharge token={PURCHASE_TOKEN} />
+            <FundList />
           </PanelWrapper>
         )}
 
         {tab === "withdraw" && (
           <PanelWrapper className="px-[14px] pb-[20px]">
-            <Withdraw />
+            <WithdrawSolana />
           </PanelWrapper>
         )}
 
-        {tab === "records" && (
+        {/* {tab === "records" && (
           <PanelWrapper className="px-[14px]">
             <Records />
           </PanelWrapper>
-        )}
+        )} */}
       </div>
     </Modal>
   );

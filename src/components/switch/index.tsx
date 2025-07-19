@@ -12,6 +12,7 @@ type SwitchProps = Omit<ComponentProps<"div">, "onChange"> & {
   tab: string;
   type?: "card" | "line";
   tabClassName?: string;
+  cursorClassName?: string;
 };
 
 export default function Switch({
@@ -20,7 +21,8 @@ export default function Switch({
   onChange,
   className,
   type = "card",
-  tabClassName
+  tabClassName,
+  cursorClassName,
 }: SwitchProps) {
   const prevI = useRef<number[]>([0]);
   return (
@@ -64,7 +66,8 @@ export default function Switch({
                 "absolute left-0",
                 type === "card"
                   ? "w-full h-full top-0 rounded-[4px] shadow-[0px_0px_6px_0px_#FFC42F]"
-                  : "w-full h-[2px] bottom-[-2px] "
+                  : "w-full h-[2px] bottom-[-2px] ",
+                cursorClassName
               )}
               style={{
                 background:
