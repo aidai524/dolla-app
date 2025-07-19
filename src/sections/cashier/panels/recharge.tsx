@@ -9,7 +9,7 @@ export default function Recharge({ token }: { token: any }) {
   const { onCopy } = useCopy();
   return (
     <div className="flex flex-col items-center">
-      <div className="w-[160px] h-[160px] mt-[30px] rounded-[6px] bg-white p-2">
+      <div className="w-[160px] h-[160px] mt-[10px] rounded-[6px] bg-white p-2">
         <QRCodeSVG
           value={address}
           size={144}
@@ -29,12 +29,12 @@ export default function Recharge({ token }: { token: any }) {
           </div>
           <img
             className="w-[18px] h-[18px] rounded-[6px]"
-            src="/chains/bera.png"
+            src="/chains/solana.png"
           />
-          <div className="text-[14px] font-normal ml-[5px]">BeraChain</div>
+          <div className="text-[14px] font-normal ml-[5px]">Solana</div>
         </div>
-        <div className="flex items-center gap-[9px] mt-[12px]">
-          <span className="text-[#ADBCCF] text-[14px] shrink-1 break-all leading-[18px]">
+        <div className="flex items-center justify-between gap-[9px] mt-[12px]">
+          <span className="text-[#BBACA6] text-[14px] shrink-1 break-all leading-[18px]">
             {address}
           </span>
           <Button
@@ -47,15 +47,15 @@ export default function Recharge({ token }: { token: any }) {
           </Button>
         </div>
       </div>
-      <div className="flex justify-between items-center w-full mt-[20px] text-[12px] text-[#ADBCCF]">
-        <span className="text-[#ADBCCF]">Minimum deposit amount</span>
+      <div className="flex justify-between items-center w-full px-[10px] mt-[20px] text-[12px] text-[#ADBCCF]">
+        <span className="text-[#BBACA6]">Minimum deposit amount</span>
         <span className="text-white">
           {rechargeToken.symbol === "BTC" ? "0.001" : "1"}{" "}
           {rechargeToken.symbol}
         </span>
       </div>
-      <div className="flex justify-between items-center w-full mt-[10px] text-[12px] text-[#ADBCCF]">
-        <span className="text-[#ADBCCF]">Cost time</span>
+      <div className="flex justify-between items-center w-full px-[10px] mt-[10px] text-[12px] text-[#ADBCCF]">
+        <span className="text-[#BBACA6]">Cost time</span>
         <span className="text-white">~2 mins</span>
       </div>
     </div>
