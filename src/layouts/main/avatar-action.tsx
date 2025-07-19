@@ -8,9 +8,10 @@ import useCopy from "@/hooks/use-copy";
 import { useUser } from "@privy-io/react-auth";
 
 const MENU = [
-  INVATE_ACTIVE && {
+  {
     key: "invite",
     label: "Invite",
+    isActive: INVATE_ACTIVE,
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -29,6 +30,7 @@ const MENU = [
   {
     key: "portfolio",
     label: "Portfolio",
+    isActive: true,
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -45,8 +47,28 @@ const MENU = [
     )
   },
   {
+    key: "create-market",
+    label: "Create Market",
+    isActive: true,
+    icon: (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="18"
+        height="18"
+        viewBox="0 0 18 18"
+        fill="none"
+      >
+        <path
+          d="M9 0C13.9706 0 18 4.02944 18 9C18 13.9706 13.9706 18 9 18C4.02944 18 0 13.9706 0 9C0 4.02944 4.02944 0 9 0ZM9 2C5.13401 2 2 5.13401 2 9C2 12.866 5.13401 16 9 16C12.866 16 16 12.866 16 9C16 5.13401 12.866 2 9 2ZM10 8H13V10H10V13H8V10H5V8H8V5H10V8Z"
+          fill="white"
+        />
+      </svg>
+    )
+  },
+  {
     key: "logout",
     label: "Disconnect",
+    isActive: true,
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -76,8 +98,8 @@ export default function AvatarAction() {
       {userInfo?.icon && (
         <Avatar size={32} src={userInfo.icon} className="shrink-0 button" />
       )}
-      <div className="w-[210px] rounded-[6px] bg-[#232932] absolute right-0 top-[40px] text-white invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-        <div className="p-[10px] flex gap-[8px] items-center border-b border-[#303742]">
+      <div className="w-[208px] rounded-[10px] bg-[#35302B] border border-[#6A5D3A] absolute right-0 top-[40px] text-white invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+        <div className="p-[10px] flex gap-[8px] items-center border-b border-[#423930]">
           <Avatar size={32} src={userInfo?.icon} className="shrink-0" />
           <div>
             <span className="text-[16px] font-medium">
@@ -113,7 +135,8 @@ export default function AvatarAction() {
           <div
             key={item.key + index}
             className={clsx(
-              "px-[20px] py-[12px] flex items-center gap-[16px] text-[16px] font-medium button hover:bg-[#00000033]"
+              "px-[20px] py-[12px] flex items-center justify-between text-[16px] font-medium",
+              item.isActive ? "hover:bg-[#00000033] button" : "opacity-50"
             )}
             onClick={() => {
               if (item.key === "logout") {
@@ -124,11 +147,21 @@ export default function AvatarAction() {
               } else if (item.key === "portfolio") {
                 navigate("/portfolio");
                 return;
+              } else if (item.key === "create-market") {
+                navigate("/btc/create");
+                return;
               }
             }}
           >
-            <div className="w-[20px]">{item.icon}</div>
-            <span>{item.label}</span>
+            <div className="flex items-center gap-[16px]">
+              <div className="w-[20px]">{item.icon}</div>
+              <span>{item.label}</span>
+            </div>
+            {!item.isActive && (
+              <div className="w-[38px] h-[20px] rounded-[6px] bg-[#4C4C4C] text-[12px] text-center leading-[20px]">
+                soon
+              </div>
+            )}
           </div>
         ))}
       </div>
