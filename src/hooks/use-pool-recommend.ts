@@ -7,11 +7,13 @@ export default function usePoolRecommend(tokenStatus: number) {
   const { userInfo } = useAuth();
   const [data, setData] = useState<any>({});
 
-  const getPoolRecommend = async () => {
+  const getPoolRecommend = async (volume?: number) => {
     try {
       setLoading(true);
       const response = await axiosInstance.get(
-        `/api/v1/pool/recommend?token_status=${tokenStatus}`
+        `/api/v1/pool/recommend?token_status=${tokenStatus}${
+          volume ? `&volume=${volume}` : ""
+        }`
       );
 
       setData(response.data.data[0]);

@@ -1,5 +1,5 @@
 export default {
-  address: "FQBUvGVq7J48y917kG146B5Uw1MHyTf1VKbo3kURBpgo",
+  address: import.meta.env.VITE_SOLANA_BETTING_CONTRACT,
   metadata: {
     name: "dolla",
     version: "0.1.0",

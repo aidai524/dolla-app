@@ -5,9 +5,10 @@ import { useBtcContext } from "../../context";
 import { formatNumber } from "@/utils/format/number";
 import { useMemo } from "react";
 import Big from "big.js";
+import { BASE_TOKEN } from "@/config/btc";
 
 export default function Header({ className }: { className?: string }) {
-  const { bids, pool } = useBtcContext();
+  const { bids, pool, getPoolRecommend } = useBtcContext();
 
   const [amount, prev, next] = useMemo(() => {
     const reward_amount = pool.reward_amount || 0;
@@ -27,6 +28,12 @@ export default function Header({ className }: { className?: string }) {
       next = 1;
     } else if (_an.eq(1)) {
       prev = 0.1;
+      next = 0;
+    } else if (_an.lt(0.001)) {
+      prev = 0;
+      next = 0.001;
+    } else if (_an.gt(1)) {
+      prev = 1;
       next = 0;
     }
     return [_a, prev, next];
@@ -58,7 +65,7 @@ export default function Header({ className }: { className?: string }) {
               <TriIcon
                 className="button"
                 onClick={() => {
-                  console.log(123);
+                  getPoolRecommend(prev * 10 ** BASE_TOKEN.decimals);
                 }}
               />
               <span className="text-[20px] text-[#FFEF43]">{prev} BTC</span>
@@ -70,7 +77,7 @@ export default function Header({ className }: { className?: string }) {
               <TriIcon
                 className="rotate-y-[180deg] button"
                 onClick={() => {
-                  console.log(456);
+                  getPoolRecommend(next * 10 ** BASE_TOKEN.decimals);
                 }}
               />
             </div>

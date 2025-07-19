@@ -23,7 +23,7 @@ export const CannonCoinsProvider = ({
   const flipedNumberRef = useRef(0);
   const [bidResult, setBidResult] = useState<any>(null);
 
-  const { data } = usePoolRecommend(0);
+  const { data, getPoolRecommend } = usePoolRecommend(0);
   const [selectedMarket, setSelectedMarket] = useState<any>(null);
   const pool = useMemo(() => {
     return selectedMarket || data;
@@ -82,7 +82,8 @@ export const CannonCoinsProvider = ({
           for (let i = 0; i < bids; i++) {
             coinsRef.current[i].flip(true);
           }
-        }
+        },
+        getPoolRecommend
       }}
     >
       {children}
