@@ -31,7 +31,7 @@ export default function Player() {
 
   return (
     <div className="w-full h-screen overflow-y-auto pb-[30px]">
-      <div className="pt-[30px] w-[933px] mx-auto ">
+      <div className="pt-[30px] w-[933px] mx-auto">
         <Header tab="player" />
         <SwitchPanel>
           <Dashboard tab="player" className="mt-[49px]" />

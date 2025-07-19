@@ -8,6 +8,23 @@ import LoadingMore from "@/components/loading/loading-more";
 import useCreatePoolList from "./hooks/use-create-pool-list";
 import { INVATE_ACTIVE } from "@/config";
 import Header from "../header";
+import Dashboard from "../ components/dashboard/index";
+import { useState } from "react";
+import Tabs from "@/components/tabs";
+import { AnimatePresence } from "framer-motion";
+import SellerMarkets from "./markets";
+import Records from "./records";
+
+const TabsList = [
+  {
+    key: "createdMarket",
+    label: "Created Market"
+  },
+  {
+    key: "records",
+    label: "Records"
+  },
+];
 
 export default function Seller() {
   const {
@@ -19,39 +36,50 @@ export default function Seller() {
     poolsData
   } = useCreatePoolList();
 
+  // @ts-ignore
   const { containerRef, isLoading } = useInfiniteScroll(getCreatePoolList, {
     loading,
     hasMore,
     threshold: 100
   });
+
+  const [tab, setTab] = useState(TabsList[0].key);
+
   return (
-    <div className="pt-[30px] w-[640px] mx-auto pb-[30px]">
-      <div
-        ref={containerRef}
-        className="w-[calc(100%+20px)] h-[calc(100vh-120px)] pr-[10px] overflow-y-auto"
-      >
+    <div className="w-full h-screen overflow-y-auto pb-[30px]">
+      <div className="pt-[30px] w-[933px] mx-auto">
+        <Header tab="seller" />
         <SwitchPanel>
-          <Header tab="seller" />
-          <div className="flex items-center justify-between pt-[30px] w-full">
-            <UserInfo />
-            {INVATE_ACTIVE && <Invite />}
-          </div>
-          <Statistics from="seller" />
-          <OrderList
-            orders={data}
-            poolsData={poolsData}
-            loading={isLoading}
-            updatePoolsData={updatePoolsData}
-          />
-          {data.length > 0 && (
-            <LoadingMore
-              loading={isLoading}
-              hasMore={hasMore}
-              className="w-full"
+          <Dashboard tab="seller" className="mt-[49px]" />
+          <div className="flex justify-between items-center gap-[10px] mt-[44px]">
+            <Tabs
+              currentTab={tab}
+              onChangeTab={setTab}
+              tabs={TabsList}
+              className="!gap-[62px]"
+              tabClassName="!text-[18px] !pb-[14px] font-[SpaceGrotesk]"
+              cursorClassName="!w-[30px] !bg-[#FFC42F] left-1/2 -translate-x-1/2"
             />
-          )}
+          </div>
+          <AnimatePresence>
+            {
+              tab === TabsList[0].key && (
+                <SwitchPanel>
+                  <SellerMarkets />
+                </SwitchPanel>
+              )
+            }
+            {
+              tab === TabsList[1].key && (
+                <SwitchPanel>
+                  <Records />
+                </SwitchPanel>
+              )
+            }
+          </AnimatePresence>
         </SwitchPanel>
       </div>
     </div>
+
   );
 }

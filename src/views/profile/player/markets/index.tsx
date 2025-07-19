@@ -2,6 +2,7 @@ import clsx from "clsx";
 import Market from "@/views/btc/components/more-markets/market";
 import ProfileButton from "../../ components/button";
 import Empty from "@/components/empty";
+import MarketStatus, { EMarketStatus } from "../../ components/market-status";
 
 const PlayerMarkets = (props: any) => {
   const { className } = props;
@@ -15,7 +16,34 @@ const PlayerMarkets = (props: any) => {
       reward_amount: "1234",
       value: "1234",
       participants: "1234",
-    }
+      avatar: "/avatar/1.svg",
+      account: "0x1234567890123456789012345678901234567890",
+      status: EMarketStatus.Live,
+    },
+    {
+      accumulative_bids: "123",
+      anchor_price: "100",
+      reward_token_info: [],
+      nft_ids: "1234",
+      reward_amount: "1234",
+      value: "1234",
+      participants: "1234",
+      avatar: "/avatar/1.svg",
+      account: "0x1234567890123456789012345678901234567890",
+      status: EMarketStatus.Cancelled,
+    },
+    {
+      accumulative_bids: "123",
+      anchor_price: "100",
+      reward_token_info: [],
+      nft_ids: "1234",
+      reward_amount: "1234",
+      value: "1234",
+      participants: "1234",
+      avatar: "/avatar/1.svg",
+      account: "0x1234567890123456789012345678901234567890",
+      status: EMarketStatus.Winner,
+    },
   ];
 
   return (
@@ -32,10 +60,11 @@ const PlayerMarkets = (props: any) => {
               className="!w-full !h-[unset] !bg-[#22201D] !rounded-[16px] !border !border-[#6A5D3A]"
               data={item}
               header={(
-                <div className="absolute z-[2] left-1/2 -translate-x-1/2 top-[-12px] rounded-[10px] pl-[20px] pr-[23px] h-[24px] shrink-0 border border-[#6A5D3A] font-[SpaceGrotesk] font-[14px] bg-black/20 backdrop-blur-[5px] text-white font-[500] flex justify-center items-center gap-[7px]">
-                  <div className="w-[9px] h-[9px] flex-shrink-0 bg-[#54FF59] rounded-full" />
-                  <div className="">Live</div>
-                </div>
+                <MarketStatus
+                  value={item.status}
+                  market={item}
+                  className="absolute z-[2] left-1/2 -translate-x-1/2 top-[-12px]"
+                />
               )}
               footer={(
                 <div className="w-full px-[13px] bg-black/20 py-[17px] mt-[20px] relative z-[2] text-white text-center font-[SpaceGrotesk] text-[14px] font-normal leading-[100%]">
