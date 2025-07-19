@@ -7,6 +7,7 @@ import BidsInfo from "./components/bids-info";
 import MarketInfo from "./components/market-info";
 import Grand from "./grand";
 import LucyDraw from "./components/lucy-draw";
+import ProvablyFair from "@/sections/provably-fair";
 
 // import WildTimeBid from "@/sections/wild-time/bid";
 
@@ -26,6 +27,7 @@ export default function NewBTC() {
         <MarketInfo />
         <MoreMarkets />
         <LucyDraw />
+        {/* <ProvablyFair /> */}
       </div>
     </CannonCoinsProvider>
   );

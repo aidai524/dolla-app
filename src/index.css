@@ -60,7 +60,6 @@ body {
 /* Reset */
 input {
   outline: none;
-  background: transparent;
 }
 
 /* Remove number input spinners (controllers) in all browsers */
