@@ -20,8 +20,8 @@ export default function FlipCoins() {
     coinsRef,
     flipComplete,
     bidResult,
-    showTicket,
-    setShowTicket,
+    showTips,
+    setShowTips,
     setFlipStatus,
     onReset
   } = useBtcContext();
@@ -68,34 +68,11 @@ export default function FlipCoins() {
           }}
           onFlipComplete={flipComplete}
           coinContainerRef={coinContainerRef}
-          setShowTicket={setShowTicket}
+          setShowTips={setShowTips}
           setFlipStatus={setFlipStatus}
         />
       ))}
-      {showTicket && (
-        <motion.img
-          src="/btc/ticket.png"
-          className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-[274px] h-[187px]"
-          initial={{ y: 0, opacity: 1 }}
-          animate={{
-            y: -120,
-            opacity: 0
-          }}
-          transition={{
-            y: {
-              duration: 0.8,
-              ease: [0.25, 0.46, 0.45, 0.94]
-            },
-            opacity: {
-              duration: 0.8,
-              ease: "easeOut"
-            }
-          }}
-          onAnimationComplete={() => {
-            setShowTicket(false);
-          }}
-        />
-      )}
+
       {flipStatus === 6 && (
         <Result
           points={sumPoints}

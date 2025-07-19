@@ -2,6 +2,7 @@ import { useState, useImperativeHandle, forwardRef, useRef } from "react";
 import clsx from "clsx";
 import { BackPointsFace, FrontFace } from "./faces";
 import useUserInfoStore from "@/stores/use-user-info";
+import { motion } from "framer-motion";
 import "./index.css";
 
 const Coin = forwardRef<any, any>(
@@ -14,7 +15,6 @@ const Coin = forwardRef<any, any>(
       index,
       coinContainerRef,
       ticket,
-      setShowTicket,
       bids,
       setFlipStatus
     },
@@ -24,7 +24,8 @@ const Coin = forwardRef<any, any>(
     const [isAnimating, setIsAnimating] = useState(false);
     const coinRef = useRef<any>(null);
     const userInfoStore: any = useUserInfoStore();
-
+    const [showTicket, setShowTicket] = useState(false);
+    const [showPoints, setShowPoints] = useState(false);
     // Check if element is in viewport
     const isElementInViewport = (element: HTMLElement) => {
       return (
@@ -57,6 +58,9 @@ const Coin = forwardRef<any, any>(
 
       if (ticket === "0") {
         setShowTicket(true);
+      }
+      if (Number(points) > 0) {
+        setShowPoints(true);
       }
       userInfoStore.set({
         prize: {
@@ -108,33 +112,34 @@ const Coin = forwardRef<any, any>(
     // const thickness = 0;
 
     return (
-      <div
-        className={clsx("relative cursor-pointer perspective-[1000px]")}
-        style={{
-          width: `${size}px`,
-          height: `${size}px`
-        }}
-        onClick={() => {
-          setFlipStatus(4);
-          onFlip(false, true);
-        }}
-        ref={coinRef}
-      >
+      <>
         <div
-          className="relative w-full h-full transition-transform duration-500 ease-in-out preserve-3d"
+          className={clsx("relative cursor-pointer perspective-[1000px]")}
           style={{
-            transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)",
-            transformStyle: "preserve-3d"
+            width: `${size}px`,
+            height: `${size}px`
           }}
+          onClick={() => {
+            setFlipStatus(4);
+            onFlip(false, true);
+          }}
+          ref={coinRef}
         >
-          {/* Front face (Heads) */}
-          <FrontFace size={size} thickness={thickness} />
+          <div
+            className="relative w-full h-full transition-transform duration-500 ease-in-out preserve-3d"
+            style={{
+              transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)",
+              transformStyle: "preserve-3d"
+            }}
+          >
+            {/* Front face (Heads) */}
+            <FrontFace size={size} thickness={thickness} />
 
-          {/* Back face (Tails) */}
-          <BackPointsFace size={size} thickness={thickness} points={points} />
+            {/* Back face (Tails) */}
+            <BackPointsFace size={size} thickness={thickness} points={points} />
 
-          {/* Coin edges container */}
-          {/* <div
+            {/* Coin edges container */}
+            {/* <div
             style={{
               transformStyle: "preserve-3d",
               backfaceVisibility: "hidden",
@@ -155,8 +160,74 @@ const Coin = forwardRef<any, any>(
               />
             ))}
           </div> */}
+          </div>
         </div>
-      </div>
+        {!!showTicket && (
+          <motion.div
+            initial={{ y: 0, opacity: 1 }}
+            animate={{
+              y: -120,
+              opacity: 0
+            }}
+            transition={{
+              y: {
+                duration: 0.8,
+                ease: [0.25, 0.46, 0.45, 0.94]
+              },
+              opacity: {
+                duration: 0.8,
+                ease: "easeOut"
+              }
+            }}
+            onAnimationComplete={() => {
+              setShowTicket(false);
+            }}
+            className="absolute z-[10] top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-[320px] h-[187px] flex items-center justify-center"
+          >
+            <img src="/btc/ticket.png" className="w-[274px] h-[187px]" />
+            <span
+              className="text-[#FFEF43] font-[AlfaSlabOne] text-[60px] mt-[-20px]"
+              style={{
+                WebkitTextStroke: "2px #5E3737"
+              }}
+            >
+              x1
+            </span>
+          </motion.div>
+        )}
+        {!!showPoints && (
+          <motion.div
+            initial={{ y: 0, opacity: 1 }}
+            animate={{
+              y: -120,
+              opacity: 0
+            }}
+            transition={{
+              y: {
+                duration: 0.8,
+                ease: [0.25, 0.46, 0.45, 0.94]
+              },
+              opacity: {
+                duration: 0.8,
+                ease: "easeOut"
+              }
+            }}
+            onAnimationComplete={() => {
+              setShowPoints(false);
+            }}
+            className="absolute z-[10] top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-[320px] h-[187px] flex items-center justify-center"
+          >
+            <span
+              className="text-[#FFEF43] font-[AlfaSlabOne] text-[60px] mt-[-20px]"
+              style={{
+                WebkitTextStroke: "2px #5E3737"
+              }}
+            >
+              + {points}
+            </span>
+          </motion.div>
+        )}
+      </>
     );
   }
 );

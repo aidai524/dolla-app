@@ -22,7 +22,6 @@ export const CannonCoinsProvider = ({
   const coinsRef = useRef<any>({});
   const flipedNumberRef = useRef(0);
   const [bidResult, setBidResult] = useState<any>(null);
-  const [showTicket, setShowTicket] = useState(false);
 
   const { data } = usePoolRecommend(0);
   const [selectedMarket, setSelectedMarket] = useState<any>(null);
@@ -65,8 +64,6 @@ export const CannonCoinsProvider = ({
         setFlipStatus,
         coinsRef,
         bidResult,
-        showTicket,
-        setShowTicket,
         setBidResult,
         flipComplete: (index: number, addNumber: boolean, notAuto = false) => {
           if (addNumber) flipedNumberRef.current++;

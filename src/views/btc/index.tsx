@@ -22,7 +22,7 @@ export default function NewBTC() {
         <WildTimeBid /> */}
         <Grand className="h-[calc(100vh-464px)] pt-[25px]" />
         <BidSelection />
-        {/* <BidsInfo /> */}
+        <BidsInfo />
         <MarketInfo />
         <MoreMarkets />
         <LucyDraw />

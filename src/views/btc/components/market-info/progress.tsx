@@ -10,7 +10,7 @@ export default function Progress({ data }: any) {
   }, [data]);
 
   return (
-    <div className="w-[292px] h-[12px] rounded-[30px] border border-[#FFE9B2] bg-[#FFFFFF1A]">
+    <div className="w-full h-[12px] rounded-[30px] border border-[#FFE9B2] bg-[#FFFFFF1A]">
       <div className="h-[10px] rounded-[10px] p-[1px]">
         <div
           className="rounded-[10px] h-[8px] bg-[#FFC42F] border border-[#FFF9B8] relative"
