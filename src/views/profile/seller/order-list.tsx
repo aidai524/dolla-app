@@ -1,4 +1,4 @@
-import Market from "@/views/btc/markets/market";
+import Market from "@/views/btc/components/more-markets/market";
 import Button from "@/components/button";
 import dayjs from "dayjs";
 import CancelModal from "./cancel-modal";

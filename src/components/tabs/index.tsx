@@ -6,7 +6,9 @@ export default function Tabs({
   currentTab,
   onChangeTab,
   tabs,
-  className
+  className,
+  tabClassName,
+  cursorClassName
 }: any) {
   const prevI = useRef<number[]>([0]);
   return (
@@ -14,7 +16,7 @@ export default function Tabs({
       {tabs.map((tab: any, i: number) => (
         <div
           key={tab.key}
-          className={clsx("button relative text-[14px] text-white pb-[10px]")}
+          className={clsx("button relative text-[14px] text-white pb-[10px]", tabClassName)}
           onClick={() => {
             onChangeTab(tab.key);
             prevI.current.push(i);
@@ -37,7 +39,7 @@ export default function Tabs({
                   }
                 }
               }}
-              className="absolute rounded-[3px] w-full h-[3px] bg-[#EBFF57] bottom-0"
+              className={clsx("absolute rounded-[3px] w-full h-[3px] bg-[#EBFF57] bottom-0", cursorClassName)}
             />
           )}
         </div>
