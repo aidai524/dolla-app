@@ -7,7 +7,7 @@ const ProfileButton = (props: any) => {
     <button
       type={htmlType}
       className={clsx(
-        "shrink-0 font-[SpaceGrotesk] cursor-pointer flex justify-center items-center px-[17px] h-[32px] rounded-[8px]",
+        "shrink-0 font-[SpaceGrotesk] cursor-pointer flex justify-center items-center px-[17px] h-[32px] rounded-[8px] disabled:opacity-50 disabled:cursor-not-allowed",
         type === "default" && "border border-[#6A5D3A] text-white text-[14px] px-[10px] bg-black/20 [background-image:none]",
         type === "primary" && "text-[16px] text-black font-[500] bg-[linear-gradient(180deg,_#FFF698_0%,_#FFC42F_100%)]",
         className

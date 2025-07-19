@@ -7,7 +7,10 @@ import BidHistory from "./bid-history";
 import Account from "./account";
 
 const Records = (props: any) => {
-  const { className } = props;
+  const {
+    className,
+    ...restProps
+  } = props;
 
   const [tab, setTab] = useState("bidHistory");
 
@@ -29,7 +32,7 @@ const Records = (props: any) => {
           {
             tab === "bidHistory" && (
               <SwitchPanel>
-                <BidHistory />
+                <BidHistory {...restProps} />
               </SwitchPanel>
             )
           }

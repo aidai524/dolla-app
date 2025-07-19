@@ -9,13 +9,13 @@ const MarketStatus = (props: Props) => {
   return (
     <div className={clsx(
       "rounded-[10px] h-[26px] shrink-0 border border-[#6A5D3A] font-[SpaceGrotesk] text-[14px] bg-black/20 backdrop-blur-[5px] text-white font-[500] flex justify-center items-center gap-[7px]",
-      value === EMarketStatus.Live && "pl-[20px] pr-[23px]",
+      ![EMarketStatus.Cancelled, EMarketStatus.Winner].includes(value) && "pl-[20px] pr-[23px]",
       value === EMarketStatus.Cancelled && "pl-[9px] pr-[10px]",
       value === EMarketStatus.Winner && "pl-[8px] pr-[11px]",
       className
     )}>
       {
-        value === EMarketStatus.Live && (
+        ![EMarketStatus.Cancelled, EMarketStatus.Winner].includes(value) && (
           <div className="w-[9px] h-[9px] flex-shrink-0 bg-[#54FF59] rounded-full" />
         )
       }
@@ -51,12 +51,16 @@ interface Props {
 export default MarketStatus;
 
 export enum EMarketStatus {
-  Live = "live",
-  Cancelled = "cancelled",
-  Winner = "winner",
+  UnDeoposit = 0,
+  Live = 1,
+  Cancelled = 3,
+  Winner = 2,
 }
 
 export const MarketStatusMap = {
+  [EMarketStatus.UnDeoposit]: {
+    label: "Live",
+  },
   [EMarketStatus.Live]: {
     label: "Live",
   },

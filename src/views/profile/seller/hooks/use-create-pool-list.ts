@@ -2,6 +2,7 @@ import axiosInstance from "@/libs/axios";
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/contexts/auth";
 import { getPoolInfo } from "@/utils/pool";
+import { useRequest } from "ahooks";
 
 const pageSize = 10;
 
@@ -12,12 +13,16 @@ export default function useCreatePoolList() {
   const pageRef = useRef(0);
   const { userInfo } = useAuth();
   const poolsData = useRef<any>({});
+
+  const [recordsPageIndex, setRecordsPageIndex] = useState(1);
+  const [recordsPageSize] = useState(10);
+  const [recordsPageHasNextPage, setRecordsPageHasNextPage] = useState(true);
+
   const getCreatePoolList = async () => {
     setLoading(true);
     try {
       const response = await axiosInstance.get(
-        `/api/v1/user/create/pool/list?limit=${pageSize}&offset=${
-          pageRef.current * pageSize
+        `/api/v1/user/create/pool/list?limit=${pageSize}&offset=${pageRef.current * pageSize
         }`
       );
       const poolIds: number[] = [];
@@ -41,6 +46,23 @@ export default function useCreatePoolList() {
     }
   };
 
+  const { runAsync: getRecords, loading: recordsLoading, data: records } = useRequest(async () => {
+    if (!userInfo?.user) return [];
+    try {
+      const response = await axiosInstance.get(
+        `/api/v1/user/create/pool/list?limit=${recordsPageSize}&offset=${(recordsPageIndex - 1) * pageSize
+        }`
+      );
+      setRecordsPageHasNextPage(response.data.data.has_next_page);
+      return response.data.data.list || [];
+    } catch (err: any) {
+      console.log(err);
+    }
+    return [];
+  }, {
+    refreshDeps: [recordsPageIndex, recordsPageSize, userInfo]
+  });
+
   const updatePoolsData = async (poolId: number, data?: any) => {
     if (data) {
       poolsData.current[poolId] = {
@@ -51,6 +73,20 @@ export default function useCreatePoolList() {
       const res = await getPoolInfo(poolId);
       poolsData.current[poolId] = res;
     }
+  };
+
+  const onRecordsPrevPage = () => {
+    if (recordsPageIndex <= 1) {
+      return;
+    }
+    setRecordsPageIndex((prev: any) => prev - 1);
+  };
+
+  const onRecordsNextPage = () => {
+    if (!recordsPageHasNextPage) {
+      return;
+    }
+    setRecordsPageIndex((prev: any) => prev + 1);
   };
 
   useEffect(() => {
@@ -65,6 +101,12 @@ export default function useCreatePoolList() {
     getCreatePoolList,
     updatePoolsData,
     poolsData: poolsData.current,
-    hasMore
+    hasMore,
+    records,
+    recordsLoading,
+    onRecordsPrevPage,
+    onRecordsNextPage,
+    recordsPageIndex,
+    recordsPageHasNextPage,
   };
 }

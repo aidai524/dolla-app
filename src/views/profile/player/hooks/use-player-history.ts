@@ -1,9 +1,10 @@
 import axiosInstance from "@/libs/axios";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/contexts/auth";
 import Big from "big.js";
+import { useRequest } from "ahooks";
 
-const pageSize = 8;
+const pageSize = 10;
 
 export default function usePlayerHistory() {
   const [loading, setLoading] = useState(false);
@@ -11,7 +12,43 @@ export default function usePlayerHistory() {
   const [page, setPage] = useState(1);
   const { userInfo } = useAuth();
   const [hasMore, setHasMore] = useState(true);
-  const getCreatePoolList = async (_page: number) => {
+
+  const joinedPoolsData = useRef<any>({});
+  const [joinedPoolListData, setJoinedPoolListData] = useState<any>([]);
+  const [joinedPoolListPageIndex, setJoinedPoolListPageIndex] = useState(1);
+  const [joinedPoolListPageSize] = useState(10);
+  const [joinedPoolListHasNextPage, setJoinedPoolListHasNextPage] = useState(true);
+
+  const { loading: joinedPoolListLoading } = useRequest(async () => {
+    if (!userInfo?.user) return [];
+    try {
+      const response = await axiosInstance.get(
+        `/api/v1/user/player/history?limit=${joinedPoolListPageSize}&offset=${
+          (joinedPoolListPageIndex - 1) * joinedPoolListPageSize
+        }`
+      );
+      const poolIds: number[] = [];
+      setJoinedPoolListHasNextPage(response.data.data.has_next_page);
+      response.data.data.list.forEach((item: any) => {
+        joinedPoolsData.current[item.pool_id] = item;
+        poolIds.push(item.pool_id);
+      });
+
+      setJoinedPoolListData((prev: any) =>
+        joinedPoolListPageIndex === 1 ? poolIds : [...prev, ...poolIds]
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  }, {
+    refreshDeps: [joinedPoolListPageIndex, joinedPoolListPageSize, userInfo]
+  });
+
+  const onJoinedPoolListPageChange = (_page: number) => {
+    setJoinedPoolListPageIndex(_page);
+  };
+
+  const getRecords = async (_page: number) => {
     setLoading(true);
     try {
       const response = await axiosInstance.get(
@@ -41,14 +78,14 @@ export default function usePlayerHistory() {
 
   useEffect(() => {
     if (userInfo?.user) {
-      getCreatePoolList(1);
+      getRecords(1);
     }
   }, [userInfo]);
 
   const onPageChange = (_page: number) => {
     setPage(_page);
     setData([]);
-    getCreatePoolList(_page);
+    getRecords(_page);
   };
 
   return {
@@ -56,6 +93,13 @@ export default function usePlayerHistory() {
     data,
     loading,
     hasMore,
-    onPageChange
+    onPageChange,
+
+    joinedPoolListHasNextPage,
+    joinedPoolListPageIndex,
+    joinedPoolListLoading,
+    joinedPoolListData,
+    joinedPoolsData: joinedPoolsData.current,
+    onJoinedPoolListPageChange,
   };
 }

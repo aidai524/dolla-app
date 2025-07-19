@@ -4,7 +4,14 @@ import dayjs from "dayjs";
 import Pagination from "@/components/pagination";
 
 const BidHistory = (props: any) => {
-  const { className } = props;
+  const {
+    className,
+    page,
+    loading,
+    data,
+    hasMore,
+    onPageChange
+  } = props;
 
   const columns = [
     {
@@ -14,7 +21,7 @@ const BidHistory = (props: any) => {
       render: (record: any) => {
         return (
           <div className="flex items-center gap-[7px]">
-            <div className="">#{record.marketId}</div>
+            <div className="">#{record.pool_id}</div>
             <img src="/profile/icon-share.svg" alt="share" className="w-[9px] h-[9px] shrink-0" />
           </div>
         );
@@ -26,13 +33,35 @@ const BidHistory = (props: any) => {
       width: 160,
     },
     {
-      dataIndex: "bid",
+      dataIndex: "purchase_amount",
       title: "Bid",
       width: 170,
     },
     {
       dataIndex: "prize",
       title: "Prize",
+      render: (record: any) => {
+        return (
+          <div className="flex items-center gap-[4px]">
+            {record.rewardTokenInfo.icon && (
+              <img
+                className="w-[20px] h-[20px] rounded-[4px]"
+                src={record.rewardTokenInfo.icon}
+                alt="coin"
+              />
+            )}
+            {record.nft_ids ? (
+              <span className="font-semibold">
+                #{record.rewardTokenInfo.token_id}
+              </span>
+            ) : (
+              <span className="font-semibold">
+                {record.rewardTokenInfo.name}
+              </span>
+            )}
+          </div>
+        );
+      }
     },
     {
       dataIndex: "date",
@@ -40,32 +69,8 @@ const BidHistory = (props: any) => {
       width: 160,
       align: GridTableAlign.Right,
       render: (record: any) => {
-        return dayjs(record.date).format("hh:mm D MMM, YYYY");
+        return dayjs(record.updated_at).format("hh:mm D MMM, YYYY");
       },
-    },
-  ];
-  // FIXME mock data
-  const data = [
-    {
-      marketId: "0122",
-      marketSize: "1 BTC",
-      bid: "-1 USDC",
-      prize: "100",
-      date: "2021-01-01 17:30:00",
-    },
-    {
-      marketId: "0122",
-      marketSize: "1 BTC",
-      bid: "-1 USDC",
-      prize: "100",
-      date: "2021-01-01 17:30:00",
-    },
-    {
-      marketId: "0122",
-      marketSize: "1 BTC",
-      bid: "-1 USDC",
-      prize: "100",
-      date: "2021-01-01 17:30:00",
     },
   ];
 
@@ -74,15 +79,15 @@ const BidHistory = (props: any) => {
       <GridTable
         data={data}
         columns={columns}
+        loading={loading}
       />
       <div className="flex justify-end items-center pt-[18px]">
         <Pagination
-          current={1}
-          total={100}
+          current={page}
+          hasNextPage={hasMore}
           size={10}
-          isCurrentSize
-          onPrev={() => { }}
-          onNext={() => { }}
+          onPrev={onPageChange}
+          onNext={onPageChange}
         />
       </div>
     </div>

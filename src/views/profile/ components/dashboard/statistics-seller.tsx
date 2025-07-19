@@ -2,23 +2,42 @@ import clsx from "clsx";
 import LabelValue from "../label-value";
 import ProfileButton from "../button";
 import Badge from "../badge";
+import { formatNumber } from "@/utils/format/number";
+import Big from "big.js";
+import { useAuth } from "@/contexts/auth";
+import useClaim from "@/hooks/evm/use-claim";
+import { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 
 const StatisticsPlayer = (props: any) => {
   const { className } = props;
 
+  const { onQueryUserInfo, userInfo } = useAuth();
+  const { claim, claiming } = useClaim(userInfo?.claim_pool, onQueryUserInfo);
+  const navigate = useNavigate();
+
+  const onSellTotalAmount = useMemo(() => {
+    if (!userInfo?.on_sell) {
+      return 0;
+    }
+    return userInfo.on_sell.reduce((acc: any, item: any) => acc + item.token_amount, 0);
+  }, [userInfo]);
+
   return (
     <div className={clsx("flex justify-between items-center gap-[40px] pl-[13px] mt-[40px] pb-[16px]", className)}>
-      <div className="flex items-center gap-[70px]">
-        <LabelValue label="PnL" className="" valueClassName="text-[#57FF70]">
-          +$358
+      <div className="flex items-center gap-[50px]">
+        <LabelValue label="PnL" className="" valueClassName={clsx(Big(userInfo?.seller_profit || 0).lt(0) ? "text-[#FF399F]" : "text-[#57FF70]")}>
+          {Big(userInfo?.seller_profit || 0).lt(0) ? "-" : "+"}{formatNumber(Big(userInfo?.seller_profit || 0).abs(), 2, true, { prefix: "$", isShort: Big(userInfo?.seller_profit || 0).abs().gt(100000), isShortUppercase: true })}
         </LabelValue>
         <LabelValue label="Claimable" className="" valueClassName="flex items-center gap-[13px]">
           <div className="">
-            $2,235
+            {formatNumber(Big(userInfo?.seller_profit || 0).gt(0) ? userInfo?.seller_profit : 0, 2, true, { prefix: "$", isShort: Big(userInfo?.seller_profit || 0).abs().gt(100000), isShortUppercase: true })}
           </div>
           <ProfileButton
             className=""
-            onClick={() => { }}
+            disabled={claiming || Big(userInfo?.seller_profit || 0).lte(0)}
+            loading={claiming}
+            onClick={claim}
           >
             Claim
           </ProfileButton>
@@ -27,34 +46,38 @@ const StatisticsPlayer = (props: any) => {
       </div>
       <div className="flex justify-end items-center gap-[35px]">
         <LabelValue label="Created Market" className="" valueClassName="flex items-center gap-[13px]">
-          <div className="">3</div>
-          <div className="flex items-center gap-[8px]">
+          <div className="">
+            {formatNumber(userInfo?.created, 0, true, { isShort: true, isShortUppercase: true })}
+          </div>
+          <div className="flex items-center gap-[8px] whitespace-nowrap">
             <Badge
               className="h-[24px] !px-[10px] !text-[14px]"
-              icon={(<div className="w-[7px] h-[7px] 1shrink-0 rounded-full bg-[#57FF70]" />)}
+              icon={(<div className="w-[7px] h-[7px] shrink-0 rounded-full bg-[#57FF70]" />)}
             >
-              1 Live
+              0 Live
             </Badge>
             <Badge
               className="h-[24px] !px-[10px] !text-[14px]"
               icon={(<div className="w-[7px] h-[7px] shrink-0 rounded-full bg-[#FF399F]" />)}
             >
-              1 Cancelled
+              0 Cancelled
             </Badge>
             <Badge
               className="h-[24px] !px-[10px] !text-[14px]"
               icon={(<div className="w-[7px] h-[7px] shrink-0 rounded-full bg-[#FF9F39]" />)}
             >
-              1 Ended
+              0 Ended
             </Badge>
           </div>
         </LabelValue>
         <LabelValue label="On Sell" className="" valueClassName="flex items-center gap-[13px]">
           <div className="">
-            0.1BTC
+            {formatNumber(onSellTotalAmount, 2, true, { isShort: true, isShortUppercase: true })} BTC
           </div>
           <ProfileButton
-            onClick={() => { }}
+            onClick={() => {
+              navigate(`btc/create`);
+            }}
             type="default"
           >
             Create

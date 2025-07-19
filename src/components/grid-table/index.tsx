@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import React, { useImperativeHandle, useMemo } from 'react';
-import Loading from '../loading';
+import Loading from "@/components/icons/loading";
 import Empty from '../empty';
 
 const GridTable = (props: Props, ref: any) => {

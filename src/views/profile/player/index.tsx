@@ -8,11 +8,13 @@ import { INVATE_ACTIVE } from "@/config";
 import Header from "../header";
 import Dashboard from "../ components/dashboard/index";
 import Tabs from "@/components/tabs";
-import { useState } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import Radio from "@/components/radio";
 import PlayerMarkets from "./markets";
 import { AnimatePresence } from "framer-motion";
 import Records from "./records";
+import usePlayerHistory from "./hooks/use-player-history";
+import LoadingMore from "@/components/loading/loading-more";
 
 const TabsList = [
   {
@@ -29,8 +31,59 @@ export default function Player() {
   const [tab, setTab] = useState(TabsList[0].key);
   const [joinedMarketFilter, setJoinedMarketFilter] = useState("1");
 
+  const {
+    page,
+    loading,
+    data,
+    hasMore,
+    onPageChange,
+
+    joinedPoolListHasNextPage,
+    joinedPoolListPageIndex,
+    joinedPoolListLoading,
+    joinedPoolListData,
+    joinedPoolsData,
+    onJoinedPoolListPageChange,
+  } = usePlayerHistory();
+
+  const containerRef = useRef<any>(null);
+  const marketsBottomRef = useRef<any>(null);
+
+  const handleLoadMore = useCallback(() => {
+    if (joinedPoolListData.length > 0 && joinedPoolListHasNextPage && !joinedPoolListLoading) {
+      onJoinedPoolListPageChange(joinedPoolListPageIndex + 1);
+    }
+  }, [joinedPoolListData.length, joinedPoolListHasNextPage, joinedPoolListLoading, joinedPoolListPageIndex, onJoinedPoolListPageChange]);
+
+  useEffect(() => {
+    if (!marketsBottomRef.current || joinedPoolListData.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && joinedPoolListHasNextPage && !joinedPoolListLoading) {
+            handleLoadMore();
+          }
+        });
+      },
+      {
+        root: null,
+        rootMargin: "100px",
+        threshold: 0.1
+      }
+    );
+
+    observer.observe(marketsBottomRef.current);
+
+    return () => {
+      if (marketsBottomRef.current) {
+        observer.unobserve(marketsBottomRef.current);
+      }
+    };
+  }, [joinedPoolListData.length, joinedPoolListHasNextPage, joinedPoolListLoading, handleLoadMore]);
+
   return (
-    <div className="w-full h-screen overflow-y-auto pb-[30px]">
+    <div className="w-full h-screen overflow-y-auto pb-[30px]" ref={containerRef}>
       <div className="pt-[30px] w-[933px] mx-auto">
         <Header tab="player" />
         <SwitchPanel>
@@ -69,14 +122,32 @@ export default function Player() {
             {
               tab === TabsList[0].key && (
                 <SwitchPanel>
-                  <PlayerMarkets />
+                  <PlayerMarkets
+                    poolsData={joinedPoolsData}
+                    orders={joinedPoolListData}
+                    loading={joinedPoolListLoading}
+                    pageIndex={joinedPoolListPageIndex}
+                    hasNextPage={joinedPoolListHasNextPage}
+                    onPageChange={onJoinedPoolListPageChange}
+                  />
+                  <div ref={marketsBottomRef} className="h-[20px] flex justify-center items-center">
+                    {joinedPoolListLoading && joinedPoolListData.length > 0 && (
+                      <LoadingMore />
+                    )}
+                  </div>
                 </SwitchPanel>
               )
             }
-             {
+            {
               tab === TabsList[1].key && (
                 <SwitchPanel>
-                  <Records />
+                  <Records
+                    page={page}
+                    loading={loading}
+                    data={data}
+                    hasMore={hasMore}
+                    onPageChange={onPageChange}
+                  />
                 </SwitchPanel>
               )
             }

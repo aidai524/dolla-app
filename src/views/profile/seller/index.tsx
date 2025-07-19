@@ -33,7 +33,13 @@ export default function Seller() {
     getCreatePoolList,
     updatePoolsData,
     hasMore,
-    poolsData
+    poolsData,
+    records,
+    recordsLoading,
+    onRecordsPrevPage,
+    onRecordsNextPage,
+    recordsPageIndex,
+    recordsPageHasNextPage,
   } = useCreatePoolList();
 
   // @ts-ignore
@@ -46,7 +52,7 @@ export default function Seller() {
   const [tab, setTab] = useState(TabsList[0].key);
 
   return (
-    <div className="w-full h-screen overflow-y-auto pb-[30px]">
+    <div className="w-full h-screen overflow-y-auto pb-[30px]" ref={containerRef}>
       <div className="pt-[30px] w-[933px] mx-auto">
         <Header tab="seller" />
         <SwitchPanel>
@@ -65,14 +71,33 @@ export default function Seller() {
             {
               tab === TabsList[0].key && (
                 <SwitchPanel>
-                  <SellerMarkets />
+                  <SellerMarkets
+                    poolsData={poolsData}
+                    orders={data}
+                    loading={isLoading}
+                    updatePoolsData={updatePoolsData}
+                  />
+                  {data.length > 0 && (
+                    <LoadingMore
+                      loading={isLoading}
+                      hasMore={hasMore}
+                      className="w-full"
+                    />
+                  )}
                 </SwitchPanel>
               )
             }
             {
               tab === TabsList[1].key && (
                 <SwitchPanel>
-                  <Records />
+                  <Records
+                    records={records}
+                    loading={recordsLoading}
+                    onPrevPage={onRecordsPrevPage}
+                    onNextPage={onRecordsNextPage}
+                    currentPage={recordsPageIndex}
+                    hasNextPage={recordsPageHasNextPage}
+                  />
                 </SwitchPanel>
               )
             }
@@ -80,6 +105,5 @@ export default function Seller() {
         </SwitchPanel>
       </div>
     </div>
-
   );
 }

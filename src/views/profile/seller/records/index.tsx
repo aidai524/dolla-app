@@ -2,9 +2,11 @@ import clsx from "clsx";
 import GridTable, { GridTableAlign } from "@/components/grid-table";
 import dayjs from "dayjs";
 import Pagination from "@/components/pagination";
+import { formatNumber } from "@/utils/format/number";
+import Big from "big.js";
 
 const Records = (props: any) => {
-  const { className } = props;
+  const { className, records, loading, onPrevPage, onNextPage, hasNextPage, currentPage } = props;
 
   const columns = [
     {
@@ -14,7 +16,7 @@ const Records = (props: any) => {
       render: (record: any) => {
         return (
           <div className="flex items-center gap-[7px]">
-            <div className="">#{record.marketId}</div>
+            <div className="">#{record.pool_id}</div>
             <img src="/profile/icon-share.svg" alt="share" className="w-[9px] h-[9px] shrink-0" />
           </div>
         );
@@ -29,10 +31,31 @@ const Records = (props: any) => {
       dataIndex: "assets",
       title: "Assets",
       width: 170,
+      render: (record: any) => {
+        return (
+          <>
+            {record?.nft_ids
+              ? 1
+              : record?.reward_token_info?.[0]?.decimals && record?.reward_amount
+                ? formatNumber(
+                  Big(record.reward_amount || 0).div(
+                    10 ** record?.reward_token_info?.[0].decimals
+                  ),
+                  3,
+                  true
+                )
+                : "-"}{" "}
+            {record?.reward_token_info?.[0].symbol}
+          </>
+        );
+      }
     },
     {
       dataIndex: "valued",
       title: "Valued",
+      render: (record: any) => {
+        return formatNumber(record.reward_usd, 2, true, { prefix: "$" });
+      }
     },
     {
       dataIndex: "date",
@@ -43,7 +66,7 @@ const Records = (props: any) => {
         return (
           <div className="flex justify-end items-center gap-[11px]">
             <div className="text-[#BBACA6]">
-              {dayjs(record.date).format("hh:mm D MMM, YYYY")}
+              {dayjs(record.updated_at).format("hh:mm D MMM, YYYY")}
             </div>
             <img src="/profile/icon-share.svg" alt="share" className="w-[9px] h-[9px] shrink-0" />
           </div>
@@ -51,52 +74,21 @@ const Records = (props: any) => {
       },
     },
   ];
-  // FIXME mock data
-  const data = [
-    {
-      marketId: "0122",
-      type: "Created",
-      assets: "0.001 BTC",
-      valued: "$102",
-      date: "2021-01-01 17:30:00",
-    },
-    {
-      marketId: "0123",
-      type: "Created",
-      assets: "0.002 BTC",
-      valued: "$1102",
-      date: "2021-01-02 17:30:00",
-    },
-    {
-      marketId: "0124",
-      type: "Created",
-      assets: "0.003 BTC",
-      valued: "$1202",
-      date: "2021-01-03 17:30:00",
-    },
-    {
-      marketId: "0125",
-      type: "Created",
-      assets: "0.004 BTC",
-      valued: "$1302",
-      date: "2021-01-04 17:30:00",
-    },
-  ];
 
   return (
     <div className={clsx("mt-[20px]", className)}>
       <GridTable
-        data={data}
+        data={records}
         columns={columns}
+        loading={loading}
       />
       <div className="flex justify-end items-center pt-[18px]">
         <Pagination
-          current={1}
-          total={100}
+          current={currentPage}
           size={10}
-          isCurrentSize
-          onPrev={() => { }}
-          onNext={() => { }}
+          hasNextPage={hasNextPage}
+          onPrev={onPrevPage}
+          onNext={onNextPage}
         />
       </div>
     </div>
