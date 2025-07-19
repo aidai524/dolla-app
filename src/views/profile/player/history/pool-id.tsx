@@ -1,5 +1,5 @@
 // import Avatar from "@/components/avatar";
-import Market from "@/views/btc/markets/market";
+import Market from "@/views/btc/components/more-markets/market";
 // import MarkIcon from "./mark-icon";
 import clsx from "clsx";
 

@@ -14,6 +14,8 @@ import MainLayout from "./layouts/main";
 
 const LazyNewBTC = lazy(() => import("./views/btc"));
 const LazyBtcCreate = lazy(() => import("./views/btc-create"));
+const LazyProfilePlayer = lazy(() => import("./views/profile/player"));
+const LazyProfileSeller = lazy(() => import("./views/profile/seller"));
 
 const router = createBrowserRouter([
   {
@@ -33,6 +35,14 @@ const router = createBrowserRouter([
       {
         path: "btc/create",
         element: <LazyBtcCreate />
+      },
+      {
+        path: "portfolio/player",
+        element: <LazyProfilePlayer />
+      },
+      {
+        path: "portfolio/seller",
+        element: <LazyProfileSeller />
       }
     ]
   },
