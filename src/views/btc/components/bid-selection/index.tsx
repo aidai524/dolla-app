@@ -38,7 +38,7 @@ export default function BidSelection() {
           <div className="text-white text-[16px]">BALANCE</div>
           <div className="text-white text-[20px] flex items-center gap-[10px]">
             <span>${addThousandSeparator(tokenBalance || "0")}</span>
-            {/* <AddBtn onClick={() => setShowCashier(true)} /> */}
+            <AddBtn onClick={() => setShowCashier(true)} />
           </div>
         </div>
       </div>
