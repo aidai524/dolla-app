@@ -3,7 +3,7 @@
 $coin: #ffd364;
 $bg: #3e3b3b;
 $time: 1s;
-$coin-size: 150px;
+$coin-size: 212px;
 $coin-thicc: 6; // (size/thicc)
 
 *,
@@ -39,23 +39,23 @@ body {
     width: 100%;
     border-radius: 50%;
     background: $coin;
-    border: $coin-size * 0.08 solid lighten($coin, 5);
-    box-shadow: inset 0 0 0 $coin-size * 0.02 darken($coin, 5);
+    border: $coin-size * 0.08 solid darken($coin, 5);
+    box-shadow: inset 0 0 0 $coin-size * 0.02 darken($coin, 12);
     font-size: $coin-size * 0.4;
-    font-family: "Raleway", sans-serif;
-    color: darken($coin, 5);
+    font-family: "SpaceGrotesk";
+    color: darken($coin, 10);
     text-shadow: $coin-size * 0.01 $coin-size * 0.01 0 darken($coin, 8),
-      -1 * ($coin-size * 0.01) -1 * ($coin-size * 0.01) 0 lighten($coin, 8);
+      -1 * ($coin-size * 0.01) -1 * ($coin-size * 0.01) 0 darken($coin, 8);
   }
 
   &:before {
     transform: translateZ($coin-size/$coin-thicc/2);
-    content: "O";
+    content: "$";
   }
   &:after {
     transform: translateZ(-$coin-size/$coin-thicc/2) rotateY(180deg)
       rotateZ(180deg);
-    content: "I";
+    content: "₿";
   }
 
   .edge {
