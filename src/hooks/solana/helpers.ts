@@ -117,11 +117,12 @@ export async function getAccountsInfo(
     }
 
     return {
+      address: account.toString(),
       instruction: createAssociatedTokenAccountInstruction(
-        provider.publicKey!,
+        new PublicKey(import.meta.env.VITE_SOLANA_OPERATOR),
         account,
-        new PublicKey(pairs[i][0]),
-        new PublicKey(pairs[i][1])
+        new PublicKey(pairs[i][1]),
+        new PublicKey(pairs[i][0])
       )
     };
   });
@@ -245,7 +246,11 @@ export function getRandomnessAccount(payer: any) {
 }
 
 export function setupQueue() {
-  return new PublicKey("EYiAmGSdsQTuCw413V5BzaruWuCCSDgTPtBGvLkXHbe7");
+  return new PublicKey(
+    import.meta.env.VITE_SOLANA_CLUSTER_NAME === "devnet"
+      ? "EYiAmGSdsQTuCw413V5BzaruWuCCSDgTPtBGvLkXHbe7"
+      : "A43DyUGA7s8eXPxqEjJY6EBu1KKbNgfxF8h17VAHn13w"
+  );
 }
 
 export async function getBidGasFee(
