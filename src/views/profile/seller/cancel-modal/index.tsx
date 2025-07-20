@@ -1,5 +1,3 @@
-import Button from "@/components/button";
-import CloseIcon from "@/components/icons/close";
 import Modal from "@/components/modal";
 import { formatNumber } from "@/utils/format/number";
 import { useMemo } from "react";
@@ -36,7 +34,12 @@ export default function CancelModal({
     const _penalty = Big(penaltyStr || 0)
       .div(10 ** order?.purchase_token_info?.decimals || 18)
       .toString();
-    return [_penalty, Big(order?.value || 0).minus(_penalty).toString()];
+    return [
+      _penalty,
+      Big(order?.value || 0)
+        .minus(_penalty)
+        .toString()
+    ];
   }, [penaltyStr, order]);
 
   return (
@@ -47,10 +50,18 @@ export default function CancelModal({
             Cancel Market
           </div>
           <button className="button" onClick={onClose}>
-            <svg width="10" height="12" viewBox="0 0 10 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M5 4.57422L8 0.592773H10L6 5.90137L10 11.21H8L5 7.22852L2 11.21H0L4 5.90137L0 0.592773H2L5 4.57422Z" fill="#BBACA6" />
+            <svg
+              width="10"
+              height="12"
+              viewBox="0 0 10 12"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M5 4.57422L8 0.592773H10L6 5.90137L10 11.21H8L5 7.22852L2 11.21H0L4 5.90137L0 0.592773H2L5 4.57422Z"
+                fill="#BBACA6"
+              />
             </svg>
-
           </button>
         </div>
         <div className="w-full px-[24px] py-[20px]">
@@ -91,13 +102,16 @@ export default function CancelModal({
           </div>
           <div className="w-full h-[86px] p-[10px] mt-[20px] mx-auto bg-[#FFC42F1A] rounded-[4px] border border-[#FFC42F]">
             <div className="flex items-center gap-[2px]">
-              <img src="/profile/icon-warning.svg" alt="warning" className="w-[13px] h-[11px] shrink-0" />
-              <span className="text-[#FFC42F]">
-                Be careful!
-              </span>
+              <img
+                src="/profile/icon-warning.svg"
+                alt="warning"
+                className="w-[13px] h-[11px] shrink-0"
+              />
+              <span className="text-[#FFC42F]">Be careful!</span>
             </div>
             <div className="text-[12px] font-[400] leading-[120%] mt-[7px]">
-              If you cancel, platform will refund the bid amount of the player who has already participated, and you need to pay 20% in demages.
+              If you cancel, platform will refund the bid amount of the player
+              who has already participated, and you need to pay 20% in demages.
             </div>
           </div>
           <div className="mt-[10px]">

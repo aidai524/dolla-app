@@ -52,18 +52,15 @@ export default function useCreate({
         anchorPrice * amount * 10 ** BASE_TOKEN.decimals
       );
 
-      let nextOrderId = await getNextOrderId(program, provider, state.pda);
+      let nextOrderId = await getNextOrderId(program, state.pda);
       nextOrderId = new anchor.BN(nextOrderId);
       console.log("nextOrderId", nextOrderId.toNumber());
       const pool = await getPool(program, provider, state.pda, nextOrderId);
 
-      const [userBaseAccount, poolBaseAccount] = await getAccountsInfo(
-        [
-          [BASE_TOKEN.address, payer.address],
-          [BASE_TOKEN.address, pool.pda.toString()]
-        ],
-        provider
-      );
+      const [userBaseAccount, poolBaseAccount] = await getAccountsInfo([
+        [BASE_TOKEN.address, payer.address],
+        [BASE_TOKEN.address, pool.pda.toString()]
+      ]);
 
       // Ensure all accounts are properly defined
 

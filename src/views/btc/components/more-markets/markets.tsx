@@ -1,10 +1,10 @@
 import clsx from "clsx";
-import { useState } from "react";
 import { motion } from "framer-motion";
 import Market from "./market";
 import MoreMarketBtn from "./btn";
 import MarketLoading from "./market-loading";
 import usePoolList from "@/hooks/use-pool-list";
+import { useBtcContext } from "../../context";
 
 export default function Markets({ onClose }: { onClose: () => void }) {
   const {
@@ -21,6 +21,7 @@ export default function Markets({ onClose }: { onClose: () => void }) {
     setVolume,
     LIMIT
   } = usePoolList();
+  const { setSelectedMarket } = useBtcContext();
 
   return (
     <motion.div
@@ -131,7 +132,11 @@ export default function Markets({ onClose }: { onClose: () => void }) {
           </div>
           <div className="flex items-center justify-center gap-[20px] py-[50px] px-[20px]">
             {poolList.map((item: any) => (
-              <Market key={item.id} data={item} />
+              <Market
+                key={item.id}
+                data={item}
+                onClick={() => setSelectedMarket(item)}
+              />
             ))}
             {loading && (
               <>

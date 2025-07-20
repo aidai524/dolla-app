@@ -1,12 +1,12 @@
 import SwitchPanel from "@/components/switch/switch-panel";
-import Statistics from "../player/statistics";
-import UserInfo from "../player/user-info";
-import Invite from "../player/invite";
-import OrderList from "./order-list";
+// import Statistics from "../player/statistics";
+// import UserInfo from "../player/user-info";
+// import Invite from "../player/invite";
+// import OrderList from "./order-list";
 import useInfiniteScroll from "@/hooks/use-infinite-scroll";
 import LoadingMore from "@/components/loading/loading-more";
 import useCreatePoolList from "./hooks/use-create-pool-list";
-import { INVATE_ACTIVE } from "@/config";
+// import { INVATE_ACTIVE } from "@/config";
 import Header from "../header";
 import Dashboard from "../ components/dashboard/index";
 import { useState } from "react";
@@ -23,7 +23,7 @@ const TabsList = [
   {
     key: "records",
     label: "Records"
-  },
+  }
 ];
 
 export default function Seller() {
@@ -39,7 +39,7 @@ export default function Seller() {
     onRecordsPrevPage,
     onRecordsNextPage,
     recordsPageIndex,
-    recordsPageHasNextPage,
+    recordsPageHasNextPage
   } = useCreatePoolList();
 
   // @ts-ignore
@@ -52,7 +52,10 @@ export default function Seller() {
   const [tab, setTab] = useState(TabsList[0].key);
 
   return (
-    <div className="w-full h-screen overflow-y-auto pb-[30px]" ref={containerRef}>
+    <div
+      className="w-full h-screen overflow-y-auto pb-[30px]"
+      ref={containerRef}
+    >
       <div className="pt-[30px] w-[933px] mx-auto">
         <Header tab="seller" />
         <SwitchPanel>
@@ -68,39 +71,35 @@ export default function Seller() {
             />
           </div>
           <AnimatePresence>
-            {
-              tab === TabsList[0].key && (
-                <SwitchPanel>
-                  <SellerMarkets
-                    poolsData={poolsData}
-                    orders={data}
+            {tab === TabsList[0].key && (
+              <SwitchPanel>
+                <SellerMarkets
+                  poolsData={poolsData}
+                  orders={data}
+                  loading={isLoading}
+                  updatePoolsData={updatePoolsData}
+                />
+                {data.length > 0 && (
+                  <LoadingMore
                     loading={isLoading}
-                    updatePoolsData={updatePoolsData}
+                    hasMore={hasMore}
+                    className="w-full"
                   />
-                  {data.length > 0 && (
-                    <LoadingMore
-                      loading={isLoading}
-                      hasMore={hasMore}
-                      className="w-full"
-                    />
-                  )}
-                </SwitchPanel>
-              )
-            }
-            {
-              tab === TabsList[1].key && (
-                <SwitchPanel>
-                  <Records
-                    records={records}
-                    loading={recordsLoading}
-                    onPrevPage={onRecordsPrevPage}
-                    onNextPage={onRecordsNextPage}
-                    currentPage={recordsPageIndex}
-                    hasNextPage={recordsPageHasNextPage}
-                  />
-                </SwitchPanel>
-              )
-            }
+                )}
+              </SwitchPanel>
+            )}
+            {tab === TabsList[1].key && (
+              <SwitchPanel>
+                <Records
+                  records={records}
+                  loading={recordsLoading}
+                  onPrevPage={onRecordsPrevPage}
+                  onNextPage={onRecordsNextPage}
+                  currentPage={recordsPageIndex}
+                  hasNextPage={recordsPageHasNextPage}
+                />
+              </SwitchPanel>
+            )}
           </AnimatePresence>
         </SwitchPanel>
       </div>

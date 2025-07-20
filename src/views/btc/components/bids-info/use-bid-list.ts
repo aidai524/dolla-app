@@ -68,7 +68,7 @@ export default function useBidList() {
   };
 
   const { run: loadData } = useDebounceFn(
-    (args: any = {}) => {
+    () => {
       if (!pool?.pool_id) {
         return;
       }

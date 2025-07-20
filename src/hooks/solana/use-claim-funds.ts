@@ -38,13 +38,10 @@ export default function useClaimFunds({
 
       const pool = await getPool(program, provider, state.pda, orderId);
 
-      const [userQuoteAccount, poolQuoteAccount] = await getAccountsInfo(
-        [
-          [QUOTE_TOKEN.address, payer.address],
-          [QUOTE_TOKEN.address, pool.pda.toString()]
-        ],
-        provider
-      );
+      const [userQuoteAccount, poolQuoteAccount] = await getAccountsInfo([
+        [QUOTE_TOKEN.address, payer.address],
+        [QUOTE_TOKEN.address, pool.pda.toString()]
+      ]);
 
       let claimFundsAccounts = {
         dollaState: state.pda,

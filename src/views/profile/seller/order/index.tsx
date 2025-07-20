@@ -1,4 +1,4 @@
-import Market from "@/views/btc/markets/market";
+import Market from "@/views/btc/components/more-markets/market";
 import ButtonWithAuth from "@/components/button/button-with-auth";
 
 export default function Order() {

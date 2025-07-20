@@ -4,11 +4,7 @@ import useToast from "@/hooks/use-toast";
 import reportHash from "@/utils/report-hash";
 import * as anchor from "@coral-xyz/anchor";
 import useProgram from "./use-program";
-import {
-  getState,
-  getAssociatedTokenAddress,
-  getAccountsInfo
-} from "./helpers";
+import { getState, getAccountsInfo } from "./helpers";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   TOKEN_PROGRAM_ID
@@ -52,15 +48,12 @@ export default function useTransfer({
           toTokenAccount,
           userPaidAccount,
           operatorPaidAccount
-        ] = await getAccountsInfo(
-          [
-            [token.address, payer.address],
-            [token.address, to],
-            [QUOTE_TOKEN.address, payer.address],
-            [QUOTE_TOKEN.address, import.meta.env.VITE_SOLANA_OPERATOR]
-          ],
-          provider
-        );
+        ] = await getAccountsInfo([
+          [token.address, payer.address],
+          [token.address, to],
+          [QUOTE_TOKEN.address, payer.address],
+          [QUOTE_TOKEN.address, import.meta.env.VITE_SOLANA_OPERATOR]
+        ]);
 
         let transferAccounts = {
           dollaState: state.pda,

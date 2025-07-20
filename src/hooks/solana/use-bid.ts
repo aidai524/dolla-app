@@ -1,14 +1,12 @@
 import useToast from "@/hooks/use-toast";
 import { useEffect, useRef, useState } from "react";
 import useProgram from "./use-program";
-import reportHash from "@/utils/report-hash";
+// import reportHash from "@/utils/report-hash";
 import {
   getPool,
   getState,
   getBuyState,
-  loadSbProgram,
   setupQueue,
-  getAssociatedTokenAddress,
   getBidGasFee,
   getWrapToSolIx,
   getAccountsInfo
@@ -201,7 +199,7 @@ export default function useBid(
       //   chain: "solana",
       //   user: payer.address,
       //   hash: result.data.data.hash,
-      //   block_number: blockhash
+      //   block_number: result.data.data.blockhash
       // });
 
       // const pb = new PublicKey("7qKtiPPkK1ZYqVFujVJjsTuGSJNXAvVhLj41HxtQDsTG");
@@ -284,16 +282,13 @@ export default function useBid(
     const [buyerState, gasFee, accountsInfo] = await Promise.all([
       getBuyState(program, provider, pool.pda, new PublicKey(payer.address)),
       getBidGasFee(program, state.pda, QUOTE_TOKEN.address),
-      getAccountsInfo(
-        [
-          [QUOTE_TOKEN.address, payer.address],
-          [QUOTE_TOKEN.address, pool.pda.toString()],
-          [QUOTE_TOKEN.address, state.pda.toString()],
-          [QUOTE_TOKEN.address, payer.address],
-          [QUOTE_TOKEN.address, import.meta.env.VITE_SOLANA_OPERATOR]
-        ],
-        provider
-      )
+      getAccountsInfo([
+        [QUOTE_TOKEN.address, payer.address],
+        [QUOTE_TOKEN.address, pool.pda.toString()],
+        [QUOTE_TOKEN.address, state.pda.toString()],
+        [QUOTE_TOKEN.address, payer.address],
+        [QUOTE_TOKEN.address, import.meta.env.VITE_SOLANA_OPERATOR]
+      ])
     ]);
 
     const userQuoteAccount = accountsInfo[0];

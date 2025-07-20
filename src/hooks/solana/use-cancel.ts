@@ -44,15 +44,12 @@ export default function useCancel({
         userQuoteAccount,
         poolBaseAccount,
         poolQuoteAccount
-      ] = await getAccountsInfo(
-        [
-          [BASE_TOKEN.address, payer.address],
-          [QUOTE_TOKEN.address, payer.address],
-          [BASE_TOKEN.address, pool.pda.toString()],
-          [QUOTE_TOKEN.address, pool.pda.toString()]
-        ],
-        provider
-      );
+      ] = await getAccountsInfo([
+        [BASE_TOKEN.address, payer.address],
+        [QUOTE_TOKEN.address, payer.address],
+        [BASE_TOKEN.address, pool.pda.toString()],
+        [QUOTE_TOKEN.address, pool.pda.toString()]
+      ]);
 
       let wrapTx: any[] = [];
       if (

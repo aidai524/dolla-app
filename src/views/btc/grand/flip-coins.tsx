@@ -1,7 +1,6 @@
 import { useBtcContext } from "../context";
 import FlipCoin from "./flip-coin";
 import { useMemo, useRef } from "react";
-import { motion } from "framer-motion";
 import Result from "../components/result";
 
 const SIZE: Record<number, number> = {
@@ -20,8 +19,6 @@ export default function FlipCoins() {
     coinsRef,
     flipComplete,
     bidResult,
-    showTips,
-    setShowTips,
     setFlipStatus,
     onReset
   } = useBtcContext();
@@ -68,7 +65,6 @@ export default function FlipCoins() {
           }}
           onFlipComplete={flipComplete}
           coinContainerRef={coinContainerRef}
-          setShowTips={setShowTips}
           setFlipStatus={setFlipStatus}
         />
       ))}

@@ -10,8 +10,9 @@ export default function BidBtn({ tokenBalance }: { tokenBalance: string }) {
     useBtcContext();
   const [isHovered, setIsHovered] = useState(false);
   const { userInfo } = useAuth();
-  const { onBid, bidding } = useBid(
-    pool.pool_id,
+  const { onBid } = useBid(
+    // pool.pool_id,
+    11,
     (result) => {
       console.log("complete success");
       setFlipStatus(4);

@@ -64,6 +64,7 @@ export const CannonCoinsProvider = ({
         setFlipStatus,
         coinsRef,
         bidResult,
+        setSelectedMarket,
         setBidResult,
         flipComplete: (index: number, addNumber: boolean, notAuto = false) => {
           if (addNumber) flipedNumberRef.current++;

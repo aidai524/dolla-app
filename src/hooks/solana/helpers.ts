@@ -29,7 +29,6 @@ export function getState(program: anchor.Program) {
 
 export async function getNextOrderId(
   program: anchor.Program,
-  provider: anchor.AnchorProvider,
   statePda: anchor.web3.PublicKey
 ) {
   // const stateExist = await accountExists(statePda, provider.connection);
@@ -85,10 +84,7 @@ export async function getPool(
   return { pda: pda, bump: bump, pool: pool };
 }
 
-export async function getAccountsInfo(
-  pairs: string[][],
-  provider: any
-): Promise<any[]> {
+export async function getAccountsInfo(pairs: string[][]): Promise<any[]> {
   const accounts = pairs.map((pair) =>
     getAssociatedTokenAddressSync(
       new PublicKey(pair[0]),
