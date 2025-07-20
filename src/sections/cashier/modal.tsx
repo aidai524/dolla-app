@@ -16,7 +16,6 @@ export default function CashierModal({ open, onClose, defaultTab }: any) {
       setTab("fund");
       return;
     }
-    
     setTab(defaultTab);
   }, [defaultTab]);
 
