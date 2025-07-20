@@ -16,7 +16,7 @@ const Account = (props: any) => {
     userRecordsPageIndex,
     hasNextPage,
     onUserRecordsPageChange,
-  } = useUserRecords();
+  } = useUserRecords({ isSinglePage: true });
 
   const columns = [
     {

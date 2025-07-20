@@ -5,7 +5,9 @@ import { useRequest } from "ahooks";
 
 const LIMIT = 20;
 
-export default function useUserRecords() {
+export default function useUserRecords(props?: { isSinglePage?: boolean; }) {
+  const { isSinglePage } = props ?? {};
+
   const [records, setRecords] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -44,7 +46,7 @@ export default function useUserRecords() {
   const [hasNextPage, setHasNextPage] = useState(true);
   const [userRecordsPageIndex, setUserRecordsPageIndex] = useState(1);
   const { data: userRecords, loading: userRecordsLoading } = useRequest(async () => {
-    if (!userInfo?.user) {
+    if (!userInfo?.user || !isSinglePage) {
       setUserRecordsPageIndex(1);
       return [];
     }
@@ -67,7 +69,7 @@ export default function useUserRecords() {
   };
 
   useEffect(() => {
-    if (userInfo?.user) {
+    if (userInfo?.user && !isSinglePage) {
       pageRef.current = 0;
       onQueryRecords();
     }
