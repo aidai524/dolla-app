@@ -18,15 +18,7 @@ const Dashboard = (props: any) => {
   const { userInfo } = useAuth();
   const toast = useToast();
 
-  const [inviteFrenz] = useState([
-    { id: 1, avatar: "/avatar/1.svg" },
-    { id: 2, avatar: "/avatar/2.svg" },
-    { id: 3, avatar: "/avatar/3.svg" },
-    { id: 4, avatar: "/avatar/4.svg" },
-    { id: 5, avatar: "/avatar/5.svg" },
-    { id: 6, avatar: "/avatar/6.svg" },
-    { id: 7, avatar: "/avatar/7.svg" },
-  ]);
+  const [inviteFrenz] = useState([]);
 
   return (
     <div className={clsx("font-[SpaceGrotesk] text-white text-[14px] font-[400] leading-[100%] w-full p-[23px_29px_15px_13px] rounded-[16px] border border-[#6A5D3A] bg-[radial-gradient(25.97%_88.62%_at_6.81%_0%,_rgba(221,_144,_0,_0.10)_0%,_rgba(255,_196,_47,_0.00)_100%)] bg-[#35302B]", className)}>
@@ -102,25 +94,29 @@ const Dashboard = (props: any) => {
           {/*#region Invite frenz*/}
           <div className="flex flex-col gap-[12px] items-end">
             <div className="flex justify-end gap-[13px] items-center">
-              <div className="flex items-center gap-[6px] h-[32px] bg-black/20 border border-[#6A5D3A] rounded-[16px] pl-[5px] pr-[14px]">
-                <div className="flex items-center">
-                  {
-                    inviteFrenz.slice(0, 5).map((item: any, index: number) => (
-                      <img
-                        key={index}
-                        src={item.avatar}
-                        alt=""
-                        className={clsx("w-[26px] h-[26px] rounded-full border-[2px] border-[#131417] shrink-0", index > 0 && "ml-[-8px]")}
-                      />
-                    ))
-                  }
-                  <img />
-                </div>
-                <div className="[text-shaow:0px_1px_0px_#000]">
-                  12
-                </div>
-              </div>
+              {
+                inviteFrenz.length > 0 && (
+                  <div className="flex items-center gap-[6px] h-[32px] bg-black/20 border border-[#6A5D3A] rounded-[16px] pl-[5px] pr-[14px]">
+                    <div className="flex items-center">
+                      {
+                        inviteFrenz.slice(0, 5).map((item: any, index: number) => (
+                          <img
+                            key={index}
+                            src={item.avatar}
+                            alt=""
+                            className={clsx("w-[26px] h-[26px] rounded-full border-[2px] border-[#131417] shrink-0", index > 0 && "ml-[-8px]")}
+                          />
+                        ))
+                      }
+                    </div>
+                    <div className="[text-shaow:0px_1px_0px_#000]">
+                      {inviteFrenz.length || 0}
+                    </div>
+                  </div>
+                )
+              }
               <ProfileButton
+                disabled
                 onClick={() => { }}
               >
                 Invite frenz

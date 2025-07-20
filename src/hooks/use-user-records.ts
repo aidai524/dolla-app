@@ -1,6 +1,7 @@
 import axiosInstance from "@/libs/axios";
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/contexts/auth";
+import { useRequest } from "ahooks";
 
 const LIMIT = 20;
 
@@ -40,6 +41,31 @@ export default function useUserRecords() {
     setHasMore(true);
   };
 
+  const [hasNextPage, setHasNextPage] = useState(true);
+  const [userRecordsPageIndex, setUserRecordsPageIndex] = useState(1);
+  const { data: userRecords, loading: userRecordsLoading } = useRequest(async () => {
+    if (!userInfo?.user) {
+      setUserRecordsPageIndex(1);
+      return [];
+    }
+    try {
+      const res = await axiosInstance.get(
+        `/api/v1/user/records?limit=${20}&offset=${(userRecordsPageIndex - 1) * 20}`
+      );
+
+      setHasNextPage(res.data.data.has_next_page);
+      return res.data.data.list || [];
+    } catch (err) {
+      console.error("Failed to fetch user records:", err);
+    }
+    return [];
+  }, {
+    refreshDeps: [userRecordsPageIndex, userInfo]
+  });
+  const onUserRecordsPageChange = (_page: number) => {
+    setUserRecordsPageIndex(_page);
+  };
+
   useEffect(() => {
     if (userInfo?.user) {
       pageRef.current = 0;
@@ -52,6 +78,12 @@ export default function useUserRecords() {
     records,
     hasMore,
     onQueryRecords,
-    resetRecords
+    resetRecords,
+
+    userRecords,
+    userRecordsLoading,
+    userRecordsPageIndex,
+    hasNextPage,
+    onUserRecordsPageChange,
   };
 }

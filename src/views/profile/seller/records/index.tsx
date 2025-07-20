@@ -16,7 +16,7 @@ const Records = (props: any) => {
       render: (record: any) => {
         return (
           <div className="flex items-center gap-[7px]">
-            <div className="">#{record.pool_id}</div>
+            <div className="">#{record.id}</div>
             <img src="/profile/icon-share.svg" alt="share" className="w-[9px] h-[9px] shrink-0" />
           </div>
         );
