@@ -361,9 +361,7 @@ export default function useBid(
     if (randomnessTimerRef.current) {
       clearTimeout(randomnessTimerRef.current);
     }
-    // randomnessTimerRef.current = setTimeout(() => {
-    //   getRandomnessAccount();
-    // }, expiredTime);
+
     return {
       randomnessAccount,
       randomnessCreateIx
@@ -375,12 +373,6 @@ export default function useBid(
       fetchPoolInfo();
     }
   }, [poolId, wallets]);
-
-  useEffect(() => {
-    if (userInfo?.user && sbProgramRef.current) {
-      getRandomnessAccount();
-    }
-  }, [userInfo, sbProgramRef.current]);
 
   return {
     bidding,
