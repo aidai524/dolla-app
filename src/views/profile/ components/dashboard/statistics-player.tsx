@@ -6,11 +6,15 @@ import { formatNumber } from "@/utils/format/number";
 import Big from "big.js";
 import CashierModal from "@/sections/cashier/modal";
 import { useAuth } from "@/contexts/auth";
+import useTokenBalance from "@/hooks/solana/use-token-balance";
+import Loading from "@/components/icons/loading";
+import { QUOTE_TOKEN } from "@/config/btc";
 
 const StatisticsPlayer = (props: any) => {
   const { className } = props;
 
   const { userInfo } = useAuth();
+  const { tokenBalance, isLoading } = useTokenBalance({ address: QUOTE_TOKEN.address, decimals: QUOTE_TOKEN.decimals });
 
   const [cashierModalOpen, setCashierModalOpen] = useState(false);
   const [cashierModalTab, setCashierModalTab] = useState("fund");
@@ -37,6 +41,7 @@ const StatisticsPlayer = (props: any) => {
         <ProfileButton
           className="ml-[64px]"
           onClick={() => { }}
+          disabled
         >
           Share
         </ProfileButton>
@@ -44,7 +49,9 @@ const StatisticsPlayer = (props: any) => {
       <div className="w-[1px] h-[70px] shrink-0 bg-[#423930]"></div>
       <div className="flex items-center">
         <LabelValue label="Your Balance" className="whitespace-nowrap">
-          {formatNumber(0, 2, true, { prefix: "$" })}
+          {isLoading ? (
+            <Loading size={12} />
+          ) : formatNumber(tokenBalance, 2, true, { prefix: "$" })}
         </LabelValue>
         <LabelValue label="Played times" className="ml-[62px] whitespace-nowrap">
           {formatNumber(userInfo?.played, 2, true, { isShort: Big(userInfo?.played || 0).gt(1000000), isShortUppercase: true })}
