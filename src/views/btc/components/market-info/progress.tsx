@@ -1,12 +1,13 @@
 import { formatNumber } from "@/utils/format/number";
+import { getAnchorPrice } from "@/utils/pool";
 import { motion } from "framer-motion";
 import { useMemo } from "react";
 
 export default function Progress({ data }: any) {
-  const [progress] = useMemo(() => {
-    const _p = (data.accumulative_bids / data.value) * 100;
+  const progress = useMemo(() => {
+    if (!data?.accumulative_bids || data?.anchor_price === "0") return 0;
 
-    return [_p];
+    return (data.accumulative_bids / getAnchorPrice(data)) * 100;
   }, [data]);
 
   return (
