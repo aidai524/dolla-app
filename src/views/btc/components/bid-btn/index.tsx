@@ -10,6 +10,7 @@ export default function BidBtn({ tokenBalance }: { tokenBalance: string }) {
     useBtcContext();
   const [isHovered, setIsHovered] = useState(false);
   const { userInfo } = useAuth();
+
   const { onBid } = useBid(
     pool.pool_id,
     (result) => {
