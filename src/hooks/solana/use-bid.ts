@@ -1,7 +1,7 @@
 import useToast from "@/hooks/use-toast";
 import { useEffect, useRef, useState } from "react";
 import useProgram from "./use-program";
-// import reportHash from "@/utils/report-hash";
+import reportHash from "@/utils/report-hash";
 import {
   getPool,
   getState,
@@ -194,13 +194,14 @@ export default function useBid(
       console.log("bidResponse", bidResponse);
       console.log("receipt:", result);
 
+      const slot = await provider.connection.getSlot();
       // Report hash for tracking
-      // reportHash({
-      //   chain: "solana",
-      //   user: payer.address,
-      //   hash: result.data.data.hash,
-      //   block_number: result.data.data.blockhash
-      // });
+      reportHash({
+        chain: "solana",
+        user: payer.address,
+        hash: result.data.data.hash,
+        block_number: slot
+      });
 
       // const pb = new PublicKey("7qKtiPPkK1ZYqVFujVJjsTuGSJNXAvVhLj41HxtQDsTG");
       // const userBaseAccount = await getAssociatedTokenAddress(

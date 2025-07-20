@@ -61,8 +61,7 @@ export default function useClaimFunds({
       const batchTx = new Transaction().add(tx);
       batchTx.feePayer = new PublicKey(import.meta.env.VITE_SOLANA_OPERATOR);
       // Get the latest blockhash
-      const { blockhash } = await provider.connection.getLatestBlockhash();
-      batchTx.recentBlockhash = blockhash;
+      batchTx.recentBlockhash = "11111111111111111111111111111111";
 
       // const signedTx = await signTransaction({
       //   transaction: tx,
@@ -76,11 +75,12 @@ export default function useClaimFunds({
       const result = await sendSolanaTransaction(batchTx, "claimFunds");
       console.log("receipt:", result);
       // Report hash for tracking
+      const slot = await provider.connection.getSlot();
       reportHash({
         chain: "solana",
         user: payer.address,
         hash: result.data.data.hash,
-        block_number: blockhash
+        block_number: slot
       });
 
       onClaimSuccess?.();

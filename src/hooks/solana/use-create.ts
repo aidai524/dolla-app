@@ -43,6 +43,7 @@ export default function useCreate({
       toast.fail({ title: "Please connect your wallet" });
       return;
     }
+
     const payer = wallets[0];
     try {
       setCreating(true);
@@ -111,8 +112,8 @@ export default function useCreate({
       tx.feePayer = new PublicKey(import.meta.env.VITE_SOLANA_OPERATOR);
 
       // Get the latest blockhash
-      const { blockhash } = await provider.connection.getLatestBlockhash();
-      tx.recentBlockhash = blockhash;
+
+      tx.recentBlockhash = "11111111111111111111111111111111";
 
       const result = await sendSolanaTransaction(tx, "createPool");
 
@@ -127,11 +128,13 @@ export default function useCreate({
       const poolId = nextOrderId.toNumber();
 
       onCreateSuccess?.(poolId);
+
+      const slot = await provider.connection.getSlot();
       reportHash({
         chain: "solana",
         user: payer.address,
         hash: result.data.data.hash,
-        block_number: blockhash
+        block_number: slot
       });
     } catch (error) {
       console.error("Create error:", error);
