@@ -8,7 +8,7 @@ import {
   getState,
   getNextOrderId,
   getPool,
-  getAssociatedTokenAddress,
+  getAccountsInfo,
   getWrapToSolIx
 } from "./helpers";
 import {
@@ -57,15 +57,11 @@ export default function useCreate({
       console.log("nextOrderId", nextOrderId.toNumber());
       const pool = await getPool(program, provider, state.pda, nextOrderId);
 
-      const userBaseAccount = await getAssociatedTokenAddress(
-        new PublicKey(BASE_TOKEN.address),
-        new PublicKey(payer.address),
-        provider
-      );
-
-      const poolBaseAccount = await getAssociatedTokenAddress(
-        new PublicKey(BASE_TOKEN.address),
-        new PublicKey(pool.pda.toString()),
+      const [userBaseAccount, poolBaseAccount] = await getAccountsInfo(
+        [
+          [BASE_TOKEN.address, payer.address],
+          [BASE_TOKEN.address, pool.pda.toString()]
+        ],
         provider
       );
 

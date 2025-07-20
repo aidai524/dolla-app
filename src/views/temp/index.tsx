@@ -1,34 +1,21 @@
-import React, { useState } from "react";
-import MultiCoins from "./multi-coins";
-import CannonCoins from "./cannon-coins";
+import React from "react";
+import useTransfer from "@/hooks/solana/use-transfer";
+import { QUOTE_TOKEN } from "@/config/btc";
 
 const TempPage: React.FC = () => {
-  const [activeComponent, setActiveComponent] = useState<"multi" | "cannon">(
-    "cannon"
-  );
-
-  const coinConfigs = [
-    { result: "heads" as const, scale: 1.0 },
-    { result: "tails" as const, scale: 1.0 },
-    { result: "heads" as const, scale: 1.0 },
-    { result: "tails" as const, scale: 1.0 },
-    { result: "heads" as const, scale: 1.0 }
-    // { result: "tails" as const, scale: 1.0 },
-    // { result: "heads" as const, scale: 1.0 },
-    // { result: "tails" as const, scale: 1.0 },
-    // { result: "heads" as const, scale: 1.0 },
-    // { result: "tails" as const, scale: 1.0 }
-  ];
+  const { onTransfer } = useTransfer({
+    token: QUOTE_TOKEN,
+    isTicket: true
+  });
 
   return (
     <div className="relative">
-      {/* Component Selector */}
-
-      {/* Component Rendering */}
-      {activeComponent === "cannon" && <CannonCoins />}
-      {activeComponent === "multi" && (
-        <MultiCoins coinConfigs={coinConfigs} animationDuration={3000} />
-      )}
+      <button
+        className="bg-white text-black button"
+        onClick={() => onTransfer(1, import.meta.env.VITE_SOLANA_OPERATOR)}
+      >
+        Transfer
+      </button>
     </div>
   );
 };

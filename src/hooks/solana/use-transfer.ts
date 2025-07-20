@@ -4,7 +4,11 @@ import useToast from "@/hooks/use-toast";
 import reportHash from "@/utils/report-hash";
 import * as anchor from "@coral-xyz/anchor";
 import useProgram from "./use-program";
-import { getState, getAssociatedTokenAddress } from "./helpers";
+import {
+  getState,
+  getAssociatedTokenAddress,
+  getAccountsInfo
+} from "./helpers";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   TOKEN_PROGRAM_ID
@@ -19,9 +23,11 @@ import { sendSolanaTransaction } from "@/utils/transaction/send-solana-transacti
 
 export default function useTransfer({
   token,
+  isTicket,
   onTransferSuccess
 }: {
   token: any;
+  isTicket?: boolean;
   onTransferSuccess?: () => void;
 }) {
   const [transferring, setTransferring] = useState(false);
@@ -41,27 +47,18 @@ export default function useTransfer({
         const transferAmount = new anchor.BN(amount * 10 ** token.decimals);
         const state = getState(program);
 
-        const userTokenAccount = await getAssociatedTokenAddress(
-          new PublicKey(token.address),
-          new PublicKey(payer.address),
-          provider
-        );
-
-        const toTokenAccount = await getAssociatedTokenAddress(
-          new PublicKey(token.address),
-          new PublicKey(to),
-          provider
-        );
-
-        const userPaidAccount = await getAssociatedTokenAddress(
-          new PublicKey(QUOTE_TOKEN.address),
-          new PublicKey(payer.address),
-          provider
-        );
-
-        const operatorPaidAccount = await getAssociatedTokenAddress(
-          new PublicKey(QUOTE_TOKEN.address),
-          new PublicKey(import.meta.env.VITE_SOLANA_OPERATOR),
+        const [
+          userTokenAccount,
+          toTokenAccount,
+          userPaidAccount,
+          operatorPaidAccount
+        ] = await getAccountsInfo(
+          [
+            [token.address, payer.address],
+            [token.address, to],
+            [QUOTE_TOKEN.address, payer.address],
+            [QUOTE_TOKEN.address, import.meta.env.VITE_SOLANA_OPERATOR]
+          ],
           provider
         );
 
@@ -85,12 +82,26 @@ export default function useTransfer({
           .accounts(transferAccounts)
           .instruction();
         const batchTx = new Transaction().add(tx);
+
+        if (isTicket) {
+          const memoInstruction = new TransactionInstruction({
+            keys: [],
+            programId: new PublicKey(
+              "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr"
+            ),
+            data: Buffer.from(
+              JSON.stringify({ type: "buy_ticket", address: to })
+            )
+          });
+          batchTx.add(memoInstruction);
+        }
+
         batchTx.feePayer = new PublicKey(import.meta.env.VITE_SOLANA_OPERATOR);
         // Get the latest blockhash
         const { blockhash } = await provider.connection.getLatestBlockhash();
         batchTx.recentBlockhash = blockhash;
 
-        const result = await sendSolanaTransaction(tx, "transferHelper");
+        const result = await sendSolanaTransaction(batchTx, "transferHelper");
         console.log("receipt:", result);
         // Report hash for tracking
         reportHash({

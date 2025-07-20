@@ -4,12 +4,7 @@ import useToast from "@/hooks/use-toast";
 import reportHash from "@/utils/report-hash";
 import * as anchor from "@coral-xyz/anchor";
 import useProgram from "./use-program";
-import {
-  getState,
-  getPool,
-  getAssociatedTokenAddress,
-  getWrapToSolIx
-} from "./helpers";
+import { getState, getPool, getWrapToSolIx, getAccountsInfo } from "./helpers";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   TOKEN_PROGRAM_ID
@@ -44,27 +39,18 @@ export default function useCancel({
 
       const pool = await getPool(program, provider, state.pda, orderId);
 
-      const userBaseAccount = await getAssociatedTokenAddress(
-        new PublicKey(BASE_TOKEN.address),
-        new PublicKey(payer.address),
-        provider
-      );
-
-      const userQuoteAccount = await getAssociatedTokenAddress(
-        new PublicKey(QUOTE_TOKEN.address),
-        new PublicKey(payer.address),
-        provider
-      );
-
-      const poolBaseAccount = await getAssociatedTokenAddress(
-        new PublicKey(BASE_TOKEN.address),
-        new PublicKey(pool.pda.toString()),
-        provider
-      );
-
-      const poolQuoteAccount = await getAssociatedTokenAddress(
-        new PublicKey(QUOTE_TOKEN.address),
-        new PublicKey(pool.pda.toString()),
+      const [
+        userBaseAccount,
+        userQuoteAccount,
+        poolBaseAccount,
+        poolQuoteAccount
+      ] = await getAccountsInfo(
+        [
+          [BASE_TOKEN.address, payer.address],
+          [QUOTE_TOKEN.address, payer.address],
+          [BASE_TOKEN.address, pool.pda.toString()],
+          [QUOTE_TOKEN.address, pool.pda.toString()]
+        ],
         provider
       );
 
@@ -110,7 +96,7 @@ export default function useCancel({
       //   connection: provider.connection
       // });
 
-      const result = await sendSolanaTransaction(tx, "cancelPool");
+      const result = await sendSolanaTransaction(batchTx, "cancelPool");
       console.log("receipt:", result);
       // Report hash for tracking
       reportHash({

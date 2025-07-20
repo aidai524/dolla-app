@@ -4,7 +4,7 @@ import useToast from "@/hooks/use-toast";
 import reportHash from "@/utils/report-hash";
 import * as anchor from "@coral-xyz/anchor";
 import useProgram from "./use-program";
-import { getState, getPool, getAssociatedTokenAddress } from "./helpers";
+import { getState, getPool, getAccountsInfo } from "./helpers";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   TOKEN_PROGRAM_ID
@@ -38,15 +38,11 @@ export default function useClaimFunds({
 
       const pool = await getPool(program, provider, state.pda, orderId);
 
-      const userQuoteAccount = await getAssociatedTokenAddress(
-        new PublicKey(QUOTE_TOKEN.address),
-        new PublicKey(payer.address),
-        provider
-      );
-
-      const poolQuoteAccount = await getAssociatedTokenAddress(
-        new PublicKey(QUOTE_TOKEN.address),
-        new PublicKey(pool.pda.toString()),
+      const [userQuoteAccount, poolQuoteAccount] = await getAccountsInfo(
+        [
+          [QUOTE_TOKEN.address, payer.address],
+          [QUOTE_TOKEN.address, pool.pda.toString()]
+        ],
         provider
       );
 
@@ -80,7 +76,7 @@ export default function useClaimFunds({
       //   transaction: batchTx,
       //   connection: provider.connection
       // });
-      const result = await sendSolanaTransaction(tx, "claimFunds");
+      const result = await sendSolanaTransaction(batchTx, "claimFunds");
       console.log("receipt:", result);
       // Report hash for tracking
       reportHash({

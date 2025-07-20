@@ -87,7 +87,10 @@ export async function getPool(
   return { pda: pda, bump: bump, pool: pool };
 }
 
-export async function getAccountsInfo(pairs: string[][], provider: any) {
+export async function getAccountsInfo(
+  pairs: string[][],
+  provider: any
+): Promise<any[]> {
   const accounts = pairs.map((pair) =>
     getAssociatedTokenAddressSync(
       new PublicKey(pair[0]),
