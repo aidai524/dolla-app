@@ -75,15 +75,13 @@ export async function getPool(
   );
 
   // // query pool info
-  // const stateExist = await accountExists(pda, provider.connection);
-  // let pool = null;
-  // if (stateExist) {
-  //   // @ts-ignore
-  //   pool = await program.account.poolState.fetch(pda);
-  // }
+  const stateExist = await accountExists(pda, provider.connection);
+  let pool = null;
+  if (stateExist) {
+    // @ts-ignore
+    pool = await program.account.poolState.fetch(pda);
+  }
 
-  // @ts-ignore
-  const pool = await program.account.poolState.fetch(pda);
   return { pda: pda, bump: bump, pool: pool };
 }
 
@@ -205,15 +203,14 @@ export async function getBuyState(
   );
 
   // query pool info
-  // const stateExist = await accountExists(pda, provider.connection);
-  // let buyerState = null;
+  const stateExist = await accountExists(pda, provider.connection);
+  let buyerState = null;
 
-  // if (stateExist) {
-  //   // @ts-ignore
-  //   buyerState = await program.account.buyerState.fetch(pda);
-  // }
-  // @ts-ignore
-  const buyerState = await program.account.buyerState.fetch(pda);
+  if (stateExist) {
+    // @ts-ignore
+    buyerState = await program.account.buyerState.fetch(pda);
+  }
+
   return { pda: pda, bump: bump, buyerState: buyerState };
 }
 

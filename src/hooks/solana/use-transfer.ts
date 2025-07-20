@@ -65,7 +65,7 @@ export default function useTransfer({
         let transferAccounts = {
           dollaState: state.pda,
           tokenMint: new PublicKey(token.address),
-          paidMint: new PublicKey(token.address),
+          paidMint: new PublicKey(QUOTE_TOKEN.address),
           userTokenAccount: userTokenAccount?.address,
           toTokenAccount: toTokenAccount?.address,
           userPaidAccount: userPaidAccount?.address,
@@ -75,26 +75,36 @@ export default function useTransfer({
           user: new PublicKey(payer.address),
           toUser: new PublicKey(to),
           operator: new PublicKey(import.meta.env.VITE_SOLANA_OPERATOR),
-          systemProgram: anchor.web3.SystemProgram.programId
+          systemProgram: anchor.web3.SystemProgram.programId,
+          splMemoProgram: new PublicKey(
+            "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr"
+          )
         };
+        const params = isTicket
+          ? [
+              transferAmount,
+              JSON.stringify({ type: "buy_ticket", address: payer.address })
+            ]
+          : [transferAmount];
+
         const tx: TransactionInstruction = await program.methods
-          .transferHelper(transferAmount)
+          .transferHelper(...params)
           .accounts(transferAccounts)
           .instruction();
         const batchTx = new Transaction().add(tx);
 
-        if (isTicket) {
-          const memoInstruction = new TransactionInstruction({
-            keys: [],
-            programId: new PublicKey(
-              "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr"
-            ),
-            data: Buffer.from(
-              JSON.stringify({ type: "buy_ticket", address: to })
-            )
-          });
-          batchTx.add(memoInstruction);
-        }
+        // if (isTicket) {
+        //   const memoInstruction = new TransactionInstruction({
+        //     keys: [],
+        //     programId: new PublicKey(
+        //       "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr"
+        //     ),
+        //     data: Buffer.from(
+        //       JSON.stringify({ type: "buy_ticket", address: to })
+        //     )
+        //   });
+        //   batchTx.add(memoInstruction);
+        // }
 
         batchTx.feePayer = new PublicKey(import.meta.env.VITE_SOLANA_OPERATOR);
         // Get the latest blockhash
@@ -119,7 +129,7 @@ export default function useTransfer({
         setTransferring(false);
       }
     },
-    [token]
+    [token, wallets]
   );
 
   return {

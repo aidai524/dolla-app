@@ -66,9 +66,10 @@ export default function useCreate({
       );
 
       // Ensure all accounts are properly defined
-      if (!userBaseAccount?.address || !poolBaseAccount?.address) {
-        throw new Error("Failed to get associated token accounts");
-      }
+
+      // if (!userBaseAccount?.address || !poolBaseAccount?.address) {
+      //   throw new Error("Failed to get associated token accounts");
+      // }
 
       let wrapTx: any[] = [];
       if (
