@@ -49,9 +49,8 @@ export default function useCreate({
       const state = getState(program);
       let baseAmount = new anchor.BN(amount * 10 ** BASE_TOKEN.decimals);
       let expectedQuoteAmount = new anchor.BN(
-        anchorPrice * amount * 10 ** BASE_TOKEN.decimals
+        anchorPrice * amount * 10 ** QUOTE_TOKEN.decimals
       );
-
       let nextOrderId = await getNextOrderId(program, state.pda);
       nextOrderId = new anchor.BN(nextOrderId);
       console.log("nextOrderId", nextOrderId.toNumber());

@@ -31,7 +31,7 @@ export default function BTCCreate() {
 
   const { onCreate, creating } = useCreate({
     amount,
-    anchorPrice: amount * pricePerBTC,
+    anchorPrice: pricePerBTC,
     onCreateSuccess: () => {
       update();
     }

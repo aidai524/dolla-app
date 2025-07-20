@@ -135,7 +135,10 @@ export default function Markets({ onClose }: { onClose: () => void }) {
               <Market
                 key={item.id}
                 data={item}
-                onClick={() => setSelectedMarket(item)}
+                onClick={() => {
+                  setSelectedMarket(item);
+                  onClose();
+                }}
               />
             ))}
             {loading && (
