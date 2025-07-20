@@ -4,12 +4,7 @@ import useToast from "@/hooks/use-toast";
 import reportHash from "@/utils/report-hash";
 import * as anchor from "@coral-xyz/anchor";
 import useProgram from "./use-program";
-import {
-  getState,
-  getPool,
-  getAssociatedTokenAddress,
-  getBuyState
-} from "./helpers";
+import { getState, getPool, getBuyState, getAccountsInfo } from "./helpers";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   TOKEN_PROGRAM_ID
@@ -22,6 +17,7 @@ import {
 } from "@solana/web3.js";
 import { sendSolanaTransaction } from "@/utils/transaction/send-solana-transaction";
 
+// user get quote token from pool when seller cancelled a pool
 export default function useClaimSlash({
   onClaimSuccess
 }: {
@@ -48,15 +44,11 @@ export default function useClaimSlash({
         pool.pda,
         new PublicKey(payer.address)
       );
-      const userQuoteAccount = await getAssociatedTokenAddress(
-        new PublicKey(QUOTE_TOKEN.address),
-        new PublicKey(payer.address),
-        provider
-      );
-
-      const poolQuoteAccount = await getAssociatedTokenAddress(
-        new PublicKey(QUOTE_TOKEN.address),
-        new PublicKey(pool.pda.toString()),
+      const [userQuoteAccount, poolQuoteAccount] = await getAccountsInfo(
+        [
+          [QUOTE_TOKEN.address, payer.address],
+          [QUOTE_TOKEN.address, pool.pda.toString()]
+        ],
         provider
       );
 
@@ -91,7 +83,7 @@ export default function useClaimSlash({
       //   transaction: batchTx,
       //   connection: provider.connection
       // });
-      const result = await sendSolanaTransaction(tx, "claimSlashFunds");
+      const result = await sendSolanaTransaction(batchTx, "claimSlashFunds");
       console.log("receipt:", result);
       // Report hash for tracking
       reportHash({
