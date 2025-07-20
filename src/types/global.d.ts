@@ -5,8 +5,7 @@ import { Howl } from "howler";
 declare global {
   interface Window {
     howl: {
-      switcher: Howl;
-      hints: Howl;
+      flip: Howl;
     };
     drawsUpdateTimer: NodeJS.Timeout;
   }

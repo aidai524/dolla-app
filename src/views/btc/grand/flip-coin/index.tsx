@@ -55,7 +55,7 @@ const Coin = forwardRef<any, any>(
 
       setIsAnimating(true);
       setIsFlipped(!isFlipped);
-
+      window.howl.flip.play();
       if (ticket === "0") {
         setShowTicket(true);
       }

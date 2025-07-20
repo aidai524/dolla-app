@@ -11,6 +11,7 @@ import { ToastContainer } from "react-toastify";
 import Temp from "./views/temp";
 import "react-toastify/dist/ReactToastify.css";
 import MainLayout from "./layouts/main";
+import "./libs/howl";
 
 const LazyNewBTC = lazy(() => import("./views/btc"));
 const LazyBtcCreate = lazy(() => import("./views/btc-create"));
