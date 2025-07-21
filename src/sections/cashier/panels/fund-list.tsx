@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/auth";
 import useTokenBalance from "@/hooks/solana/use-token-balance";
 import { formatNumber } from "@/utils/format/number";
 import FundFromCoinbase from "./fund-from-coinbase";
+import FundFromMoonpay from "./fund-from-moonpay";
 
 interface FundOption {
     id: string;
@@ -41,7 +42,13 @@ export default function FundList() {
             onClick: () => {
                 console.log("Bridge clicked");
                 // setSelectedOption("bridge");
-                window.open(`https://dolla-bridge-interface.pages.dev?toAddress=${userInfo?.sol_user}`, '_blank');
+                if (userInfo?.sol_user) {
+                    const windowWidth = 800;
+                    const windowHeight = 600;
+                    const left = (screen.width - windowWidth) / 2;
+                    const top = (screen.height - windowHeight) / 2;
+                    window.open(`https://dolla-bridge-interface.pages.dev?toAddress=${userInfo?.sol_user}`, '_blank', `width=${windowWidth},height=${windowHeight},left=${left},top=${top}`);
+                }
             }
         },
         {
@@ -171,7 +178,7 @@ export default function FundList() {
 
             {
                 (selectedOption === "moonpay") && (
-                    <FundFromCoinbase onBack={() => setSelectedOption(null)} />
+                    <FundFromMoonpay onBack={() => setSelectedOption(null)} />
                 )
             }
         </>

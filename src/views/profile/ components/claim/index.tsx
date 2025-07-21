@@ -2,7 +2,7 @@ import Empty from "@/components/empty";
 import Loading from "@/components/icons/loading";
 import { useRequest } from "ahooks";
 import { useEffect } from "react";
-import ProfileButton from "../button";
+import ButtonV2 from "@/components/button/v2";
 import { formatAddress } from "@/utils/format/address";
 import { formatNumber } from "@/utils/format/number";
 import Big from "big.js";
@@ -64,11 +64,11 @@ const ClaimIndex = (props: any) => {
                   {formatNumber(item.claimable, 2, true, { prefix: "$", isShort: Big(item.claimable || 0).gt(100000), isShortUppercase: true })}
                 </div>
                 <div className="py-[10px] flex items-center">
-                  <ProfileButton
+                  <ButtonV2
                     className="!w-[69px] !px-[unset]"
                   >
                     Claim
-                  </ProfileButton>
+                  </ButtonV2>
                 </div>
               </div>
             )) : (

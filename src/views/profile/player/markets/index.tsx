@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import Market from "@/views/btc/components/more-markets/market";
-import ProfileButton from "../../ components/button";
+import ButtonV2 from "@/components/button/v2";
 import Empty from "@/components/empty";
 import MarketStatus from "../../ components/market-status";
 import Loading from "@/components/icons/loading";
@@ -58,18 +58,19 @@ const MarketItem = (props: any) => {
           <div className="flex justify-between items-center gap-[10px]">
             <div className="text-[#BBACA6]">You bid / Refund</div>
             <div className="flex items-center justify-end gap-[7px]">
-              <ProfileButton
+              <ButtonV2
                 type="default"
                 className="!h-[24px] !rounded-[12px] !px-[10px] !text-[#BBACA6]"
               >
                 Claim
-              </ProfileButton>
-              <div className="">$200</div>
+              </ButtonV2>
+              <div className="">
+                $200
+              </div>
             </div>
           </div>
-        </div>
-      }
-      onClick={() => {}}
+        </div>)}
+      onClick={() => { }}
     />
   );
 };
