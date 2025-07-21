@@ -6,8 +6,9 @@ import { formatNumber } from "@/utils/format/number";
 import Big from "big.js";
 import { useAuth } from "@/contexts/auth";
 import useClaim from "@/hooks/evm/use-claim";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ClaimModal from "../claim/modal";
 
 const StatisticsPlayer = (props: any) => {
   const { className } = props;
@@ -15,6 +16,8 @@ const StatisticsPlayer = (props: any) => {
   const { onQueryUserInfo, userInfo } = useAuth();
   const { claim, claiming } = useClaim(userInfo?.claim_pool, onQueryUserInfo);
   const navigate = useNavigate();
+
+  const [claimModalOpen, setClaimModalOpen] = useState(false);
 
   const onSellTotalAmount = useMemo(() => {
     if (!userInfo?.on_sell) {
@@ -35,9 +38,11 @@ const StatisticsPlayer = (props: any) => {
           </div>
           <ProfileButton
             className=""
-            disabled={claiming || Big(userInfo?.seller_profit || 0).lte(0)}
-            loading={claiming}
-            onClick={claim}
+            // disabled={claiming || Big(userInfo?.seller_profit || 0).lte(0)}
+            // loading={claiming}
+            onClick={() => {
+              setClaimModalOpen(true);
+            }}
           >
             Claim
           </ProfileButton>
@@ -84,6 +89,12 @@ const StatisticsPlayer = (props: any) => {
           </ProfileButton>
         </LabelValue>
       </div>
+      <ClaimModal
+        open={claimModalOpen}
+        onClose={() => {
+          setClaimModalOpen(false);
+        }}
+      />
     </div>
   );
 };
