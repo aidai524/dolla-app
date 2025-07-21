@@ -7,7 +7,7 @@ import useDeposit from "@/hooks/evm/use-deposit-reward";
 import useApprove from "@/hooks/evm/use-approve";
 import { BETTING_CONTRACT_ADDRESS } from "@/config";
 import { useAuth } from "@/contexts/auth";
-import ProfileButton from "../../ components/button";
+import ButtonV2 from "@/components/button/v2";
 
 export default function DepositModal({
   open,
@@ -116,7 +116,7 @@ export default function DepositModal({
           </div>
 
           <div className="flex justify-center mt-[0px]">
-            <ProfileButton
+            <ButtonV2
               className="w-[220px] !h-[40px] !text-[16px]"
               loading={isLoading || approving || checking || depositing}
               onClick={() => {
@@ -128,7 +128,7 @@ export default function DepositModal({
               }}
             >
               {!approved ? "Approve" : "Deposit"}
-            </ProfileButton>
+            </ButtonV2>
           </div>
         </div>
       </Modal>

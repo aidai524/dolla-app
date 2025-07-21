@@ -41,63 +41,64 @@ export default function ListNFT() {
   }, [collection, nft]);
 
   return (
-    <div className="pt-[20px] max-w-[860px] pb-[50px]">
-      <div className="text-[16px] text-white font-semibold mb-[20px]">
-        Create Market
-      </div>
-      <div className="flex items-center h-[60px] bg-[#141519] rounded-[6px] px-[26px] mb-[12px]">
-        <div className="text-[14px] text-white font-light w-[100px]">
-          Chains
+    <div className="w-full h-screen overflow-y-auto flex justify-center">
+      <div className="pt-[20px] max-w-[860px] pb-[50px]">
+        <div className="text-[16px] text-white font-semibold mb-[20px]">
+          Create Market
         </div>
-        <div className="flex items-center gap-[20px]">
-          {chains.map((item) => (
-            <div
-              key={item.id}
-              className={clsx(
-                chain.id === item.id &&
+        <div className="flex items-center h-[60px] bg-[#141519] rounded-[6px] px-[26px] mb-[12px]">
+          <div className="text-[14px] text-white font-light w-[100px]">
+            Chains
+          </div>
+          <div className="flex items-center gap-[20px]">
+            {chains.map((item) => (
+              <div
+                key={item.id}
+                className={clsx(
+                  chain.id === item.id &&
                   "p-[4px] border border-[#FFC42F] bg-[#222A35] rounded-[6px] gap-[5px] flex items-center text-[#FFC42F]"
-              )}
-              onClick={() => {}}
-            >
-              <img className="w-[32px] h-[32px] rounded-[4px" src={item.icon} />
-              {chain.id === item.id && (
+                )}
+                onClick={() => { }}
+              >
+                <img className="w-[32px] h-[32px] rounded-[4px" src={item.icon} />
+                {chain.id === item.id && (
+                  <span className="text-[12px] font-light">{item.name}</span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="flex items-center h-[60px] bg-[#141519] rounded-[6px] px-[26px] mb-[12px]">
+          <div className="text-[14px] text-white font-light w-[100px]">
+            Collections
+          </div>
+          <div className="flex items-center gap-[20px]">
+            {collections.map((item) => (
+              <div
+                key={item.id}
+                className={clsx(
+                  "flex rounded-[6px] gap-[5px] flex items-center p-[4px] button border",
+                  collection.id === item.id
+                    ? "border-[#FFC42F] bg-[#222A35] text-[#FFC42F]"
+                    : "border-transparent"
+                )}
+                onClick={() => onSelectCollection(item)}
+              >
+                <img
+                  className="w-[32px] h-[32px] rounded-[4px]"
+                  src={item.icon}
+                />
                 <span className="text-[12px] font-light">{item.name}</span>
-              )}
-            </div>
-          ))}
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
-      <div className="flex items-center h-[60px] bg-[#141519] rounded-[6px] px-[26px] mb-[12px]">
-        <div className="text-[14px] text-white font-light w-[100px]">
-          Collections
-        </div>
-        <div className="flex items-center gap-[20px]">
-          {collections.map((item) => (
-            <div
-              key={item.id}
-              className={clsx(
-                "flex rounded-[6px] gap-[5px] flex items-center p-[4px] button border",
-                collection.id === item.id
-                  ? "border-[#FFC42F] bg-[#222A35] text-[#FFC42F]"
-                  : "border-transparent"
-              )}
-              onClick={() => onSelectCollection(item)}
-            >
-              <img
-                className="w-[32px] h-[32px] rounded-[4px]"
-                src={item.icon}
-              />
-              <span className="text-[12px] font-light">{item.name}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="border border-[#373737] bg-[#141519] rounded-[10px] p-[20px] mb-[12px]">
-        <div className="text-[14px] text-white font-light w-[100px]">
-          Select NFT
-        </div>
-        <Nfts nfts={nfts} onSelectNft={onSelectNft} currentNft={nft} />
-        {/* <div className="flex items-center gap-[8px] flex-wrap mt-[16px]">
+        <div className="border border-[#373737] bg-[#141519] rounded-[10px] p-[20px] mb-[12px]">
+          <div className="text-[14px] text-white font-light w-[100px]">
+            Select NFT
+          </div>
+          <Nfts nfts={nfts} onSelectNft={onSelectNft} currentNft={nft} />
+          {/* <div className="flex items-center gap-[8px] flex-wrap mt-[16px]">
           {nfts.map((item) => (
             <NFTCard
               key={item.id}
@@ -107,20 +108,21 @@ export default function ListNFT() {
             />
           ))}
         </div> */}
+        </div>
+        <ListPrice
+          listPrice={listPrice}
+          onSetListPrice={setListPrice}
+          errorTips={errorTips}
+          address={address}
+          token={selectedToken}
+          onSuccess={(type?: string) => {
+            fetchNfts();
+            if (type === "create") {
+              setNft({});
+            }
+          }}
+        />
       </div>
-      <ListPrice
-        listPrice={listPrice}
-        onSetListPrice={setListPrice}
-        errorTips={errorTips}
-        address={address}
-        token={selectedToken}
-        onSuccess={(type?: string) => {
-          fetchNfts();
-          if (type === "create") {
-            setNft({});
-          }
-        }}
-      />
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import ProfileButton from "../button";
+import ButtonV2 from "@/components/button/v2";
 import LabelValue from "../label-value";
 import { useState } from "react";
 import { formatNumber } from "@/utils/format/number";
@@ -46,9 +46,13 @@ const StatisticsPlayer = (props: any) => {
         <LabelValue label="#BTC" className="ml-[45px]">
           {formatNumber(0, 2, true)}
         </LabelValue>
-        <ProfileButton className="ml-[64px]" onClick={() => {}} disabled>
+        <ButtonV2
+          className="ml-[64px]"
+          onClick={() => { }}
+          disabled
+        >
           Share
-        </ProfileButton>
+        </ButtonV2>
       </div>
       <div className="w-[1px] h-[70px] shrink-0 bg-[#423930]"></div>
       <div className="flex items-center">
@@ -69,7 +73,7 @@ const StatisticsPlayer = (props: any) => {
           })}
         </LabelValue>
         <div className="flex items-center justify-end gap-[10px] ml-[70px]">
-          <ProfileButton
+          <ButtonV2
             className=""
             onClick={() => {
               setCashierModalTab("fund");
@@ -77,8 +81,8 @@ const StatisticsPlayer = (props: any) => {
             }}
           >
             Fund
-          </ProfileButton>
-          <ProfileButton
+          </ButtonV2>
+          <ButtonV2
             className=""
             type="default"
             onClick={() => {
@@ -87,7 +91,7 @@ const StatisticsPlayer = (props: any) => {
             }}
           >
             Withdraw
-          </ProfileButton>
+          </ButtonV2>
         </div>
       </div>
       <CashierModal
