@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@coinbase/onchainkit": "^0.38.17",
     "@coral-xyz/anchor": "0.30.1",
     "@gelatonetwork/smartwallet": "^0.0.18",
     "@gelatonetwork/smartwallet-react-sdk": "^0.0.18",

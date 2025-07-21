@@ -42,7 +42,6 @@ export default function useBidList() {
           newList = [...cachedList.current, ...res.data.data.list];
         }
       }
-      console.log("newList", newList);
       const _more = res.data?.data?.has_next_page || false;
 
       cachedList.current = newList;

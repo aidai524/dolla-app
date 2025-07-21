@@ -2,11 +2,8 @@ import Modal from "@/components/modal";
 import Switch from "@/components/switch";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import Recharge from "./panels/recharge";
-import WithdrawSolana from "./panels/withdraw-solana";
-import Records from "./panels/records";
 import FundList from "./panels/fund-list";
-import { PURCHASE_TOKEN } from "@/config";
+import WithdrawSolana from "./panels/withdraw-solana";
 
 export default function CashierModal({ open, onClose, defaultTab }: any) {
   const [tab, setTab] = useState("fund");

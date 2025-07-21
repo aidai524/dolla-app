@@ -4,7 +4,7 @@ import { PURCHASE_TOKEN } from "@/config";
 import { useAuth } from "@/contexts/auth";
 import useTokenBalance from "@/hooks/solana/use-token-balance";
 import { formatNumber } from "@/utils/format/number";
-
+import FundFromCoinbase from "./fund-from-coinbase";
 
 interface FundOption {
     id: string;
@@ -25,8 +25,6 @@ export default function FundList() {
     const { address, userInfo } = useAuth();
     const { tokenBalance, isLoading } = useTokenBalance({ address: usdc.address, decimals: usdc.decimals });
 
-    console.log("tokenBalance", address, userInfo, tokenBalance, isLoading);
-
     const fundOptions: FundOption[] = [
         {
             id: "bridge",
@@ -43,6 +41,7 @@ export default function FundList() {
             onClick: () => {
                 console.log("Bridge clicked");
                 setSelectedOption("bridge");
+                window.open(`https://dolla-bridge-interface.pages.dev?toAddress=${userInfo?.sol_user}`, '_blank');
             }
         },
         {
@@ -148,7 +147,7 @@ export default function FundList() {
                                     />
                                     <div className="flex flex-col">
                                         <span className="text-white text-[16px] leading-[18px]">Your account</span>
-                                        <span className="text-[#BBACA6] text-xs leading-[16px] mt-[2px]">{ userInfo?.sol_user.slice(0, 5) }...{ userInfo?.sol_user.slice(-4)     }</span>
+                                        <span className="text-[#BBACA6] text-xs leading-[16px] mt-[2px]">{userInfo?.sol_user.slice(0, 5)}...{userInfo?.sol_user.slice(-4)}</span>
                                     </div>
                                 </div>
                                 <span className="text-white text-[16px]">{formatNumber(tokenBalance, 2, true)} {usdc.symbol}</span>
@@ -161,6 +160,18 @@ export default function FundList() {
                         </div>
                     </div>
 
+                )
+            }
+
+            {
+                (selectedOption === "coinbase") && (
+                    <FundFromCoinbase onBack={() => setSelectedOption(null)} />
+                )
+            }
+
+            {
+                (selectedOption === "moonpay") && (
+                    <FundFromCoinbase onBack={() => setSelectedOption(null)} />
                 )
             }
         </>
