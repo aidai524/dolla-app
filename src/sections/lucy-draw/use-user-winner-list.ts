@@ -10,7 +10,7 @@ export default function useUserWinnerList() {
   const fetchUserWinnerList = async () => {
     try {
       const res = await axiosInstance.get(
-        `/api/v1/user/ticket/winning/list?claim=false&limit=100&offset=0`
+        `/api/v1/user/ticket/winning/list?claim=true&limit=100&offset=0`
       );
 
       const map: any = {};
