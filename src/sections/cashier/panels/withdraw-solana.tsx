@@ -4,7 +4,7 @@ import ButtonWithAuth from "@/components/button/button-with-auth";
 import { formatNumber } from "@/utils/format/number";
 import { useMemo, useState } from "react";
 import clsx from "clsx";
-import useWithdraw from "@/hooks/evm/use-withdraw";
+import useSplWithdraw from "@/hooks/solana/use-spl-withdraw";
 // import useUserWinner from "@/hooks/use-user-winner";
 // import Loading from "@/components/icons/loading";
 import { useAuth } from "@/contexts/auth";
@@ -29,22 +29,28 @@ export default function WithdrawSolana() {
   const { tokenBalance: btcBalance } = useTokenBalance(TOKNES[1]);
   const [receiveAddress, setReceiveAddress] = useState("");
   const { address } = useAuth();
+  const [amount, setAmount] = useState("");
   const isAddressValid = useMemo(() => {
     return (
       // receiveAddress.length === 42 &&
       // receiveAddress.startsWith("0x") &&
-      receiveAddress === address
+      receiveAddress !== address
     );
   }, [receiveAddress]);
 
   const [selectedItem, setSelectedItem] = useState<any>(TOKNES[0]);
-  const { withdrawing, onWithdraw } = useWithdraw(() => {
-    setSelectedItem(null);
-    setReceiveAddress("");
-    setAmount("");
-  });
+  // const { withdrawing, onWithdraw } = useWithdraw(() => {
+  //   setSelectedItem(null);
+  //   setReceiveAddress("");
+  //   setAmount("");
+  // });
 
-  const [amount, setAmount] = useState("");
+  const { withdraw } = useSplWithdraw({
+    token: selectedItem,
+    amount: Number(amount),
+    targetAddress: receiveAddress
+  });
+  
   return (
     <div className="pt-[20px]">
       <div className="flex gap-[15px] min-h-[160px]">
@@ -131,13 +137,9 @@ export default function WithdrawSolana() {
       <ButtonWithAuth
         className="mt-[20px] w-[160px] mx-auto h-[40px]"
         disabled={!isAddressValid || !amount || !receiveAddress}
-        loading={withdrawing}
+        loading={false}
         onClick={() => {
-          onWithdraw({
-            ...selectedItem,
-            receiveAddress,
-            amount: Number(amount)
-          });
+          withdraw();
         }}
       >
         {!amount

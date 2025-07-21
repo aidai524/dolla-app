@@ -1,6 +1,6 @@
 import clsx from "clsx";
 
-const ProfileButton = (props: any) => {
+const ButtonV2 = (props: any) => {
   const { className, children, type = "primary", htmlType = "button", ...restProps } = props;
 
   return (
@@ -19,4 +19,4 @@ const ProfileButton = (props: any) => {
   );
 };
 
-export default ProfileButton;
+export default ButtonV2;

@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import LabelValue from "../label-value";
-import ProfileButton from "../button";
+import ButtonV2 from "@/components/button/v2";
 import Badge from "../badge";
 import { formatNumber } from "@/utils/format/number";
 import Big from "big.js";
@@ -36,7 +36,7 @@ const StatisticsPlayer = (props: any) => {
           <div className="">
             {formatNumber(Big(userInfo?.seller_profit || 0).gt(0) ? userInfo?.seller_profit : 0, 2, true, { prefix: "$", isShort: Big(userInfo?.seller_profit || 0).abs().gt(100000), isShortUppercase: true })}
           </div>
-          <ProfileButton
+          <ButtonV2
             className=""
             // disabled={claiming || Big(userInfo?.seller_profit || 0).lte(0)}
             // loading={claiming}
@@ -45,7 +45,7 @@ const StatisticsPlayer = (props: any) => {
             }}
           >
             Claim
-          </ProfileButton>
+          </ButtonV2>
         </LabelValue>
 
       </div>
@@ -79,14 +79,14 @@ const StatisticsPlayer = (props: any) => {
           <div className="">
             {formatNumber(onSellTotalAmount, 2, true, { isShort: true, isShortUppercase: true })} BTC
           </div>
-          <ProfileButton
+          <ButtonV2
             onClick={() => {
               navigate(`btc/create`);
             }}
             type="default"
           >
             Create
-          </ProfileButton>
+          </ButtonV2>
         </LabelValue>
       </div>
       <ClaimModal
