@@ -31,8 +31,8 @@ export default function WithdrawSolana() {
   const { address } = useAuth();
   const isAddressValid = useMemo(() => {
     return (
-      receiveAddress.length === 42 &&
-      receiveAddress.startsWith("0x") &&
+      // receiveAddress.length === 42 &&
+      // receiveAddress.startsWith("0x") &&
       receiveAddress === address
     );
   }, [receiveAddress]);

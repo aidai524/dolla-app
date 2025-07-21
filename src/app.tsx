@@ -12,6 +12,7 @@ import Temp from "./views/temp";
 import "react-toastify/dist/ReactToastify.css";
 import MainLayout from "./layouts/main";
 import "./libs/howl";
+import Callback from "./views/callback";
 
 const LazyNewBTC = lazy(() => import("./views/btc"));
 const LazyBtcCreate = lazy(() => import("./views/btc-create"));
@@ -46,6 +47,10 @@ const router = createBrowserRouter([
         element: <LazyProfileSeller />
       }
     ]
+  },
+  {
+    path: "/callback",
+    element: <Callback />
   },
   {
     path: "/temp",
