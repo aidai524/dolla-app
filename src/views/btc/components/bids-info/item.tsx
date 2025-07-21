@@ -1,4 +1,5 @@
 import Avatar from "@/components/avatar";
+import { formatAddress } from "@/utils/format/address";
 import dayjs from "dayjs";
 
 export default function Item({ data }: any) {
@@ -9,8 +10,8 @@ export default function Item({ data }: any) {
         size={30}
         className="border border-[#131417] mr-[8px]"
       />
-      <div className="max-w-[90px] text-[14px] font-bold truncate mr-[5px]">
-        {data.user}
+      <div className="text-[14px] font-bold truncate mr-[5px]">
+        {formatAddress(data.user, 3)}
       </div>
       <div className="text-[14px] font-bold text-[#FFEF43] mr-[5px]">
         bid {data.times}
