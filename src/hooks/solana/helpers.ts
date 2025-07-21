@@ -106,7 +106,7 @@ export async function getAccountsInfo(pairs: string[][]): Promise<any[]> {
   });
 
   const accountsInfo = accounts.map((account, i) => {
-    if (response.data.result.value[i]) {
+    if (response.data?.result?.value[i]) {
       return {
         address: account.toString()
       };

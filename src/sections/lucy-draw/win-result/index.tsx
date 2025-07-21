@@ -46,7 +46,7 @@ export default function WinResult({
             <button
               onClick={() => {
                 if (isClaiming) return;
-                claim(currentWinner.prize_draw_id);
+                claim(currentWinner.ids);
               }}
               className={clsx(
                 "w-[72px] h-[24px] bg-linear-to-b from-[#FFF698] to-[#FFC42F] rounded-[8px] text-[12px]",

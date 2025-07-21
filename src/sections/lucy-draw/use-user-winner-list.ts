@@ -12,13 +12,32 @@ export default function useUserWinnerList() {
       const res = await axiosInstance.get(
         `/api/v1/user/ticket/winning/list?claim=false&limit=100&offset=0`
       );
-      listRef.current = res.data.data;
+
+      const map: any = {};
+
+      res.data.data.list.forEach((item: any) => {
+        if (!map[item.prize_draw_id]) {
+          map[item.prize_draw_id] = {
+            volume: Number(item.volume),
+            ids: [item.id],
+            prize_draw_id: item.prize_draw_id
+          };
+        } else {
+          map[item.prize_draw_id].volume += Number(item.volume);
+          map[item.prize_draw_id].ids.push(item.id);
+        }
+      });
+
+      listRef.current = Object.values(map);
       getCurrentWinner();
     } catch (err) {}
   };
 
   const getCurrentWinner = () => {
-    if (!listRef.current) return null;
+    if (!listRef.current?.length) {
+      setCurrentWinner(null);
+      return;
+    }
     const winner = listRef.current.pop();
     setCurrentWinner(winner);
   };
