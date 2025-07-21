@@ -52,7 +52,7 @@ export default function BTCCreate() {
   }, [amount, tokenBalance, pricePerBTC]);
 
   return (
-    <div className="w-full h-screen overflow-y-auto font-[SpaceGrotesk] text-[14px] font-[400] leading-[100%] text-white pt-[60px]">
+    <div className="w-full h-screen overflow-y-auto font-[SpaceGrotesk] text-[14px] font-[400] leading-[100%] text-white pt-[60px] pb-[60px]">
       <div className="text-[20px] font-[DelaGothicOne] text-center">
         Create BTC Market
       </div>
