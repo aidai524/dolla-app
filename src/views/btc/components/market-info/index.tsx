@@ -4,6 +4,7 @@ import { formatNumber } from "@/utils/format/number";
 import Big from "big.js";
 import { formatAddress } from "@/utils/format/address";
 import { useMemo } from "react";
+import Avatar from "@/components/avatar";
 
 export default function MarketInfo() {
   const { pool } = useBtcContext();
@@ -21,10 +22,11 @@ export default function MarketInfo() {
       <div className="absolute left-[20px] bottom-[24%] w-[244px]">
         <div className="flex items-center gap-[50px]">
           <div className="flex items-center gap-[8px]">
-            {/* <img
-            src="/images/new-btc/header/icon-1.png"
-            className="w-[32px] h-[32px] rounded-[6px] border border-[2px] border-white/40"
-          /> */}
+            <Avatar
+              address={pool?.user}
+              size={32}
+              className="border border-[2px] border-white/40"
+            />
             <div>
               <div className="text-[#FFE9B2] text-[12px]">Provider</div>
               <div className="text-white text-[14px]">
