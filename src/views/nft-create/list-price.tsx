@@ -36,12 +36,12 @@ export default function ListPrice({
   const tokenIds = useMemo(() => {
     return token.id
       ? [
-          {
-            chain: "Berachain",
-            address: token.address,
-            tokenIds: [token.id]
-          }
-        ]
+        {
+          chain: "Berachain",
+          address: token.address,
+          tokenIds: [token.id]
+        }
+      ]
       : [];
   }, [token]);
   const { prices, loading: pricesLoading } = useTokenPrice(tokenIds);
@@ -72,7 +72,7 @@ export default function ListPrice({
                   ? "cursor-pointer hover:border-[#FFC42F] hover:shadow-[0px_0px_6px_0px_#FFC530]"
                   : "cursor-not-allowed opacity-50",
                 listPrice === price[item.key] &&
-                  "border-[#FFC42F] shadow-[0px_0px_6px_0px_#FFC530]"
+                "border-[#FFC42F] shadow-[0px_0px_6px_0px_#FFC530]"
               )}
               key={item.key}
               onClick={() => {
@@ -145,9 +145,10 @@ export default function ListPrice({
             </Button>
           )}
         </div>
-        <div className="flex flex-col gap-[14px] w-[474px] bg-[#1A1E24] rounded-[6px] h-[328px] relative">
-          <PriceChart anchorPrice={listPrice} />
-        </div>
+        <PriceChart
+          anchorPrice={listPrice}
+          className="h-[328px] !w-[474px] bg-[#1A1E24] rounded-[6px]"
+        />
       </div>
     </div>
   );

@@ -9,7 +9,7 @@ import StatisticsPlayer from "./statistics-player";
 import StatisticsSeller from "./statistics-seller";
 import Popover, { PopoverPlacement, PopoverTrigger } from "@/components/popover";
 import Badge from "../badge";
-import ProfileButton from "../button";
+import ButtonV2 from "@/components/button/v2";
 import PopoverCard from "../popover-card";
 
 const Dashboard = (props: any) => {
@@ -115,12 +115,12 @@ const Dashboard = (props: any) => {
                   </div>
                 )
               }
-              <ProfileButton
+              <ButtonV2
                 disabled
                 onClick={() => { }}
               >
                 Invite frenz
-              </ProfileButton>
+              </ButtonV2>
             </div>
             <div className="">
               Joined {userInfo?.created_at ? dayjs(userInfo.created_at).format("MMMM D, YYYY") : ""}
