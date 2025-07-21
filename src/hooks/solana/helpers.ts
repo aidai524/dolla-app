@@ -75,15 +75,13 @@ export async function getPool(
   );
 
   // // query pool info
-  // const stateExist = await accountExists(pda, provider.connection);
-  // let pool = null;
-  // if (stateExist) {
-  //   // @ts-ignore
-  //   pool = await program.account.poolState.fetch(pda);
-  // }
+  const stateExist = await accountExists(pda, provider.connection);
+  let pool = null;
+  if (stateExist) {
+    // @ts-ignore
+    pool = await program.account.poolState.fetch(pda);
+  }
 
-  // @ts-ignore
-  const pool = await program.account.poolState.fetch(pda);
   return { pda: pda, bump: bump, pool: pool };
 }
 
@@ -119,11 +117,12 @@ export async function getAccountsInfo(
     }
 
     return {
+      address: account.toString(),
       instruction: createAssociatedTokenAccountInstruction(
-        provider.publicKey!,
+        new PublicKey(import.meta.env.VITE_SOLANA_OPERATOR),
         account,
-        new PublicKey(pairs[i][0]),
-        new PublicKey(pairs[i][1])
+        new PublicKey(pairs[i][1]),
+        new PublicKey(pairs[i][0])
       )
     };
   });
@@ -205,15 +204,14 @@ export async function getBuyState(
   );
 
   // query pool info
-  // const stateExist = await accountExists(pda, provider.connection);
-  // let buyerState = null;
+  const stateExist = await accountExists(pda, provider.connection);
+  let buyerState = null;
 
-  // if (stateExist) {
-  //   // @ts-ignore
-  //   buyerState = await program.account.buyerState.fetch(pda);
-  // }
-  // @ts-ignore
-  const buyerState = await program.account.buyerState.fetch(pda);
+  if (stateExist) {
+    // @ts-ignore
+    buyerState = await program.account.buyerState.fetch(pda);
+  }
+
   return { pda: pda, bump: bump, buyerState: buyerState };
 }
 
@@ -248,7 +246,11 @@ export function getRandomnessAccount(payer: any) {
 }
 
 export function setupQueue() {
-  return new PublicKey("EYiAmGSdsQTuCw413V5BzaruWuCCSDgTPtBGvLkXHbe7");
+  return new PublicKey(
+    import.meta.env.VITE_SOLANA_CLUSTER_NAME === "devnet"
+      ? "EYiAmGSdsQTuCw413V5BzaruWuCCSDgTPtBGvLkXHbe7"
+      : "A43DyUGA7s8eXPxqEjJY6EBu1KKbNgfxF8h17VAHn13w"
+  );
 }
 
 export async function getBidGasFee(

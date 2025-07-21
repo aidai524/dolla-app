@@ -1364,6 +1364,10 @@ export default {
           address: "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
         },
         {
+          name: "spl_memo_program",
+          address: "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr"
+        },
+        {
           name: "user",
           writable: true,
           signer: true
@@ -1385,6 +1389,12 @@ export default {
         {
           name: "transfer_amount",
           type: "u64"
+        },
+        {
+          name: "memo",
+          type: {
+            option: "string"
+          }
         }
       ]
     },
