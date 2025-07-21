@@ -2,6 +2,7 @@ import clsx from "clsx";
 import GridTable, { GridTableAlign } from "@/components/grid-table";
 import dayjs from "dayjs";
 import Pagination from "@/components/pagination";
+import { formatNumber } from "@/utils/format/number";
 
 const BidHistory = (props: any) => {
   const {
@@ -31,6 +32,9 @@ const BidHistory = (props: any) => {
       dataIndex: "marketSize",
       title: "Market Size",
       width: 160,
+      render: (record: any) => {
+        return `${formatNumber(record.reward_amount, 4, true)} ${typeof record.reward_token == "string" ? record.reward_token : record.reward_token.symbol}`;
+      }
     },
     {
       dataIndex: "purchase_amount",
