@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import Market from "@/views/btc/components/more-markets/market";
-import ProfileButton from "../../ components/button";
+import ButtonV2 from "@/components/button/v2";
 import Empty from "@/components/empty";
 import MarketStatus, { EMarketStatus } from "../../ components/market-status";
 import dayjs from "dayjs";
@@ -125,13 +125,13 @@ const MarketItem = (props: any) => {
             <div className="flex items-center justify-end gap-[7px]">
               {
                 order.status === EMarketStatus.UnDeoposit && (
-                  <ProfileButton
+                  <ButtonV2
                     type="primary"
                     className="!h-[28px] !rounded-[8px] !text-[14px] !px-[5px] !font-[400]"
                     onClick={onDeposit}
                   >
                     Deposit
-                  </ProfileButton>
+                  </ButtonV2>
                 )
               }
 
@@ -157,14 +157,14 @@ const MarketItem = (props: any) => {
                     closeDelayDuration={0}
                     offset={30}
                   >
-                    <ProfileButton
+                    <ButtonV2
                       type="default"
                       className="!h-[28px] !px-[7px] !rounded-[8px] !text-[14px] flex items-center gap-[3px]"
                       onClick={onCancel}
                     >
                       <div className="">Cancel</div>
                       <img src="/profile/icon-warning.svg" alt="warning" className="w-[13px] h-[11px] shrink-0" />
-                    </ProfileButton>
+                    </ButtonV2>
                   </Popover>
                 )
               }
@@ -172,7 +172,7 @@ const MarketItem = (props: any) => {
               {
                 order.status === EMarketStatus.Winner && (
                   !order.is_claim && (
-                    <ProfileButton
+                    <ButtonV2
                       type="primary"
                       className="!h-[28px] !rounded-[8px] !text-[14px]"
                       onClick={claim}
@@ -180,20 +180,20 @@ const MarketItem = (props: any) => {
                       disabled={claiming}
                     >
                       Claim
-                    </ProfileButton>
+                    </ButtonV2>
                   )
                 )
               }
 
               {
                 order.is_claim && (
-                  <ProfileButton
+                  <ButtonV2
                     type="default"
                     disabled={true}
                     className="!h-[28px] !rounded-[8px] !text-[14px]"
                   >
                     Claimed
-                  </ProfileButton>
+                  </ButtonV2>
                 )
               }
 

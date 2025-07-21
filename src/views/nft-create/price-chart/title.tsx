@@ -1,7 +1,11 @@
-export default function Title() {
+import clsx from "clsx";
+
+export default function Title(props: any) {
+  const { className } = props;
+
   return (
-    <div className="absolute top-[14px] left-[20px] flex items-center gap-[6px]">
-      <span className="text-[16px] font-medium">
+    <div className={clsx("absolute top-[14px] left-[20px] flex items-center gap-[6px] text-[#BBACA6] text-[14px] font-[SpaceGrotesk] font-[400] leading-[100%]", className)}>
+      <span className="">
         Probability Weighted Sales
       </span>
       <button className="button relative group">
@@ -18,7 +22,7 @@ export default function Title() {
           />
         </svg>
         <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 absolute top-[-60px] left-[50%] translate-x-[-50%] w-[254px] h-[51px] bg-[#131313] border border-[#484848] px-[11px] pt-[6px] rounded-[6px] pointer-events-none">
-          <div className="text-[#ADBCCF] text-[12px] text-left">
+          <div className="text-[12px] text-left">
             This Probability weighted sales is projected based on 10,000
             simulations.
           </div>
