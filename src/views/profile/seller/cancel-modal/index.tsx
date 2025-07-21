@@ -5,7 +5,7 @@ import { formatNumber } from "@/utils/format/number";
 import { useMemo } from "react";
 import Big from "big.js";
 import useCancelOrder from "@/hooks/evm/use-cancel-order";
-import ProfileButton from "../../ components/button";
+import ButtonV2 from "@/components/button/v2";
 
 export default function CancelModal({
   open,
@@ -118,13 +118,13 @@ export default function CancelModal({
           </div>
         </div>
         <div className="flex justify-center mt-[0px]">
-          <ProfileButton
+          <ButtonV2
             className="w-[220px] !h-[40px] !text-[16px]"
             loading={cancelling}
             onClick={cancelOrder}
           >
             Confirm
-          </ProfileButton>
+          </ButtonV2>
         </div>
       </div>
     </Modal>
