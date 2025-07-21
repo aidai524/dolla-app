@@ -37,7 +37,11 @@ export default function FundFromCoinbase({ onBack }: { onBack: () => void }) {
     return <div>
         <FundFromCex amount={amount} disabled={!amount || Number(amount) < 10 || !coinBaseUrl} setAmount={setAmount} onBack={onBack} onOrderIdCreated={() => {
             if (coinBaseUrl) {
-                window.open(coinBaseUrl, '_blank', 'width=800,height=600,left=100,top=100');
+                const windowWidth = 800;
+                const windowHeight = 600;
+                const left = (screen.width - windowWidth) / 2;
+                const top = (screen.height - windowHeight) / 2;
+                window.open(coinBaseUrl, '_blank', `width=${windowWidth},height=${windowHeight},left=${left},top=${top}`);
             }
         }} />
     </div>
