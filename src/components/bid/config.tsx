@@ -7,18 +7,23 @@ export default [
     color: "#FFC42F"
   },
   {
-    value: 10,
+    value: 5,
     icon: <FireIcon />,
-    color: "#FF972F"
+    color: "#FF9B43"
   },
   {
-    value: 20,
+    value: 10,
+    icon: <FireIcon />,
+    color: "#83FF52"
+  },
+  {
+    value: 50,
     icon: <FrashIcon />,
-    color: "#57FF70"
+    color: "#7357FF"
   },
   {
     value: 100,
     icon: <DemandIcon />,
-    color: "#FF52F6"
+    color: "#FF5252"
   }
 ];
