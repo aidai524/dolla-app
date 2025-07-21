@@ -17,6 +17,7 @@ import {
   useUser,
   useSolanaWallets
 } from "@privy-io/react-auth";
+import useConfig from "@/hooks/use-config";
 import { ethers } from "ethers";
 
 const AuthContext = React.createContext<any | null>(null);
@@ -26,7 +27,7 @@ export const AuthProvider: React.FC<{
 }> = ({ children }) => {
   const { logout: privyLogout, login: privyLogin, ready } = usePrivy();
   const { user } = useUser();
-
+  const config = useConfig();
   const { wallets } = useWallets();
   const { wallets: solanaWallets } = useSolanaWallets();
 
