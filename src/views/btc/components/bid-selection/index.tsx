@@ -2,7 +2,7 @@ import clsx from "clsx";
 import AddBtn from "./add-btn";
 import { BalanceBg, Bg1, Bg100, Bg10, Bg5, Bg50, ProvablyFairBg } from "./bgs";
 import Cashier from "@/sections/cashier/modal";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useBtcContext } from "../../context";
 import BidBtn from "../bid-btn";
 import AutoBtn from "./auto-btn";
@@ -16,13 +16,17 @@ export default function BidSelection() {
     decimals: QUOTE_TOKEN.decimals
   });
   const [showCashier, setShowCashier] = useState(false);
-  const { bids, setBids, flipStatus } = useBtcContext();
+  const { bids, setBids, flipStatus, pool } = useBtcContext();
   const onChangeBids = (bids: number) => {
     if (flipStatus === 1) return;
     setBids(bids);
   };
 
-  const isDisabled = flipStatus !== 0 && flipStatus !== 6;
+  const isDisabled = useMemo(() => {
+    if (flipStatus !== 0 && flipStatus !== 6) return true;
+    if (pool?.status !== 1) return true;
+    return false;
+  }, [flipStatus, pool]);
 
   return (
     <div className="absolute bottom-0 left-[3%] w-full h-[202px] flex items-center justify-center">

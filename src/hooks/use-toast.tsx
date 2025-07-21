@@ -41,11 +41,21 @@ export default function useToast() {
       }
     );
   };
+  const notice = (params: any) => {
+    return toast(
+      <Toast type="notice" duration={ToastAutoCloseDuration} {...params} />,
+      {
+        position: "top-right",
+        autoClose: ToastAutoCloseDuration
+      }
+    );
+  };
   return {
     success,
     fail,
     info,
     loading,
+    notice,
     dismiss: toast.dismiss
   };
 }

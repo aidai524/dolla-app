@@ -8,6 +8,8 @@ import {
 } from "react";
 import usePoolRecommend from "@/hooks/use-pool-recommend";
 import useBasicInfo from "@/hooks/solana/use-basic";
+import { useParams } from "react-router-dom";
+import usePoolInfo from "@/hooks/use-pool-info";
 
 export const CannonCoinsContext = createContext<any>({});
 
@@ -22,12 +24,16 @@ export const CannonCoinsProvider = ({
   const coinsRef = useRef<any>({});
   const flipedNumberRef = useRef(0);
   const [bidResult, setBidResult] = useState<any>(null);
+  const params = useParams();
+  const { poolInfo, onQueryPoolInfo } = usePoolInfo("solana");
 
-  const { data, getPoolRecommend } = usePoolRecommend(0);
+  const { data, getPoolRecommend } = usePoolRecommend(0, !params?.poolId);
   const [selectedMarket, setSelectedMarket] = useState<any>(null);
   const pool = useMemo(() => {
-    return selectedMarket || data;
-  }, [selectedMarket, data]);
+    if (selectedMarket) return selectedMarket;
+    if (params?.poolId && !data?.id) return poolInfo;
+    return data;
+  }, [selectedMarket, data, poolInfo]);
 
   useEffect(() => {
     if (flipStatus === 1 || flipStatus === 0) {
@@ -53,11 +59,15 @@ export const CannonCoinsProvider = ({
     }
   }, [flipStatus]);
 
+  useEffect(() => {
+    if (params?.poolId) onQueryPoolInfo(Number(params.poolId));
+  }, [params?.poolId]);
+
   return (
     <CannonCoinsContext.Provider
       value={{
         flipStatus,
-        pool,
+        pool: { ...pool, status: 1 },
         sbProgramRef,
         bids,
         setBids,

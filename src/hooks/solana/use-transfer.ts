@@ -84,20 +84,22 @@ export default function useTransfer({
           .transferHelper(...params)
           .accounts(transferAccounts)
           .instruction();
-        const batchTx = new Transaction().add(tx);
+        const batchTx = new Transaction();
 
-        // if (isTicket) {
-        //   const memoInstruction = new TransactionInstruction({
-        //     keys: [],
-        //     programId: new PublicKey(
-        //       "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr"
-        //     ),
-        //     data: Buffer.from(
-        //       JSON.stringify({ type: "buy_ticket", address: to })
-        //     )
-        //   });
-        //   batchTx.add(memoInstruction);
-        // }
+        if (userTokenAccount?.instruction) {
+          batchTx.add(userTokenAccount.instruction);
+        }
+        if (toTokenAccount?.instruction) {
+          batchTx.add(toTokenAccount.instruction);
+        }
+        if (userPaidAccount?.instruction) {
+          batchTx.add(userPaidAccount.instruction);
+        }
+        if (operatorPaidAccount?.instruction) {
+          batchTx.add(operatorPaidAccount.instruction);
+        }
+
+        batchTx.add(tx);
 
         batchTx.feePayer = new PublicKey(import.meta.env.VITE_SOLANA_OPERATOR);
         // Get the latest blockhash
