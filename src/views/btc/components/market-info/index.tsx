@@ -9,6 +9,7 @@ export default function MarketInfo() {
   const { pool } = useBtcContext();
 
   const [amount] = useMemo(() => {
+    if (!pool) return ["0"];
     const reward_amount = pool.reward_amount || 0;
     const decimals = pool.reward_token_info?.[0]?.decimals || 1;
     const _a = formatNumber(Big(reward_amount).div(10 ** decimals), 3, true);
@@ -26,17 +27,21 @@ export default function MarketInfo() {
           <div>
             <div className="text-[#FFE9B2] text-[12px]">Provider</div>
             <div className="text-white text-[14px]">
-              {formatAddress(pool.user)}
+              {pool?.user ? formatAddress(pool.user) : "-"}
             </div>
           </div>
         </div>
         <div>
           <div className="text-[#FFE9B2] text-[12px]">Players</div>
-          <div className="text-white text-[14px]">{pool.participants}</div>
+          <div className="text-white text-[14px]">
+            {pool?.participants || "-"}
+          </div>
         </div>
         <div>
           <div className="text-[#FFE9B2] text-[12px]">Bid</div>
-          <div className="text-white text-[14px]">{pool.accumulative_bids}</div>
+          <div className="text-white text-[14px]">
+            {pool?.accumulative_bids || "-"}
+          </div>
         </div>
       </div>
       <div className="mt-[28px] font-[BlackHanSans]">
@@ -60,7 +65,7 @@ export default function MarketInfo() {
             WebkitTextFillColor: "transparent"
           }}
         >
-          ${formatNumber(pool.value, 0, true)}
+          ${formatNumber(pool?.value, 0, true)}
         </div>
       </div>
       <Progress data={pool} />

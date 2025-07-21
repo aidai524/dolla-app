@@ -14,7 +14,6 @@ import LucyDraw from "../../sections/lucy-draw";
 export default function NewBTC() {
   return (
     <CannonCoinsProvider>
-      <div className=""></div>
       <div className="h-screen overflow-hidden bg-[radial-gradient(50%_50%_at_50%_50%,rgba(0,0,0,0)_0%,#000_100%),url('/new-btc/bg.gif')] bg-cover bg-center relative">
         <Header className="h-[214px]" />
         {/* 

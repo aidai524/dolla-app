@@ -12,7 +12,7 @@ export default function BidBtn({ tokenBalance }: { tokenBalance: string }) {
   const { userInfo } = useAuth();
 
   const { onBid } = useBid(
-    pool.pool_id,
+    pool?.pool_id,
     (result) => {
       console.log("complete success");
       setFlipStatus(4);

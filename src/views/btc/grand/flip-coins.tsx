@@ -44,41 +44,43 @@ export default function FlipCoins() {
   // console.log(points, tickets);
 
   return (
-    <div
-      className="flex items-center justify-center w-full gap-[10px_30px] flex-wrap overflow-y-auto overflow-x-hidden h-full"
-      style={{
-        maxWidth: (SIZE[bids] + 20) * (bids > 10 ? 11 : 6)
-      }}
-      ref={coinContainerRef}
-    >
-      {new Array(bids).fill(0).map((_, index) => (
-        <FlipCoin
-          key={pool.id + "_" + index + "_" + bids}
-          size={SIZE[bids]}
-          points={points[index] || 0}
-          ticket={tickets[index] || 0}
-          disabled={flipStatus !== 4 && flipStatus !== 5}
-          bids={bids}
-          index={index}
-          ref={(el) => {
-            coinsRef.current[index] = el;
-          }}
-          onFlipComplete={flipComplete}
-          coinContainerRef={coinContainerRef}
-          setFlipStatus={setFlipStatus}
-        />
-      ))}
+    pool && (
+      <div
+        className="flex items-center justify-center w-full gap-[10px_30px] flex-wrap overflow-y-auto overflow-x-hidden h-full"
+        style={{
+          maxWidth: (SIZE[bids] + 20) * (bids > 10 ? 11 : 6)
+        }}
+        ref={coinContainerRef}
+      >
+        {new Array(bids).fill(0).map((_, index) => (
+          <FlipCoin
+            key={pool.id + "_" + index + "_" + bids}
+            size={SIZE[bids]}
+            points={points[index] || 0}
+            ticket={tickets[index] || 0}
+            disabled={flipStatus !== 4 && flipStatus !== 5}
+            bids={bids}
+            index={index}
+            ref={(el) => {
+              coinsRef.current[index] = el;
+            }}
+            onFlipComplete={flipComplete}
+            coinContainerRef={coinContainerRef}
+            setFlipStatus={setFlipStatus}
+          />
+        ))}
 
-      {flipStatus === 6 && (
-        <Result
-          points={sumPoints}
-          tickets={sumTickets}
-          onClose={() => {
-            setFlipStatus(0);
-            onReset();
-          }}
-        />
-      )}
-    </div>
+        {flipStatus === 6 && (
+          <Result
+            points={sumPoints}
+            tickets={sumTickets}
+            onClose={() => {
+              setFlipStatus(0);
+              onReset();
+            }}
+          />
+        )}
+      </div>
+    )
   );
 }

@@ -27,10 +27,13 @@ const router = createBrowserRouter([
         index: true,
         element: <Navigate to="/btc" replace />
       },
-
       {
         index: true,
         path: "btc",
+        element: <LazyNewBTC />
+      },
+      {
+        path: "btc/:poolId",
         element: <LazyNewBTC />
       },
       {
