@@ -1,13 +1,46 @@
 import Modal from "@/components/modal";
 import CircleArrow from "@/components/icons/circle-arrow";
+import { useEffect, useState } from "react";
+import { formatAddress } from "@/utils/format/address";
+import clsx from "clsx";
+import LoadingItem from "./loading-item";
 
 export default function LucyDrawHistory({
   open,
-  onClose
+  onClose,
+  historyRound,
+  isLoading,
+  fetchCurrentRound,
+  prizeAmount,
+  currentRound
 }: {
   open: boolean;
   onClose: () => void;
+  historyRound: number;
+  isLoading: boolean;
+  fetchCurrentRound: (id?: number) => Promise<{
+    winningList: any[];
+    number: number;
+  }>;
+  prizeAmount: number;
+  currentRound: number;
 }) {
+  const [round, setRound] = useState(1);
+  const [winningList, setWinningList] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (!historyRound && !currentRound) return;
+    setRound(historyRound || currentRound - 1);
+  }, [historyRound, currentRound]);
+
+  useEffect(() => {
+    if (!open) return;
+    setWinningList([]);
+    fetchCurrentRound(round).then((res) => {
+      setWinningList(res.winningList);
+    });
+  }, [round, open]);
+
   return (
     <Modal open={open} onClose={onClose}>
       <div className="w-[496px] rounded-[16px] border border-[#6A5D3A] bg-[#1D1A16]">
@@ -27,32 +60,67 @@ export default function LucyDrawHistory({
                 WebkitTextStroke: "1px #EEAF0F"
               }}
             >
-              $1，000
+              ${prizeAmount.toLocaleString()}
             </div>
             <div className="flex items-center gap-[16px] mt-[8px]">
-              <CircleArrow className="rotate-180" />
+              <CircleArrow
+                className={clsx(
+                  "rotate-180",
+                  round > 1 ? "button" : "opacity-50"
+                )}
+                onClick={() => {
+                  if (round > 1) {
+                    setRound(round - 1);
+                  }
+                }}
+              />
               <div className="w-[120px] h-[32px] rounded-[12px] bg-linear-to-r from-[#FFC42F] to-[#FFF698] leading-[32px] text-center">
-                Round #09
+                Round #{round}
               </div>
-              <CircleArrow />
+              <CircleArrow
+                className={clsx(
+                  round < currentRound - 1 ? "button" : "opacity-50"
+                )}
+                onClick={() => {
+                  if (round < currentRound - 1) {
+                    setRound(round + 1);
+                  }
+                }}
+              />
             </div>
           </div>
           <HeaderBg />
         </div>
-        <div className="py-[8px]">
-          <div className="px-[20px] py-[8px] flex items-center justify-between">
-            <div className="flex items-center gap-[6px]">
-              <Rank rank={1} />
-              <img
-                src=""
-                className="w-[30px] h-[30px] rounded-full border border-[#DD9000]"
-              />
-              <div className="text-[14px] text-white">0x12c...ab212</div>
+        <div className="py-[8px] h-[476px]">
+          {winningList.map((item, index) => (
+            <div
+              key={item.tx_hash}
+              className="px-[20px] py-[8px] flex items-center justify-between"
+            >
+              <div className="flex items-center gap-[6px]">
+                <Rank rank={index + 1} />
+                <img
+                  src=""
+                  className="w-[30px] h-[30px] rounded-full border border-[#DD9000]"
+                />
+                <div className="text-[14px] text-white">
+                  {formatAddress(item.user)}
+                </div>
+              </div>
+              <div className="text-[14px] text-[#FFC42F] font-[DelaGothicOne]">
+                ${item.volume}
+              </div>
             </div>
-            <div className="text-[14px] text-[#FFC42F] font-[DelaGothicOne]">
-              $300
+          ))}
+          {winningList.length === 0 && !isLoading && (
+            <div className="text-[16px] text-white text-center pt-[200px]">
+              No data
             </div>
-          </div>
+          )}
+          {isLoading &&
+            Array.from({ length: 10 }).map((_, index) => (
+              <LoadingItem key={index} />
+            ))}
         </div>
       </div>
     </Modal>

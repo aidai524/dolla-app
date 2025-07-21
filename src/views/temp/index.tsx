@@ -12,7 +12,9 @@ const TempPage: React.FC = () => {
     <div className="relative">
       <button
         className="bg-white text-black button"
-        onClick={() => onTransfer(1, import.meta.env.VITE_SOLANA_OPERATOR)}
+        onClick={() =>
+          onTransfer(1, import.meta.env.VITE_SOLANA_TICKET_ACCOUNT)
+        }
       >
         Transfer
       </button>

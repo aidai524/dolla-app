@@ -1,6 +1,12 @@
-export default function TicketBottom({ tickets }: { tickets: number }) {
+export default function TicketBottom({
+  tickets,
+  onBuyTicket
+}: {
+  tickets: number;
+  onBuyTicket: () => void;
+}) {
   return (
-    <>
+    <div className="flex items-center justify-end h-full relative z-[4]">
       <div className="bg-[url(/btc/ticket1.png)] w-[122px] h-[100px] bg-no-repeat bg-center bg-contain absolute top-[-20px] left-[-10px]" />
       <div className="w-[140px]">
         <div className="text-[12px] text-[#FFE9B2]">Auto Joined</div>
@@ -19,7 +25,7 @@ export default function TicketBottom({ tickets }: { tickets: number }) {
               WebkitTextStroke: "2px #5E3737"
             }}
             onClick={() => {
-              console.log("buy");
+              onBuyTicket();
             }}
           >
             <svg
@@ -35,6 +41,6 @@ export default function TicketBottom({ tickets }: { tickets: number }) {
           </button>
         </div>
       </div>
-    </>
+    </div>
   );
 }

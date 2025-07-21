@@ -1,9 +1,15 @@
 import useCountdown, { getTimePeriods, toTwo } from "@/hooks/use-count-down";
 import { useConfigStore } from "@/stores/use-config";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import * as parser from "cron-parser";
 
-export default function Timer() {
+export default function Timer({
+  onTimeUp,
+  currentRound
+}: {
+  onTimeUp: () => void;
+  currentRound: number;
+}) {
   const configStore = useConfigStore();
 
   const time = useMemo(() => {
@@ -17,10 +23,16 @@ export default function Timer() {
     const next = interval.next().getTime();
 
     return next / 1000;
-  }, [configStore.config]);
+  }, [configStore.config, currentRound]);
 
   const { secondsRemaining } = useCountdown(time);
   const { hours, minutes, seconds } = getTimePeriods(secondsRemaining);
+
+  useEffect(() => {
+    if (secondsRemaining <= 0) {
+      onTimeUp();
+    }
+  }, [secondsRemaining]);
 
   return (
     <div className="w-[115px] h-[30px] text-center text-[14px] p-[6px] border border-[#6A5D3A] text-white flex items-center justify-between rounded-[16px] border border-[#FFE9B2] bg-[#00000033] font-semibold">
