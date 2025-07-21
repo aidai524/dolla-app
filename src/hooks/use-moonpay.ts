@@ -22,7 +22,7 @@ export default function useMoonpay({ address, amount, orderId }: { address: stri
         // });
 
         // console.log('onrampBuyUrl', onrampBuyUrl);
-        const url = `https://buy.moonpay.io/?apiKey=${apiKey}&currencyCode=usdc&walletAddress=${address}&lockAmount=true&quoteCurrencyAmount=${amount}&redirectURL=${window.location.origin}/callback?type=moonpay&orderId=${orderId}`;
+        const url = `https://buy.moonpay.io/?apiKey=${apiKey}&currencyCode=usdc_sol&walletAddress=${address}&lockAmount=true&quoteCurrencyAmount=${amount}&redirectURL=${window.location.origin}/callback?type=moonpay&orderId=${orderId}`;
 
         // setCoinBaseUrl(onrampBuyUrl);
         setMoonpayUrl(url);

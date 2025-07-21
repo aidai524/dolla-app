@@ -40,7 +40,7 @@ export default function FundList() {
             ),
             onClick: () => {
                 console.log("Bridge clicked");
-                setSelectedOption("bridge");
+                // setSelectedOption("bridge");
                 window.open(`https://dolla-bridge-interface.pages.dev?toAddress=${userInfo?.sol_user}`, '_blank');
             }
         },

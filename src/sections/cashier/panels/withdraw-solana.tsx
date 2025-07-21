@@ -1,12 +1,12 @@
 import Coin from "@/components/icons/coin";
 import ButtonWithAuth from "@/components/button/button-with-auth";
-import { PURCHASE_TOKEN } from "@/config";
+// import { PURCHASE_TOKEN } from "@/config";
 import { formatNumber } from "@/utils/format/number";
 import { useMemo, useState } from "react";
 import clsx from "clsx";
 import useWithdraw from "@/hooks/evm/use-withdraw";
-import useUserWinner from "@/hooks/use-user-winner";
-import Loading from "@/components/icons/loading";
+// import useUserWinner from "@/hooks/use-user-winner";
+// import Loading from "@/components/icons/loading";
 import { useAuth } from "@/contexts/auth";
 import useTokenBalance from "@/hooks/solana/use-token-balance";
 
@@ -23,7 +23,7 @@ const TOKNES = [
     icon: "/btc.png",
     symbol: "BTC"
   }
-]
+];
 export default function WithdrawSolana() {
   const { tokenBalance: usdcBalance } = useTokenBalance(TOKNES[0]);
   const { tokenBalance: btcBalance } = useTokenBalance(TOKNES[1]);
@@ -57,7 +57,9 @@ export default function WithdrawSolana() {
               onClick={() => {
                 setSelectedItem(item);
               }}
-              balance={selectedItem.symbol === "USDC" ? usdcBalance : btcBalance}
+              balance={
+                selectedItem.symbol === "USDC" ? usdcBalance : btcBalance
+              }
             />
           );
         })}
@@ -83,12 +85,17 @@ export default function WithdrawSolana() {
             <button
               className="button text-[#BBACA6] text-[12px]"
               onClick={() => {
-                setAmount(selectedItem.symbol === "USDC" ? usdcBalance : btcBalance);
+                setAmount(
+                  selectedItem.symbol === "USDC" ? usdcBalance : btcBalance
+                );
               }}
             >
               Max
             </button>
-            <img src={selectedItem.icon} className="w-[20px] h-[20px] rounded-full ml-[5px]" />
+            <img
+              src={selectedItem.icon}
+              className="w-[20px] h-[20px] rounded-full ml-[5px]"
+            />
           </div>
         </div>
 
@@ -96,16 +103,13 @@ export default function WithdrawSolana() {
           <div className="text-[#BBACA6]">Est. Received</div>
 
           <div className="flex items-center">
-            <span>
-              {formatNumber(amount, 0, true, { isShort: true })}
-            </span>
+            <span>{formatNumber(amount, 0, true, { isShort: true })}</span>
             <img
               src={selectedItem.icon}
               alt="bid-coins"
               className="w-[20px] h-[20px] rounded-full ml-[10px] mr-[7px]"
             />
           </div>
-
         </div>
       </>
       <>
@@ -139,10 +143,10 @@ export default function WithdrawSolana() {
         {!amount
           ? "Input Amount"
           : !receiveAddress
-            ? "Input Address"
-            : isAddressValid
-              ? "Withdraw"
-              : "Invalid Address"}
+          ? "Input Address"
+          : isAddressValid
+          ? "Withdraw"
+          : "Invalid Address"}
       </ButtonWithAuth>
     </div>
   );
