@@ -6,7 +6,7 @@ import BidSelection from "./components/bid-selection";
 import BidsInfo from "./components/bids-info";
 import MarketInfo from "./components/market-info";
 import Grand from "./grand";
-import LucyDraw from "./components/lucy-draw";
+import LucyDraw from "../../sections/lucy-draw";
 // import ProvablyFair from "@/sections/provably-fair";
 
 // import WildTimeBid from "@/sections/wild-time/bid";

@@ -1,9 +1,11 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import Timer from "./timer";
 import useUserInfoStore from "@/stores/use-user-info";
+import LucyDrawHistory from "./history";
 
 export default function LucyDraw() {
   const { prize } = useUserInfoStore();
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
   const tickets = useMemo(() => {
     return prize.tickets > 99 ? "99+" : prize.tickets;
@@ -31,8 +33,16 @@ export default function LucyDraw() {
           <Timer />
         </div>
         <div className="flex items-center justify-between mt-[10px] text-[12px] text-[#FFE9B2]">
-          <span>Total Tickets</span>
-          <span>{tickets}</span>
+          <span>
+            <span>Total Tickets</span>{" "}
+            <span className="text-white">{tickets}</span>
+          </span>
+          <button
+            className="button underline"
+            onClick={() => setIsHistoryOpen(true)}
+          >
+            History
+          </button>
         </div>
       </div>
 
@@ -72,6 +82,10 @@ export default function LucyDraw() {
           </div>
         </div>
       </div>
+      <LucyDrawHistory
+        open={isHistoryOpen}
+        onClose={() => setIsHistoryOpen(false)}
+      />
     </div>
   );
 }
