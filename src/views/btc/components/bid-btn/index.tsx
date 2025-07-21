@@ -31,6 +31,9 @@ export default function BidBtn({ tokenBalance }: { tokenBalance: string }) {
   );
 
   const disabled = useMemo(() => {
+    if (pool?.status !== 1) {
+      return true;
+    }
     if (!userInfo?.user) {
       return true;
     }
@@ -41,7 +44,7 @@ export default function BidBtn({ tokenBalance }: { tokenBalance: string }) {
       return false;
     }
     return true;
-  }, [flipStatus, userInfo, tokenBalance, bids]);
+  }, [flipStatus, userInfo, tokenBalance, bids, pool]);
 
   return (
     <div

@@ -67,7 +67,7 @@ export const CannonCoinsProvider = ({
     <CannonCoinsContext.Provider
       value={{
         flipStatus,
-        pool,
+        pool: { ...pool, status: 1 },
         sbProgramRef,
         bids,
         setBids,
