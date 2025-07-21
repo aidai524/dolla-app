@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/auth";
 import useTokenBalance from "@/hooks/solana/use-token-balance";
 import { formatNumber } from "@/utils/format/number";
 import FundFromCoinbase from "./fund-from-coinbase";
+import FundFromMoonpay from "./fund-from-moonpay";
 
 interface FundOption {
     id: string;
@@ -171,7 +172,7 @@ export default function FundList() {
 
             {
                 (selectedOption === "moonpay") && (
-                    <FundFromCoinbase onBack={() => setSelectedOption(null)} />
+                    <FundFromMoonpay onBack={() => setSelectedOption(null)} />
                 )
             }
         </>
