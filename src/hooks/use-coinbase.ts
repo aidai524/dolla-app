@@ -24,7 +24,7 @@ export default function useCoinBase({ address, amount, orderId }: { address: str
 
         console.log('onrampBuyUrl', onrampBuyUrl);
 
-        setCoinBaseUrl('http://localhost:5173/callback?type=coinbase&orderId=' + orderId);
+        setCoinBaseUrl(onrampBuyUrl);
     }, [address, amount, orderId])
 
     useEffect(() => {
