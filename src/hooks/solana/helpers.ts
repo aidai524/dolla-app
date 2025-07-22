@@ -130,7 +130,7 @@ export async function getAssociatedTokenAddress(
   mint: any,
   owner: any,
   provider: any
-) {
+): Promise<{ address: PublicKey; instruction: any; account: any } | null> {
   const connection = provider.connection;
   if (!connection) {
     return null;
