@@ -25,15 +25,11 @@ export const CannonCoinsProvider = ({
   const flipedNumberRef = useRef(0);
   const [bidResult, setBidResult] = useState<any>(null);
   const params = useParams();
-  const { poolInfo, onQueryPoolInfo } = usePoolInfo("solana");
+  const { onQueryPoolInfo } = usePoolInfo("solana");
+  const [pool, setPool] = useState<any>(null);
+  const [poolUpdated, setPoolUpdated] = useState(false);
 
   const { data, getPoolRecommend } = usePoolRecommend(0, !params?.poolId);
-  const [selectedMarket, setSelectedMarket] = useState<any>(null);
-  const pool = useMemo(() => {
-    if (selectedMarket) return selectedMarket;
-    if (params?.poolId && !data?.id) return poolInfo;
-    return data;
-  }, [selectedMarket, data, poolInfo]);
 
   useEffect(() => {
     if (flipStatus === 1 || flipStatus === 0) {
@@ -60,8 +56,39 @@ export const CannonCoinsProvider = ({
   }, [flipStatus]);
 
   useEffect(() => {
-    if (params?.poolId) onQueryPoolInfo(Number(params.poolId));
+    if (!params?.poolId) return;
+    const updatePool = async () => {
+      const res = await onQueryPoolInfo(Number(params.poolId));
+      if (res) {
+        setPool(res);
+        setPoolUpdated(true);
+      }
+    };
+    updatePool();
   }, [params?.poolId]);
+
+  useEffect(() => {
+    if (data?.id) {
+      setPool(data);
+      setPoolUpdated(true);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    const loop = async () => {
+      if (pool?.status === 1) {
+        const res = await onQueryPoolInfo(pool?.pool_id);
+        if (res) setPool(res);
+        window.poolTimer = setTimeout(loop, 10000);
+      } else {
+        clearTimeout(window.poolTimer);
+      }
+    };
+    loop();
+    return () => {
+      clearTimeout(window.poolTimer);
+    };
+  }, [poolUpdated]);
 
   return (
     <CannonCoinsContext.Provider
@@ -75,7 +102,7 @@ export const CannonCoinsProvider = ({
         setFlipStatus,
         coinsRef,
         bidResult,
-        setSelectedMarket,
+        setSelectedMarket: setPool,
         setBidResult,
         flipComplete: (index: number, addNumber: boolean, notAuto = false) => {
           if (addNumber) flipedNumberRef.current++;

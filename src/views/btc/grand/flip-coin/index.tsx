@@ -166,9 +166,9 @@ const Coin = forwardRef<any, any>(
         </div>
         {!!showTicket && (
           <motion.div
-            initial={{ y: showPoints ? 50 : 0, opacity: 1 }}
+            initial={{ y: showPoints ? 90 : 0, opacity: 1 }}
             animate={{
-              y: showPoints ? -70 : -120,
+              y: showPoints ? -30 : -120,
               opacity: 0
             }}
             transition={{

@@ -13,7 +13,7 @@ import useTokenBalance from "@/hooks/solana/use-token-balance";
 import { useAuth } from "@/contexts/auth";
 
 export default function BidSelection() {
-  const { tokenBalance } = useTokenBalance({
+  const { tokenBalance, update } = useTokenBalance({
     address: QUOTE_TOKEN.address,
     decimals: QUOTE_TOKEN.decimals
   });
@@ -54,7 +54,14 @@ export default function BidSelection() {
         </div>
       </div>
       <div className="mx-[20px] relative flex flex-col items-center justify-center">
-        {flipStatus !== 4 && <BidBtn tokenBalance={tokenBalance} />}
+        {flipStatus !== 4 && (
+          <BidBtn
+            tokenBalance={tokenBalance}
+            onBidSuccess={() => {
+              update();
+            }}
+          />
+        )}
         {flipStatus === 4 && <AutoBtn />}
       </div>
       <div className="flex items-center text-white text-[22px] font-normal leading-[100%] uppercase font-[DelaGothicOne]">
