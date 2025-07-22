@@ -2,7 +2,7 @@ import Loading from "@/components/icons/loading";
 import Modal from "@/components/modal";
 import clsx from "clsx";
 
-export default function ProvablyFair() {
+export default function ProvablyFair({ open, onClose }: { open: boolean, onClose: () => void }) {
   const loading = false;
   const data: any[] = [
     {
@@ -14,7 +14,7 @@ export default function ProvablyFair() {
     }
   ];
   return (
-    <Modal open={true} onClose={() => {}}>
+    <Modal open={open} onClose={onClose}>
       <div className="w-[672px] h-[444px] bg-[#35302B] border border-[#6A5D3A] rounded-[16px]">
         <div className="flex justify-between items-center rounded-t-[16px] h-[54px] px-[30px] bg-[#00000033]">
           <div className="text-[20px] font-bold text-white">Provably Fair</div>

@@ -6,9 +6,11 @@ import { useState } from "react";
 import { useBtcContext } from "../../context";
 import BidBtn from "../bid-btn";
 import AutoBtn from "./auto-btn";
+import ProvablyFair from "@/sections/provably-fair";
 import { addThousandSeparator } from "@/utils/format/number";
 import { QUOTE_TOKEN } from "@/config/btc";
 import useTokenBalance from "@/hooks/solana/use-token-balance";
+import { useAuth } from "@/contexts/auth";
 
 export default function BidSelection() {
   const { tokenBalance } = useTokenBalance({
@@ -16,7 +18,9 @@ export default function BidSelection() {
     decimals: QUOTE_TOKEN.decimals
   });
   const [showCashier, setShowCashier] = useState(false);
+  const [showProvablyFair, setShowProvablyFair] = useState(false);
   const { bids, setBids, flipStatus } = useBtcContext();
+  const { address } = useAuth();
   const onChangeBids = (bids: number) => {
     if (flipStatus === 1) return;
     setBids(bids);
@@ -26,7 +30,7 @@ export default function BidSelection() {
 
   return (
     <div className="absolute bottom-0 left-[3%] w-full h-[202px] flex items-center justify-center">
-      <div className="w-[192px] h-[53px] relative top-[10px] flex items-center justify-center font-[BlackHanSans]">
+      <div onClick={() => setShowProvablyFair(true)} className="w-[192px] cursor-pointer h-[53px] relative top-[10px] flex items-center justify-center font-[BlackHanSans]">
         <ProvablyFairBg />
         <span className="text-white text-[16px] mt-[10px] leading-[16px]">
           Provably fair
@@ -38,7 +42,9 @@ export default function BidSelection() {
           <div className="text-white text-[16px]">BALANCE</div>
           <div className="text-white text-[20px] flex items-center gap-[10px]">
             <span>${addThousandSeparator(tokenBalance || "0")}</span>
-            <AddBtn onClick={() => setShowCashier(true)} />
+            {
+              address && <AddBtn onClick={() => setShowCashier(true)} />
+            }
           </div>
         </div>
       </div>
@@ -82,6 +88,7 @@ export default function BidSelection() {
         ))}
       </div>
       <Cashier open={showCashier} onClose={() => setShowCashier(false)} />
+      <ProvablyFair open={showProvablyFair} onClose={() => setShowProvablyFair(false)} />
     </div>
   );
 }
