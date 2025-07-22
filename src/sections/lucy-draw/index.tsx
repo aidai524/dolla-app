@@ -26,9 +26,13 @@ export default function LucyDraw() {
   }, [prize.tickets]);
 
   const prizeAmount = useMemo(() => {
-    return configStore.config?.ticket_prize.reduce((acc: number, curr: any) => {
-      return acc + curr.volume * curr.winner_count;
-    }, 0);
+    if (!configStore.config?.ticket_prize) return 0;
+    return configStore.config?.ticket_prize?.reduce(
+      (acc: number, curr: any) => {
+        return acc + curr.volume * curr.winner_count;
+      },
+      0
+    );
   }, [configStore.config?.ticket_prize]);
 
   const fetchResult = async () => {
