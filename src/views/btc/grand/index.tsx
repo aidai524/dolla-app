@@ -13,7 +13,9 @@ export default function Grand({ className }: { className?: string }) {
     <div
       className={clsx(
         "relative flex items-center justify-center mx-auto overflow-hidden",
-        !isDetail ? "w-[calc(100vw-620px)]" : "w-[calc(100vw-220px)]",
+        isDetail && pool?.status === 2
+          ? "w-[calc(100vw-220px)]"
+          : "w-[calc(100vw-620px)]",
         className
       )}
     >
