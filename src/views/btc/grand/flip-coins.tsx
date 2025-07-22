@@ -28,7 +28,7 @@ export default function FlipCoins() {
 
   const [points, tickets, sumPoints, sumTickets, isWinner] = useMemo(() => {
     if (!bidResult) {
-      return [[], [], 0, 0];
+      return [[], [], 0, 0, false];
     }
     const _p = bidResult.point
       ? bidResult.point.wild_coin_ev_result.split(",")
