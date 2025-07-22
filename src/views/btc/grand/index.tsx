@@ -7,12 +7,13 @@ import PreLoading from "./pre-loading";
 import EndPanel from "../detail/end";
 
 export default function Grand({ className }: { className?: string }) {
-  const { flipStatus, pool } = useBtcContext();
+  const { flipStatus, pool, isDetail } = useBtcContext();
 
   return (
     <div
       className={clsx(
-        "relative w-[calc(100vw-620px)] flex items-center justify-center mx-auto overflow-hidden",
+        "relative flex items-center justify-center mx-auto overflow-hidden",
+        !isDetail ? "w-[calc(100vw-620px)]" : "w-[calc(100vw-220px)]",
         className
       )}
     >
@@ -23,7 +24,7 @@ export default function Grand({ className }: { className?: string }) {
           {flipStatus === 1 && <PreLoading />}
         </>
       )}
-      {pool?.status === 2 && <EndPanel />}
+      {pool?.status === 2 && <EndPanel data={pool} />}
     </div>
   );
 }

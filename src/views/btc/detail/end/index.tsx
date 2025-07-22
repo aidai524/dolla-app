@@ -1,7 +1,13 @@
+import Avatar from "@/components/avatar";
 import MultiIcon from "./multi-icon";
 import PlayerDistribution from "./player-distribution";
+import { formatAddress } from "@/utils/format/address";
+import dayjs from "@/libs/dayjs";
+import { addThousandSeparator } from "@/utils/format/number";
 
-export default function EndPanel() {
+// win 14 4
+export default function EndPanel({ data }: { data: any }) {
+  console.log(data);
   return (
     <div className="w-[815px] h-full flex gap-[20px] p-[20px] rounded-[20px] border border-[#605D55] bg-[#FFFFFF1A] backdrop-blur-[10px]">
       <div className="w-[250px] h-full rounded-[20px] bg-[#00000033] px-[20px] pt-[10px]">
@@ -18,14 +24,18 @@ export default function EndPanel() {
             Verify
           </button>
         </div>
-        <div className="relative w-[150px] h-[150px] p-[3px] mx-auto mt-[47px] rounded-full bg-linear-to-b from-[#DD9000] via-[#FFBF47] to-[#774E00] flex items-center justify-center">
-          <div className="absolute top-[-30px] right-[-30px] w-[93px] h-[93px] flex items-center justify-center">
+        <div className="relative mx-auto mt-[47px] rounded-full flex items-center justify-center">
+          <div className="absolute z-[3] top-[-30px] right-[-30px] w-[93px] h-[93px] flex items-center justify-center">
             <MultiIcon className="absolute top-0 left-0 w-full h-full" />
             <div className="text-black text-[24px] font-[DelaGothicOne] relative z-[1] rotate-[8deg]">
               x100
             </div>
           </div>
-          <img src="" className="w-full h-full rounded-full" />
+          <Avatar
+            size={150}
+            address={data.winner_user_info?.sol_user}
+            email={data.winner_user_info?.email}
+          />
         </div>
         <div className="text-white text-center text-[16px] font-[DelaGothicOne] mt-[10px]">
           0xdollar
@@ -52,34 +62,44 @@ export default function EndPanel() {
       <div className="grow">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-[10px]">
-            <img
-              src=""
-              className="w-[32px] h-[32px] rounded-[6px] border border-[#FFFFFF66]"
+            <Avatar
+              size={32}
+              address={data.user_info?.sol_user}
+              email={data.user_info?.email}
             />
             <div>
               <div className="text-[#FFE9B2] text-[12px]">Provider</div>
               <div className="text-white text-[12px] font-[DelaGothicOne]">
-                0xdolla
+                {data.user_info?.email ||
+                  formatAddress(data.user_info?.sol_user)}
               </div>
             </div>
           </div>
           <div className="text-right">
             <div className="text-[#FFE9B2] text-[12px]">Started from</div>
-            <div className="text-white text-[14px]">12:50 20 June, 2025 </div>
+            <div className="text-white text-[14px]">
+              {dayjs(data.user_info?.created_at).format("HH:mm DD MMM, YYYY")}{" "}
+            </div>
           </div>
         </div>
         <div className="flex items-center gap-[12px] mt-[16px] font-[DelaGothicOne] text-white">
           <div className="w-1/3 h-[70px] flex flex-col items-center justify-center bg-[#00000033] rounded-[10px]">
             <div className="text-[12px]">Total Players</div>
-            <div className="text-[16px]">924</div>
+            <div className="text-[16px]">{data?.participants}</div>
           </div>
           <div className="w-1/3 h-[70px] flex flex-col items-center justify-center bg-[#00000033] rounded-[10px]">
             <div className="text-[12px]">Total Bid</div>
-            <div className="text-[16px]">$12,450</div>
+            <div className="text-[16px]">
+              ${addThousandSeparator(data?.accumulative_bids)}
+            </div>
           </div>
           <div className="w-1/3 h-[70px] flex flex-col items-center justify-center bg-[#00000033] rounded-[10px]">
             <div className="text-[12px]">Time Duration</div>
-            <div className="text-[16px]">5 days</div>
+            <div className="text-[16px]">
+              {data?.created_at && data?.updated_at
+                ? dayjs(data.created_at).from(dayjs(data.updated_at), true)
+                : "-"}
+            </div>
           </div>
         </div>
         <div className="mt-[8px]">
@@ -87,10 +107,11 @@ export default function EndPanel() {
             Winner’s Bid Timing
           </div>
           <div className="w-full relative h-[6px] mt-[40px] bg-linear-to-r from-[#FFC42F] via-[#FF43E0] to-[#53EABF] rounded-[6px]">
-            <div className="w-[28px] h-[28px] border border-[#DD9000] rounded-full absolute top-[-33px]">
-              <img
-                className="w-full h-full rounded-full relative z-[1]"
-                src=""
+            <div className="w-[28px] h-[28px] border border-[#DD9000] rounded-[6px] absolute top-[-33px]">
+              <Avatar
+                size={26}
+                address={data.winner_user_info?.sol_user}
+                email={data.winner_user_info?.email}
               />
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -112,7 +133,7 @@ export default function EndPanel() {
           <div className="text-white text-[12px] font-[DelaGothicOne]">
             Player Distribution
           </div>
-          <PlayerDistribution data={{}} />
+          <PlayerDistribution data={data} />
         </div>
       </div>
     </div>
