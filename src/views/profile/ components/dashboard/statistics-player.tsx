@@ -36,18 +36,18 @@ const StatisticsPlayer = (props: any) => {
         className
       )}
     >
-      <div className="flex items-center">
+      <div className="flex items-center justify-between gap-[10px] flex-1">
         <div className="flex flex-col justify-center items-center gap-[15px] p-[20px_32px_33px] bg-[#22201D] border border-[#6A5D3A] rounded-[16px] shrink-0">
           <div className="">Wins</div>
           <div className="font-[DelaGothicOne] text-[36px]">
             {formatNumber(userInfo?.you_won?.length, 2, true)}
           </div>
         </div>
-        <LabelValue label="#BTC" className="ml-[45px]">
+        <LabelValue label="#BTC" className="">
           {formatNumber(0, 2, true)}
         </LabelValue>
         <ButtonV2
-          className="ml-[64px]"
+          className=""
           onClick={() => { }}
           disabled
         >
@@ -55,24 +55,26 @@ const StatisticsPlayer = (props: any) => {
         </ButtonV2>
       </div>
       <div className="w-[1px] h-[70px] shrink-0 bg-[#423930]"></div>
-      <div className="flex items-center">
-        <LabelValue label="Your Balance" className="whitespace-nowrap">
-          {isLoading ? (
-            <Loading size={12} />
-          ) : (
-            formatNumber(tokenBalance, 2, true, { prefix: "$" })
-          )}
-        </LabelValue>
-        <LabelValue
-          label="Played times"
-          className="ml-[62px] whitespace-nowrap"
-        >
-          {formatNumber(userInfo?.played, 2, true, {
-            isShort: Big(userInfo?.played || 0).gt(1000000),
-            isShortUppercase: true
-          })}
-        </LabelValue>
-        <div className="flex items-center justify-end gap-[10px] ml-[70px]">
+      <div className="flex items-center justify-between gap-[10px] flex-1">
+        <div className="flex items-center gap-[10px]">
+          <LabelValue label="Your Balance" className="whitespace-nowrap">
+            {isLoading ? (
+              <Loading size={12} />
+            ) : (
+              formatNumber(tokenBalance, 2, true, { prefix: "$" })
+            )}
+          </LabelValue>
+          <LabelValue
+            label="Played times"
+            className="whitespace-nowrap"
+          >
+            {formatNumber(userInfo?.played, 2, true, {
+              isShort: Big(userInfo?.played || 0).gt(1000000),
+              isShortUppercase: true
+            })}
+          </LabelValue>
+        </div>
+        <div className="flex items-center justify-end gap-[10px]">
           <ButtonV2
             className=""
             onClick={() => {
