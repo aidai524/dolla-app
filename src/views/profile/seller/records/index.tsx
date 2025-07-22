@@ -4,6 +4,7 @@ import dayjs from "dayjs";
 import Pagination from "@/components/pagination";
 import { formatNumber } from "@/utils/format/number";
 import Big from "big.js";
+import chains from "@/config/chains";
 
 const Records = (props: any) => {
   const { className, records, loading, onPrevPage, onNextPage, hasNextPage, currentPage } = props;
@@ -14,8 +15,15 @@ const Records = (props: any) => {
       title: "Market ID",
       width: 130,
       render: (record: any) => {
+        const currentChain = Object.values(chains).find((chain) => chain.name.toLowerCase() === record.chain.toLowerCase());
         return (
-          <div className="flex items-center gap-[7px]">
+          <div
+           className="flex items-center gap-[7px] cursor-pointer"
+           onClick={() => {
+            if (!currentChain) return;
+             window.open(`${currentChain.blockExplorers?.default?.url}/tx/${record.tx_hash}`, "_blank");
+           }}
+           >
             <div className="">#{record.id}</div>
             <img src="/profile/icon-share.svg" alt="share" className="w-[9px] h-[9px] shrink-0" />
           </div>
@@ -60,7 +68,7 @@ const Records = (props: any) => {
     {
       dataIndex: "date",
       title: "Date",
-      width: 160,
+      width: 170,
       align: GridTableAlign.Right,
       render: (record: any) => {
         return (

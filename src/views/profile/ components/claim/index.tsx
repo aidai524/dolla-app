@@ -7,6 +7,7 @@ import { formatAddress } from "@/utils/format/address";
 import { formatNumber } from "@/utils/format/number";
 import Big from "big.js";
 import clsx from "clsx";
+import useClaimFunds from "@/hooks/solana/use-claim-funds";
 
 const ClaimIndex = (props: any) => {
   const { className } = props;
@@ -22,6 +23,12 @@ const ClaimIndex = (props: any) => {
     const _data = await _request();
     return _data;
   }, { manual: true });
+
+  const { onClaim, claiming } = useClaimFunds({
+    onClaimSuccess: () => {
+      getData();
+    },
+  });
 
   useEffect(() => {
     getData();
@@ -66,6 +73,11 @@ const ClaimIndex = (props: any) => {
                 <div className="py-[10px] flex items-center">
                   <ButtonV2
                     className="!w-[69px] !px-[unset]"
+                    loading={claiming}
+                    disabled={claiming}
+                    onClick={() => {
+                      onClaim(item.id);
+                    }}
                   >
                     Claim
                   </ButtonV2>

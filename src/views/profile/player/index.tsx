@@ -42,6 +42,7 @@ export default function Player() {
     joinedPoolListLoading,
     joinedPoolListData,
     joinedPoolsData,
+    updateJoinedPoolListData,
     onJoinedPoolListPageChange
   } = usePlayerHistory();
 
@@ -147,6 +148,7 @@ export default function Player() {
                   pageIndex={joinedPoolListPageIndex}
                   hasNextPage={joinedPoolListHasNextPage}
                   onPageChange={onJoinedPoolListPageChange}
+                  updatePoolsData={updateJoinedPoolListData}
                 />
                 <div
                   ref={marketsBottomRef}

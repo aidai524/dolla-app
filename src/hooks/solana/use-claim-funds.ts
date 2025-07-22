@@ -84,8 +84,9 @@ export default function useClaimFunds({
       });
 
       onClaimSuccess?.();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Create error:", error);
+      toast.fail({ title: "Claim failed", text: error?.message });
       throw error;
     } finally {
       setClaiming(false);
