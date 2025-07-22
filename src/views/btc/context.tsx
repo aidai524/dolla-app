@@ -68,7 +68,7 @@ export const CannonCoinsProvider = ({
       value={{
         isDetail: !!params?.poolId,
         flipStatus,
-        pool: pool,
+        pool,
         sbProgramRef,
         bids,
         setBids,
