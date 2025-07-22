@@ -105,7 +105,7 @@ export default function AvatarAction() {
       <div className="w-[208px] rounded-[10px] bg-[#35302B] border border-[#6A5D3A] absolute right-0 top-[40px] text-white invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
         <div className="p-[10px] flex gap-[8px] items-center border-b border-[#423930]">
           <Avatar size={32} address={userInfo.sol_user} className="shrink-0" />
-          <div>
+          <div className="flex-1 w-0 whitespace-nowrap overflow-hidden text-ellipsis">
             <span className="text-[16px] font-medium">
               {user?.email?.address}
             </span>
