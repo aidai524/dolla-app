@@ -82,8 +82,23 @@ export default function useCancel({
         .accounts(cancelPoolAccounts)
         .instruction();
 
-      batchTx.add(tx);
+      if (userBaseAccount?.instruction) {
+        batchTx.add(userBaseAccount.instruction);
+      }
 
+      if (userQuoteAccount?.instruction) {
+        batchTx.add(userQuoteAccount.instruction);
+      }
+
+      if (poolBaseAccount?.instruction) {
+        batchTx.add(poolBaseAccount.instruction);
+      }
+
+      if (poolQuoteAccount?.instruction) {
+        batchTx.add(poolQuoteAccount.instruction);
+      }
+
+      batchTx.add(tx);
       batchTx.feePayer = new PublicKey(import.meta.env.VITE_SOLANA_OPERATOR);
       // Get the latest blockhash
       batchTx.recentBlockhash = "11111111111111111111111111111111";
