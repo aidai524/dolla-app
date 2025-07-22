@@ -6,8 +6,7 @@ import { addThousandSeparator } from "@/utils/format/number";
 import PointIcon from "@/components/icons/point-icon";
 import RedeemSelectionItem from "./item";
 import { useConfigStore } from "@/stores/use-config";
-import { useMemo, useState } from "react";
-import { BASE_TOKEN, QUOTE_TOKEN } from "@/config/btc";
+import { useState } from "react";
 import useUserInfoStore from "@/stores/use-user-info";
 import Redeem from "../redeem";
 import History from "../history";
@@ -15,47 +14,19 @@ import History from "../history";
 export default function RedeemSelection({
   points,
   showRedeemSelection,
+  items,
+  itemsMap,
   onClose
 }: {
   points: number;
   showRedeemSelection: boolean;
+  items: any[];
+  itemsMap: any;
   onClose: () => void;
 }) {
   const { userInfo } = useAuth();
-  const { config } = useConfigStore();
-  const { prize } = useUserInfoStore();
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [showHistory, setShowHistory] = useState(false);
-  const [items, itemsMap] = useMemo(() => {
-    if (!config?.point_withdrawal_config) return [];
-    let _itemsMap: any = {};
-    const _items = config.point_withdrawal_config.map((item: any) => {
-      let icon = "";
-      let name = "";
-
-      if (item.token.toLowerCase() === BASE_TOKEN.address.toLowerCase()) {
-        icon = BASE_TOKEN.pointIcon;
-        name = BASE_TOKEN.name;
-      } else if (
-        item.token.toLowerCase() === QUOTE_TOKEN.address.toLowerCase()
-      ) {
-        icon =
-          item.token_volume === "1" ? "/points/bid.png" : QUOTE_TOKEN.pointIcon;
-        name = item.token_volume === "1" ? "Free Bid" : QUOTE_TOKEN.name;
-      } else if (item.token === "SOL") {
-        icon = "/points/solana.png";
-        name = "SOL";
-      }
-      _itemsMap[item.token + "_" + item.token_volume] = { name };
-      return {
-        ...item,
-        icon,
-        name,
-        disabled: prize.points < Number(item.number)
-      };
-    });
-    return [_items, _itemsMap];
-  }, [config?.point_withdrawal_config, prize]);
 
   const close = () => {
     onClose();
