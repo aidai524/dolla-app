@@ -11,7 +11,9 @@ export default function useUserPrize() {
       set({
         prize: {
           points: response.data.data.point.reward,
-          tickets: response.data.data.ticket.number
+          tickets:
+            response.data.data.ticket.number -
+            response.data.data.ticket.use_number
         }
       });
     } catch (err) {}

@@ -178,10 +178,10 @@ export default function useBid(
           bidResponse.data.data.bid !== null &&
           bidResponse.data.data.bid.status !== 0
         ) {
-          console.log("result", bidResponse.data.data);
           console.timeEnd("bid time");
           console.timeEnd("bid loop");
           onSuccess(bidResponse.data.data);
+
           return;
         }
         if (timer) {

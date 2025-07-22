@@ -5,6 +5,7 @@ import { useMemo } from "react";
 
 export default function Progress({ data }: any) {
   const progress = useMemo(() => {
+    if (!data) return 0;
     if (!data?.accumulative_bids || data?.anchor_price === "0") return 0;
 
     return (data.accumulative_bids / getAnchorPrice(data)) * 100;
@@ -49,7 +50,7 @@ export default function Progress({ data }: any) {
               ></motion.div>
             </>
           )}
-          <Label amount={data.accumulative_bids} />
+          <Label amount={data?.accumulative_bids || 0} />
         </div>
       </div>
     </div>

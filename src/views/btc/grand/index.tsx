@@ -4,9 +4,10 @@ import FlipCoins from "./flip-coins";
 import { useBtcContext } from "../context";
 import FlippingCoin from "../components/fliping-coin";
 import PreLoading from "./pre-loading";
+import EndPanel from "../detail/end";
 
 export default function Grand({ className }: { className?: string }) {
-  const { flipStatus } = useBtcContext();
+  const { flipStatus, pool } = useBtcContext();
 
   return (
     <div
@@ -15,10 +16,14 @@ export default function Grand({ className }: { className?: string }) {
         className
       )}
     >
-      <FlipCoins />
-
-      {flipStatus === 3 && <FlippingCoin start={true} />}
-      {flipStatus === 1 && <PreLoading />}
+      {pool?.status === 1 && (
+        <>
+          <FlipCoins />
+          {flipStatus === 3 && <FlippingCoin start={true} />}
+          {flipStatus === 1 && <PreLoading />}
+        </>
+      )}
+      {pool?.status === 2 && <EndPanel />}
     </div>
   );
 }
