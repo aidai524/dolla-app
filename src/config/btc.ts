@@ -11,11 +11,15 @@ export const TOKEN = {
 export const BASE_TOKEN: Record<string, any> = {
   address: import.meta.env.VITE_SOLANA_BASE_ADDRESS,
   decimals: 6,
-  chain: "solana"
+  chain: "solana",
+  name: "BTC",
+  pointIcon: "/points/btc.png"
 };
 // usdc
 export const QUOTE_TOKEN: Record<string, any> = {
   address: import.meta.env.VITE_SOLANA_QUOTE_ADDRESS,
   decimals: 6,
-  chain: "solana"
+  chain: "solana",
+  name: "USDT",
+  pointIcon: "/points/usdt.png"
 };

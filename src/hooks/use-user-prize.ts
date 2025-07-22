@@ -10,7 +10,10 @@ export default function useUserPrize() {
 
       set({
         prize: {
-          points: response.data.data.point.reward,
+          points:
+            response.data.data.point.reward -
+            response.data.data.point.freeze_reward -
+            response.data.data.point.withdrawal_reward,
           tickets:
             response.data.data.ticket.number -
             response.data.data.ticket.use_number
