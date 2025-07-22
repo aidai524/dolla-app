@@ -180,6 +180,8 @@ export default function useBid(
         ) {
           console.timeEnd("bid time");
           console.timeEnd("bid loop");
+          console.log("bidResponse", bidResponse.data.data);
+          // bidResponse.data.data.bid.isWinner === true
           onSuccess(bidResponse.data.data);
 
           return;

@@ -4,33 +4,40 @@ export const FlipCoinBg = ({ size, className }: any) => {
       xmlns="http://www.w3.org/2000/svg"
       width={size}
       height={size}
-      viewBox="0 0 63 62"
+      viewBox="0 0 214 214"
       fill="none"
       className={className}
     >
       <circle
-        cx="31.3075"
-        cy="30.9434"
-        r="30.4434"
+        cx="106.801"
+        cy="107.038"
+        r="104.731"
         fill="#FFD364"
         stroke="#DD9000"
+        strokeWidth="3"
       />
-      <g filter="url(#filter0_i_63_35)">
+      <g filter="url(#filter0_i_77_3)">
         <circle
-          cx="30.8196"
-          cy="30.9431"
-          r="24.0671"
-          fill="url(#paint0_linear_63_35)"
+          cx="106.801"
+          cy="107.038"
+          r="82.6242"
+          fill="url(#paint0_linear_77_3)"
         />
       </g>
-      <circle cx="30.8196" cy="30.9431" r="23.5671" stroke="#DD9000" />
+      <circle
+        cx="106.801"
+        cy="107.038"
+        r="81.1242"
+        stroke="#DD9000"
+        strokeWidth="3"
+      />
       <defs>
         <filter
-          id="filter0_i_63_35"
-          x="6.75256"
-          y="6.87598"
-          width="48.1342"
-          height="48.1342"
+          id="filter0_i_77_3"
+          x="24.1768"
+          y="24.4134"
+          width="165.248"
+          height="165.248"
           filterUnits="userSpaceOnUse"
           colorInterpolationFilters="sRGB"
         >
@@ -56,15 +63,15 @@ export const FlipCoinBg = ({ size, className }: any) => {
           <feBlend
             mode="normal"
             in2="shape"
-            result="effect1_innerShadow_63_35"
+            result="effect1_innerShadow_77_3"
           />
         </filter>
         <linearGradient
-          id="paint0_linear_63_35"
-          x1="6.75256"
-          y1="30.9431"
-          x2="54.8867"
-          y2="30.9431"
+          id="paint0_linear_77_3"
+          x1="24.1768"
+          y1="107.038"
+          x2="189.425"
+          y2="107.038"
           gradientUnits="userSpaceOnUse"
         >
           <stop stopColor="#FFCE52" />

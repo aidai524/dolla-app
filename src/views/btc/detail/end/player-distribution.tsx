@@ -1,3 +1,4 @@
+import Avatar from "@/components/avatar";
 import config from "@/components/bid/config";
 import { usePoolDistributed } from "@/hooks/use-pool-distributed";
 import { useMemo } from "react";
@@ -7,13 +8,14 @@ export default function PlayerDistribution({ data }: { data: any }) {
 
   return (
     <div className="w-full h-full rounded-[10px] bg-[#00000033] mt-[10px]">
-      <div className="h-full pt-[12px] px-[8px] pb-[20px] flex flex-col justify-between">
+      <div className="h-full pt-[12px] px-[18px] pb-[20px] flex flex-col justify-between">
         {config.map((item) => (
           <Item
             data={item}
             key={item.value}
             number={distributed[item.value as keyof typeof distributed]}
             total={data.accumulative_bids}
+            winner={data.winner_user_info}
           />
         ))}
       </div>
@@ -21,7 +23,7 @@ export default function PlayerDistribution({ data }: { data: any }) {
   );
 }
 
-const Item = ({ data, number, total }: any) => {
+const Item = ({ data, number, total, winner }: any) => {
   const width = useMemo(() => {
     if (total === 0) return 0;
     return (number / total) * 100;
@@ -39,10 +41,7 @@ const Item = ({ data, number, total }: any) => {
       </div>
       <div className="text-[14px] text-[#ADBCCF]">{number}</div>
       <div className="flex items-center gap-[6px] ml-[10px]">
-        <img
-          className="w-[20px] h-[20px] rounded-full border-[#DD9000]"
-          src=""
-        />
+        <Avatar size={20} address={winner?.sol_user} email={winner?.email} />
         <span className="text-[12px] text-white">x22</span>
       </div>
     </div>

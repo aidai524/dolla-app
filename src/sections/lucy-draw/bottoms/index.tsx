@@ -1,11 +1,12 @@
 import StarBg from "../star-bg";
 import TicketBottom from "./ticket";
+import Avatar from "@/components/avatar";
 
 export default function Bottoms({
   status,
   tickets,
   onBuyTicket,
-  winningList
+  winningList = []
 }: {
   status: number;
   tickets: number;
@@ -28,10 +29,13 @@ export default function Bottoms({
       {status === 2 && (
         <>
           <div className="relative z-[2] w-full h-full flex items-center justify-center">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item) => (
-              <img
+            {winningList.map((item) => (
+              <Avatar
+                address={item.user}
                 key={item}
-                className="w-[30px] h-[30px] rounded-full border border-[#DD9000] ml-[-10px]"
+                className="border border-[#DD9000] ml-[-10px]"
+                size={30}
+                email={item.user_info?.email}
               />
             ))}
           </div>

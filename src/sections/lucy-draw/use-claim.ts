@@ -1,5 +1,6 @@
 import axiosInstance from "@/libs/axios";
 import { useState } from "react";
+import useToast from "@/hooks/use-toast";
 
 export default function useClaim({
   onClaimSuccess
@@ -7,13 +8,25 @@ export default function useClaim({
   onClaimSuccess?: () => void;
 }) {
   const [isClaiming, setIsClaiming] = useState(false);
-  const claim = async (id: number) => {
-    setIsClaiming(true);
-    const res = await axiosInstance.post(`/api/v1/ticket/claim`, { id });
-    if (res.data.code === 0) {
-      onClaimSuccess?.();
+  const toast = useToast();
+  const claim = async (ids: number[]) => {
+    try {
+      setIsClaiming(true);
+      const res = await axiosInstance.post(`/api/v1/ticket/claim`, {
+        id: ids.join(",")
+      });
+
+      if (res.data.code === 0) {
+        onClaimSuccess?.();
+        toast.success({ title: "Claim successfully" });
+      } else {
+        toast.fail({ title: "Claim failed" });
+      }
+      setIsClaiming(false);
+    } catch (error) {
+      toast.fail({ title: "Claim failed" });
+      setIsClaiming(false);
     }
-    setIsClaiming(false);
   };
   return {
     claim,

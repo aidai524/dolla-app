@@ -8,6 +8,7 @@ import useTransfer from "@/hooks/solana/use-transfer";
 import Loading from "@/components/icons/loading";
 import useUserInfoStore from "@/stores/use-user-info";
 import useToast from "@/hooks/use-toast";
+import AmountInput from "./amount-input";
 
 export default function BuyTicket({
   showBuyTicket,
@@ -46,7 +47,7 @@ export default function BuyTicket({
       <div className="w-[378px] h-[444px] rounded-[16px] border border-[#6A5D3A] bg-[#35302B]">
         <div className="h-[54px] bg-[#00000033] rounded-t-[16px] flex items-center justify-between px-[16px]">
           <div className="text-[20px] text-white">Buy Ticket</div>
-          <button className="w-[24px] h-[24px] button">
+          <button className="w-[24px] h-[24px] button" onClick={onClose}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="10"
@@ -70,7 +71,6 @@ export default function BuyTicket({
         </div>
         <div className="w-[338px] mx-auto mt-[40px]">
           <div className="flex items-center justify-between text-[14px] text-[#BBACA6]">
-            <span />
             <span>Amount</span>
             <span
               className="underline button"
@@ -81,65 +81,11 @@ export default function BuyTicket({
               Max
             </span>
           </div>
-          <div className="rounded-[10px] bg-[#00000033] flex items-center justify-between p-[10px] mt-[6px]">
-            <button
-              className={clsx(
-                "w-[24px] h-[24px] rounded-full border border-[#6A5D3A] bg-[#00000033] flex justify-center items-center",
-                ticket === 1 ? "opacity-50" : "button"
-              )}
-              onClick={() => {
-                if (ticket > 1) {
-                  setTicket((prev) => prev - 1);
-                }
-              }}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="10"
-                height="2"
-                viewBox="0 0 10 2"
-                fill="none"
-              >
-                <path
-                  d="M9.59961 1.54492H0V0.0449219H9.59961V1.54492Z"
-                  fill="white"
-                />
-              </svg>
-            </button>
-            <input
-              className="w-[280px] text-center text-white text-[14px] font-[DelaGothicOne]"
-              value={ticket}
-              onChange={(e) => {
-                if (!isNaN(Number(e.target.value))) {
-                  setTicket(Number(e.target.value));
-                }
-              }}
-            />
-            <button
-              className={clsx(
-                "w-[24px] h-[24px] rounded-full border border-[#6A5D3A] bg-[#00000033] flex justify-center items-center",
-                ticket === Number(tokenBalance) ? "opacity-50" : "button"
-              )}
-              onClick={() => {
-                if (ticket < Number(tokenBalance)) {
-                  setTicket((prev) => prev + 1);
-                }
-              }}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="10"
-                height="10"
-                viewBox="0 0 10 10"
-                fill="none"
-              >
-                <path
-                  d="M5.54492 4.04492H9.59961V5.54492H5.54492V9.59961H4.04492V5.54492H0V4.04492H4.04492V0H5.54492V4.04492Z"
-                  fill="white"
-                />
-              </svg>
-            </button>
-          </div>
+          <AmountInput
+            amount={ticket}
+            onChange={setTicket}
+            max={Number(tokenBalance)}
+          />
         </div>
         <button
           className={clsx(

@@ -22,11 +22,14 @@ export default function usePlayerHistory() {
   const { loading: joinedPoolListLoading } = useRequest(async () => {
     if (!userInfo?.user) return [];
     try {
-      const response = await axiosInstance.get(
-        `/api/v1/user/player/history?limit=${joinedPoolListPageSize}&offset=${
-          (joinedPoolListPageIndex - 1) * joinedPoolListPageSize
-        }`
-      );
+      // const response = await axiosInstance.get(
+      //   `/api/v1/user/player/history?limit=${joinedPoolListPageSize}&offset=${
+      //     (joinedPoolListPageIndex - 1) * joinedPoolListPageSize
+      //   }`
+      // );
+      const response = {
+        data: { data: { list: [], has_next_page: false } }
+      };
       const poolIds: number[] = [];
       setJoinedPoolListHasNextPage(response.data.data.has_next_page);
       response.data.data.list.forEach((item: any) => {

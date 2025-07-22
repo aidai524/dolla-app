@@ -73,13 +73,11 @@ const MarketItem = (props: any) => {
               >
                 Claim
               </ButtonV2>
-              <div className="">
-                $200
-              </div>
+              <div className="">$200</div>
             </div>
           </div>
-        </div>)}
-      onClick={() => { }}
+        </div>
+      }
     />
   );
 };

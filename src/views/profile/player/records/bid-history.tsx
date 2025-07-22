@@ -33,7 +33,7 @@ const BidHistory = (props: any) => {
       title: "Market Size",
       width: 160,
       render: (record: any) => {
-        return `${formatNumber(record.reward_amount, 4, true)} ${typeof record.reward_token == "string" ? record.reward_token : record.reward_token.symbol}`;
+        return `${formatNumber(record.reward_amount, 4, true)} ${record.rewardTokenInfo?.symbol}`;
       }
     },
     {
