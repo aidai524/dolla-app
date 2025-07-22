@@ -9,6 +9,7 @@ import { useAuth } from "@/contexts/auth";
 import useTokenBalance from "@/hooks/solana/use-token-balance";
 import Loading from "@/components/icons/loading";
 import { QUOTE_TOKEN } from "@/config/btc";
+import useUserWinner from "@/hooks/use-user-winner";
 
 const StatisticsPlayer = (props: any) => {
   const { className } = props;
@@ -18,6 +19,7 @@ const StatisticsPlayer = (props: any) => {
     address: QUOTE_TOKEN.address,
     decimals: QUOTE_TOKEN.decimals
   });
+  const { totalBtcAmount, loading: totalBtcLoading } = useUserWinner();
 
   const [cashierModalOpen, setCashierModalOpen] = useState(false);
   const [cashierModalTab, setCashierModalTab] = useState("fund");
@@ -47,9 +49,13 @@ const StatisticsPlayer = (props: any) => {
           </div>
         </div>
         <LabelValue label="#BTC" className="">
-          {formatNumber(0, 2, true)}
+          {totalBtcLoading ? (
+            <Loading size={12} />
+          ) : (
+            formatNumber(totalBtcAmount, 2, true)
+          )}
         </LabelValue>
-        <ButtonV2 className="" onClick={() => {}} disabled>
+        <ButtonV2 className="" onClick={() => { }} disabled>
           Share
         </ButtonV2>
       </div>

@@ -14,11 +14,17 @@ import { motion } from "framer-motion";
 import ButtonV2 from "@/components/button/v2";
 import DoughnutChart from "./doughnut-chart";
 import { formatAddress } from "@/utils/format/address";
+import { useReferenceData } from "./hooks/use-reference-data";
+import Skeleton from "@/components/skeleton";
+import { useConfigStore } from "@/stores/use-config";
+import Big from "big.js";
 
 export default function BTCCreate() {
   const [amount, setAmount] = useState(1);
   const { address } = useAuth();
   const { tokenBalance, isLoading, update } = useTokenBalance(BASE_TOKEN);
+  const { data: referenceData, loading: referenceDataLoading } = useReferenceData({ token: BASE_TOKEN, amount });
+  const globalConfig = useConfigStore((state) => state.config);
 
   const { prices } = useTokenPrice(BASE_TOKEN);
 
@@ -45,6 +51,21 @@ export default function BTCCreate() {
     }
     return "";
   }, [amount, tokenBalance, pricePerBTC]);
+
+  const [poolCashOutTiming, poolBidsOvermarket] = useMemo(() => {
+    return [
+      globalConfig?.pool_cash_out_timing?.map((_item: any) => ({
+        label: _item.days,
+        value: _item.volume,
+        percentage: _item.percentage[0],
+      })) || [],
+      globalConfig?.pool_bids_overmarket?.map((_item: any) => ({
+        label: Big(_item.volume || 0).div(10 ** BASE_TOKEN.decimals).toNumber(),
+        value: _item.bid,
+        percentage: _item.percentage[0],
+      })) || []
+    ];
+  }, [globalConfig]);
 
   return (
     <div className="w-full h-screen overflow-y-auto font-[SpaceGrotesk] text-[14px] font-[400] leading-[100%] text-white pt-[60px] pb-[60px]">
@@ -113,10 +134,18 @@ export default function BTCCreate() {
                   />
                 </div>
                 <div className="font-[DelaGothicOne] text-[20px]">
-                  {formatNumber(2325, 2, true, { prefix: "$" })}
+                  {
+                    referenceDataLoading ? (
+                      <Skeleton className="w-[85px] h-[12px] rounded-full" />
+                    ) : formatNumber(referenceData?.top_sale, 2, true, { prefix: "$" })
+                  }
                 </div>
                 <div className="text-[#4DD561] text-[12px] mt-[2px]">
-                  {formatNumber(228, 2, true, { prefix: "+" })}%
+                  {
+                    referenceDataLoading ? (
+                      <Skeleton className="w-[25px] h-[12px] rounded-full" />
+                    ) : formatNumber(referenceData?.top_sale_percentage, 2, true, { prefix: "+" }) + "%"
+                  }
                 </div>
               </div>
               <div className="rounded-[10px] border border-[#2B2C2F] h-[93px] flex flex-col justify-center items-center gap-[10px]">
@@ -124,10 +153,18 @@ export default function BTCCreate() {
                   <div className="font-[DelaGothicOne]">Avg. Profit</div>
                 </div>
                 <div className="font-[DelaGothicOne] text-[20px]">
-                  +{formatNumber(102, 2, true, { prefix: "$" })}
+                  {
+                    referenceDataLoading ? (
+                      <Skeleton className="w-[85px] h-[12px] rounded-full" />
+                    ) : "+" + formatNumber(referenceData?.avg_profit, 2, true, { prefix: "$" })
+                  }
                 </div>
                 <div className="text-[#4DD561] text-[12px] mt-[2px]">
-                  {formatNumber(8.2, 2, true, { prefix: "+" })}%
+                  {
+                    referenceDataLoading ? (
+                      <Skeleton className="w-[25px] h-[12px] rounded-full" />
+                    ) : formatNumber(referenceData?.avg_profit_percentage, 2, true, { prefix: "+" }) + "%"
+                  }
                 </div>
               </div>
               <div className="rounded-[10px] border border-[#2B2C2F] h-[93px] flex flex-col justify-center items-center gap-[10px]">
@@ -135,22 +172,25 @@ export default function BTCCreate() {
                   <div className="font-[DelaGothicOne]">Live</div>
                 </div>
                 <div className="font-[DelaGothicOne] text-[20px]">
-                  {formatNumber(23, 0, true)}
+                  {
+                    referenceDataLoading ? (
+                      <Skeleton className="w-[85px] h-[12px] rounded-full" />
+                    ) : formatNumber(referenceData?.live, 0, true, { prefix: "$" })
+                  }
                 </div>
                 <div className="text-[#4DD561] text-[12px] mt-[2px]">
-                  {formatNumber(2, 0, true, { prefix: "+" })} new
+                  {
+                    referenceDataLoading ? (
+                      <Skeleton className="w-[25px] h-[12px] rounded-full" />
+                    ) : formatNumber(referenceData?.new_live, 0, true, { prefix: "+" }) + " new"
+                  }
                 </div>
               </div>
             </div>
             <div className="w-full mt-[30px] grid grid-cols-2 h-[210px] place-items-center">
               <DoughnutChart
                 className="!w-[210px] !h-[210px]"
-                data={[
-                  { value: 48, label: "5" },
-                  { value: 25, label: "10" },
-                  { value: 15, label: "15" },
-                  { value: 12, label: "20" }
-                ]}
+                data={poolCashOutTiming}
                 formatLabel={(record: any) => {
                   return (
                     <div className="flex flex-col items-center justify-center gap-[5px]">
@@ -159,7 +199,7 @@ export default function BTCCreate() {
                         in {record.label} days
                       </div>
                       <div className="text-[16px] mt-[10px] text-[#BBACA6]">
-                        {record.value}%
+                        {record.percentage}%
                       </div>
                     </div>
                   );
@@ -167,28 +207,23 @@ export default function BTCCreate() {
               />
               <DoughnutChart
                 className="!w-[210px] !h-[210px]"
-                data={[
-                  { value: 49, amount: 1, bids: "520" },
-                  { value: 21, amount: 0.1, bids: "3562" },
-                  { value: 17, amount: 0.01, bids: "12345" },
-                  { value: 13, amount: 0.001, bids: "67894" }
-                ]}
+                data={poolBidsOvermarket}
                 formatLabel={(record: any) => {
                   return (
                     <div className="flex flex-col items-center justify-center gap-[5px]">
-                      <div className="text-[16px]">{record.amount} BTC</div>
+                      <div className="text-[16px]">{record.label} BTC</div>
                       <div className="text-[#BBACA6] mt-[4px]">
                         Bids overmarket
                       </div>
                       <div className="font-[DelaGothicOne] text-[20px] mt-[1px]">
-                        {formatNumber(record.bids, 2, true, {
+                        {formatNumber(record.value, 2, true, {
                           isShort: true,
                           isShortUppercase: true
                         })}{" "}
                         Bids
                       </div>
                       <div className="text-[16px] mt-[6px] text-[#BBACA6]">
-                        {record.value}%
+                        {record.percentage}%
                       </div>
                     </div>
                   );
