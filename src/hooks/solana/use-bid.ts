@@ -21,14 +21,14 @@ import {
 import {
   PublicKey,
   Transaction,
-  TransactionInstruction
+  TransactionInstruction,
+  ComputeBudgetProgram
 } from "@solana/web3.js";
 import { Randomness } from "@switchboard-xyz/on-demand";
 import { sendSolanaTransaction } from "@/utils/transaction/send-solana-transaction";
 import axiosInstance from "@/libs/axios";
 import { useBtcContext } from "@/views/btc/context";
 import { useRandomnessStore } from "@/stores/use-randomness";
-import { useAuth } from "@/contexts/auth";
 
 export default function useBid(
   poolId: number,
@@ -43,7 +43,6 @@ export default function useBid(
   const poolInfoRef = useRef<any>(null);
   const { sbProgramRef } = useBtcContext();
   const randomnessStore: any = useRandomnessStore();
-  const { userInfo } = useAuth();
   const randomnessTimerRef = useRef<any>(null);
 
   const onBid = async (times: number) => {
@@ -142,7 +141,17 @@ export default function useBid(
         console.log("randomnessCreateIx:" + randomnessCreateIx[i].programId);
         tx.add(randomnessCreateIx[i]);
       }
-      tx.add(bidIx);
+
+      const priorityFeeInstruction = ComputeBudgetProgram.setComputeUnitPrice({
+        microLamports: 5000
+      });
+
+      const computeUnitLimitInstruction =
+        ComputeBudgetProgram.setComputeUnitLimit({
+          units: 200000
+        });
+
+      tx.add(priorityFeeInstruction, computeUnitLimitInstruction, bidIx);
       tx.feePayer = new PublicKey(import.meta.env.VITE_SOLANA_OPERATOR);
 
       // Get the latest blockhash

@@ -21,7 +21,8 @@ import { sendSolanaTransaction } from "@/utils/transaction/send-solana-transacti
 import {
   PublicKey,
   Transaction,
-  TransactionInstruction
+  TransactionInstruction,
+  ComputeBudgetProgram
 } from "@solana/web3.js";
 
 export default function useCreate({
@@ -108,7 +109,16 @@ export default function useCreate({
       if (poolBaseAccount?.instruction) {
         tx.add(poolBaseAccount.instruction);
       }
-      tx.add(createIx);
+
+      const priorityFeeInstruction = ComputeBudgetProgram.setComputeUnitPrice({
+        microLamports: 5000
+      });
+
+      const computeUnitLimitInstruction =
+        ComputeBudgetProgram.setComputeUnitLimit({
+          units: 200000
+        });
+      tx.add(priorityFeeInstruction, computeUnitLimitInstruction, createIx);
       tx.feePayer = new PublicKey(import.meta.env.VITE_SOLANA_OPERATOR);
 
       // Get the latest blockhash

@@ -13,7 +13,8 @@ import { useSolanaWallets } from "@privy-io/react-auth";
 import {
   PublicKey,
   Transaction,
-  TransactionInstruction
+  TransactionInstruction,
+  ComputeBudgetProgram
 } from "@solana/web3.js";
 import { sendSolanaTransaction } from "@/utils/transaction/send-solana-transaction";
 
@@ -98,7 +99,15 @@ export default function useCancel({
         batchTx.add(poolQuoteAccount.instruction);
       }
 
-      batchTx.add(tx);
+      const priorityFeeInstruction = ComputeBudgetProgram.setComputeUnitPrice({
+        microLamports: 5000
+      });
+
+      const computeUnitLimitInstruction =
+        ComputeBudgetProgram.setComputeUnitLimit({
+          units: 200000
+        });
+      batchTx.add(priorityFeeInstruction, computeUnitLimitInstruction, tx);
       batchTx.feePayer = new PublicKey(import.meta.env.VITE_SOLANA_OPERATOR);
       // Get the latest blockhash
       batchTx.recentBlockhash = "11111111111111111111111111111111";
