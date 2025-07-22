@@ -13,31 +13,32 @@ export default function useSplWithdraw({ token, amount, targetAddress }: { token
     const { wallets } = useSolanaWallets();
 
     const withdraw = async () => {
-        const res = await getAssociatedTokenAddress(token.address, targetAddress, provider);
-        if (!res) {
+        const destination = await getAssociatedTokenAddress(new PublicKey(token.address), new PublicKey(targetAddress), provider);
+        if (!destination) {
             return;
         }
 
-        const { address, instruction, account: tokenAccount }  = res;
         const payer = wallets[0];
-
-        console.log(payer);
-
         const owerPublicKey = new PublicKey(payer.address);
+        const source = await getAssociatedTokenAddress(new PublicKey(token.address), owerPublicKey, provider);
+
+        if (!source) {
+            return;
+        }
 
         const transaction: Transaction = new Transaction()
 
-        if (instruction) {
-            transaction.add(instruction);
+        if (destination.instruction) {
+            transaction.add(destination.instruction);
         }
 
         transaction.add(
             createTransferInstruction(
+                source.address,
+                destination.address,
                 owerPublicKey,
-                tokenAccount,
-                owerPublicKey,
-                amount,
-                [owerPublicKey]
+                amount * 10 ** token.decimals,
+                []
             )
         );
 

@@ -13,6 +13,7 @@ export const BASE_TOKEN: Record<string, any> = {
   decimals: 6,
   chain: "solana",
   name: "BTC",
+  symbol: "BTC",
   pointIcon: "/points/btc.png"
 };
 // usdc

@@ -18,7 +18,7 @@ export default function ProvablyFair({ open, onClose }: { open: boolean, onClose
       <div className="w-[672px] h-[444px] bg-[#35302B] border border-[#6A5D3A] rounded-[16px]">
         <div className="flex justify-between items-center rounded-t-[16px] h-[54px] px-[30px] bg-[#00000033]">
           <div className="text-[20px] font-bold text-white">Provably Fair</div>
-          <button>
+          <button className="cursor-pointer" onClick={onClose}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="10"
@@ -44,7 +44,7 @@ export default function ProvablyFair({ open, onClose }: { open: boolean, onClose
               Verify
             </button>
           </div>
-          <div className="w-[544px] flex items-center gap-[12px] mt-[14px] text-white">
+          {/* <div className="w-[544px] flex items-center gap-[12px] mt-[14px] text-white">
             <input
               className="w-1/3 h-[46px] bg-[#00000033] rounded-[10px] p-[15px] text-[16px]"
               placeholder="Server Seed"
@@ -57,7 +57,7 @@ export default function ProvablyFair({ open, onClose }: { open: boolean, onClose
               className="w-1/3 h-[46px] bg-[#00000033] rounded-[10px] p-[15px] text-[16px]"
               placeholder="EOS Block"
             />
-          </div>
+          </div> */}
           <div className="mt-[20px] text-white">
             <div className="px-[12px] h-[45px] flex items-center text-[14px] text-[#5E6B7D]">
               {COLUMNS.map((column) => (

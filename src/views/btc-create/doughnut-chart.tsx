@@ -25,13 +25,16 @@ export default function DoughnutChart({ data, formatLabel, className }: Doughnut
     const ctx = chartRef.current.getContext("2d");
     if (!ctx) return;
 
+    // Check if data is empty or undefined
+    const hasData = data && data.length > 0;
+
     // Prepare chart data
     const chartData = {
-      labels: data.map((item: any) => item.label),
+      labels: hasData ? data.map((item: any) => item.label) : [''],
       datasets: [
         {
-          data: data.map((item: any) => item.value),
-          backgroundColor: data.map((item: any, index: number) => {
+          data: hasData ? data.map((item: any) => item.value) : [1],
+          backgroundColor: hasData ? data.map((item: any, index: number) => {
             if (index === selectedIndex) {
               // Create gradient for selected segment
               const canvas = chartRef.current;
@@ -47,7 +50,7 @@ export default function DoughnutChart({ data, formatLabel, className }: Doughnut
               return '#FFE9B2'; // Fallback color
             }
             return "#2B2C2F"; // Dark gray for unselected segments
-          }),
+          }) : ['#35302B'], // Empty state color
           borderWidth: 2,
           borderColor: "#000", // Background color for gaps
           cutout: "78%", // Doughnut chart inner radius
@@ -105,8 +108,11 @@ export default function DoughnutChart({ data, formatLabel, className }: Doughnut
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    // Check if data is empty or undefined
+    const hasData = data && data.length > 0;
+
     // Update colors for all segments
-    const newColors = data.map((item: any, index: number) => {
+    const newColors = hasData ? data.map((item: any, index: number) => {
       if (index === selectedIndex) {
         // Create gradient for selected segment
         const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
@@ -115,7 +121,7 @@ export default function DoughnutChart({ data, formatLabel, className }: Doughnut
         return gradient;
       }
       return "#2B2C2F"; // Dark gray for unselected segments
-    });
+    }) : ['#35302B']; // Empty state color
 
     // Update the chart data
     chartInstance.current.data.datasets[0].backgroundColor = newColors;
@@ -123,7 +129,8 @@ export default function DoughnutChart({ data, formatLabel, className }: Doughnut
   }, [selectedIndex, data]);
 
   // Calculate center record - show selected record
-  const centerRecord = data[selectedIndex] || data[0] || { value: 0, label: "0" };
+  const hasData = data && data.length > 0;
+  const centerRecord = hasData ? (data[selectedIndex] || data[0] || { value: 0, label: "0" }) : { value: 0, label: "0" };
 
   return (
     <div className={clsx("relative w-full h-full", className)}>
