@@ -229,49 +229,11 @@ export default function BTCCreate() {
               <div className="text-center font-[700] text-[16px]">
                 Recharge
               </div>
-              <div className="w-[160px] h-[160px] mt-[17px] mx-auto bg-white rounded-[6px]"></div>
-              <div className="mt-[20px] bg-black/20 rounded-[10px] p-[16px_10px_13px_10px]">
-                <div className="flex items-center gap-[5px]">
-                  <div className="text-[16px] font-[DelaGothicOne]">
-                    WBTC
-                  </div>
-                  <img
-                    src="/chains/solana.png"
-                    alt=""
-                    className="shrink-0 w-[17px] h-[17px] object-center object-contain rounded-[4px] ml-[2px]"
-                  />
-                  <div className="">
-                    Solana
-                  </div>
-                </div>
-                <div className="mt-[15px] flex justify-between items-center gap-[8px]">
-                  <div className="break-all text-[#BBACA6] leading-[120%]">
-                    0x54132d48c6c75d9dea1810c99f76424f322501234
-                  </div>
-                  <button
-                    type="button"
-                    className="button shrink-0 w-[60px] h-[32px] flex justify-center items-center rounded-[6px] text-[14px] text-black font-[SpaceGrotesk] font-[600] leading-[100%] bg-[radial-gradient(50%_50%_at_50%_50%,_#FFEF43_0%,_#FFC42F_100%)] shadow-[0px_0px_6px_0px_#FFC42F]"
-                  >
-                    Copy
-                  </button>
-                </div>
-              </div>
-              <div className="mt-[24px] flex justify-between items-center gap-[10px]">
-                <div className="text-[#BBACA6] text-[12px]">
-                  Minimum deposit amount
-                </div>
-                <div className="text-[12px]">
-                  0.01 WBTC
-                </div>
-              </div>
-              <div className="mt-[19px] flex justify-between items-center gap-[10px]">
-                <div className="text-[#BBACA6] text-[12px]">
-                  Cost time
-                </div>
-                <div className="text-[12px]">
-                  ~2 mins
-                </div>
-              </div>
+              <Recharge
+                token={BASE_TOKEN}
+                className="mt-[7px]"
+                tokenPanelClassName="!bg-black/20 !rounded-[10px]"
+              />
             </div>
           </div>
         </div>
