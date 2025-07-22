@@ -10,9 +10,9 @@ import CancelModal from "../cancel-modal";
 import { useState } from "react";
 import Loading from "@/components/icons/loading";
 import DepositModal from "../deposit-modal";
-import useClaim from "@/hooks/evm/use-claim";
 import { formatNumber } from "@/utils/format/number";
 import Big from "big.js";
+import useClaimFunds from "@/hooks/solana/use-claim-funds";
 
 const SellerMarkets = (props: any) => {
   const { className, poolsData, orders, loading, updatePoolsData } = props;
@@ -100,8 +100,8 @@ export default SellerMarkets;
 const MarketItem = (props: any) => {
   const { order, onDeposit, onCancel, onClaimSuccess } = props;
 
-  const { claim, claiming } = useClaim(order.pool_id, () => {
-    onClaimSuccess();
+  const { onClaim, claiming } = useClaimFunds({
+    onClaimSuccess,
   });
 
   return (
@@ -175,7 +175,9 @@ const MarketItem = (props: any) => {
                     <ButtonV2
                       type="primary"
                       className="!h-[28px] !rounded-[8px] !text-[14px]"
-                      onClick={claim}
+                      onClick={() => {
+                        onClaim(order.id);
+                      }}
                       loading={claiming}
                       disabled={claiming}
                     >

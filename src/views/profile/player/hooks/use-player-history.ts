@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/contexts/auth";
 import Big from "big.js";
 import { useRequest } from "ahooks";
+import { getPoolInfo } from "@/utils/pool";
 
 const pageSize = 10;
 
@@ -49,6 +50,18 @@ export default function usePlayerHistory() {
 
   const onJoinedPoolListPageChange = (_page: number) => {
     setJoinedPoolListPageIndex(_page);
+  };
+
+  const updateJoinedPoolListData = async (poolId: number, data?: any) => {
+    if (data) {
+      joinedPoolsData.current[poolId] = {
+        ...joinedPoolsData.current[poolId],
+        ...data
+      };
+    } else {
+      const res = await getPoolInfo(poolId);
+      joinedPoolsData.current[poolId] = res;
+    }
   };
 
   const getRecords = async (_page: number) => {
@@ -104,5 +117,6 @@ export default function usePlayerHistory() {
     joinedPoolListData,
     joinedPoolsData: joinedPoolsData.current,
     onJoinedPoolListPageChange,
+    updateJoinedPoolListData,
   };
 }

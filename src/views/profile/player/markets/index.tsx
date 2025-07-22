@@ -4,9 +4,10 @@ import ButtonV2 from "@/components/button/v2";
 import Empty from "@/components/empty";
 import MarketStatus, { EMarketStatus } from "../../ components/market-status";
 import Loading from "@/components/icons/loading";
+import useClaimSlash from "@/hooks/solana/use-claim-slash";
 
 const PlayerMarkets = (props: any) => {
-  const { className, poolsData, orders, loading } = props;
+  const { className, poolsData, orders, loading, updatePoolsData } = props;
 
   return (
     <div
@@ -25,7 +26,14 @@ const PlayerMarkets = (props: any) => {
           const order = poolsData[item];
           return (
             <div key={index} className="relative pt-[12px]">
-              <MarketItem order={order} />
+              <MarketItem
+                order={order}
+                onClaimSuccess={() => {
+                  updatePoolsData(order, {
+                    is_claim: true
+                  });
+                }}
+              />
             </div>
           );
         })
@@ -39,7 +47,11 @@ const PlayerMarkets = (props: any) => {
 export default PlayerMarkets;
 
 const MarketItem = (props: any) => {
-  const { order } = props;
+  const { order, onClaimSuccess } = props;
+
+  const { claiming, onClaim } = useClaimSlash({
+    onClaimSuccess,
+  });
 
   return (
     <Market
@@ -61,6 +73,11 @@ const MarketItem = (props: any) => {
               <ButtonV2
                 type="default"
                 className="!h-[24px] !rounded-[12px] !px-[10px] !text-[#BBACA6]"
+                loading={claiming}
+                disabled={claiming}
+                onClick={() => {
+                  onClaim(order.id);
+                }}
               >
                 Claim
               </ButtonV2>
