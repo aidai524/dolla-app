@@ -3,7 +3,13 @@ import config from "@/components/bid/config";
 import { usePoolDistributed } from "@/hooks/use-pool-distributed";
 import { useMemo } from "react";
 
-export default function PlayerDistribution({ data }: { data: any }) {
+export default function PlayerDistribution({
+  data,
+  bidsDistribution
+}: {
+  data: any;
+  bidsDistribution: any;
+}) {
   const { distributed } = usePoolDistributed(data);
 
   return (
@@ -16,6 +22,7 @@ export default function PlayerDistribution({ data }: { data: any }) {
             number={distributed[item.value as keyof typeof distributed]}
             total={data.accumulative_bids}
             winner={data.winner_user_info}
+            bidsDistribution={bidsDistribution[item.value]}
           />
         ))}
       </div>
@@ -23,7 +30,7 @@ export default function PlayerDistribution({ data }: { data: any }) {
   );
 }
 
-const Item = ({ data, number, total, winner }: any) => {
+const Item = ({ data, number, total, winner, bidsDistribution }: any) => {
   const width = useMemo(() => {
     if (total === 0) return 0;
     return (number / total) * 100;
@@ -33,16 +40,26 @@ const Item = ({ data, number, total, winner }: any) => {
       <div className="text-[14px] text-[#FFE9B2] w-[58px] mr-[11px]">
         BID x{data.value}
       </div>
-      <div className="h-[12px] w-[294px] mr-[10px] rounded-[6px]">
+      <div className="h-[12px] w-[294px] rounded-[6px] flex items-center">
         <div
-          className="h-full rounded-[6px]"
+          className="h-full rounded-[6px] mr-[16px]"
           style={{ width: `${width}%`, backgroundColor: data.color }}
         />
-      </div>
-      <div className="text-[14px] text-[#ADBCCF]">{number}</div>
-      <div className="flex items-center gap-[6px] ml-[10px]">
-        <Avatar size={20} address={winner?.sol_user} email={winner?.email} />
-        <span className="text-[12px] text-white">x22</span>
+        {!!number && (
+          <>
+            <div className="text-[14px] text-[#ADBCCF]">{number}</div>
+            <div className="flex items-center gap-[6px] ml-[10px]">
+              <Avatar
+                size={20}
+                address={winner?.sol_user}
+                email={winner?.email}
+              />
+              <span className="text-[12px] text-white">
+                x{bidsDistribution}
+              </span>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

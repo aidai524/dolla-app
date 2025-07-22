@@ -24,7 +24,7 @@ export default function FlipCoins() {
   } = useBtcContext();
   const coinContainerRef = useRef<any>(null);
 
-  const [points, tickets, sumPoints, sumTickets] = useMemo(() => {
+  const [points, tickets, sumPoints, sumTickets, isWinner] = useMemo(() => {
     if (!bidResult) {
       return [[], [], 0, 0];
     }
@@ -39,7 +39,8 @@ export default function FlipCoins() {
       _t.reduce(
         (acc: number, curr: string) => acc + Number(curr === "0" ? 1 : 0),
         0
-      )
+      ),
+      bidResult.bid.isWinner
     ];
   }, [bidResult]);
 
@@ -80,6 +81,7 @@ export default function FlipCoins() {
               setFlipStatus(0);
               onReset();
             }}
+            isWinner={isWinner}
           />
         )}
       </div>
