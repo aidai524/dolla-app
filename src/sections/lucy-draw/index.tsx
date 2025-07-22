@@ -10,7 +10,7 @@ import BuyTicket from "./buy-ticket";
 import useUserPrize from "@/hooks/use-user-prize";
 
 export default function LucyDraw() {
-  const { prize } = useUserInfoStore();
+  const userInfoStore = useUserInfoStore();
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [historyRound, setHistoryRound] = useState(0);
   const { currentRound, isLoading, fetchCurrentRound } = useLucyDraw();
@@ -22,8 +22,10 @@ export default function LucyDraw() {
   const { getUserPrize } = useUserPrize();
 
   const tickets = useMemo(() => {
-    return prize.tickets > 99 ? "99+" : prize.tickets;
-  }, [prize.tickets]);
+    return userInfoStore?.prize?.tickets > 99
+      ? "99+"
+      : userInfoStore?.prize?.tickets;
+  }, [userInfoStore?.prize?.tickets]);
 
   const prizeAmount = useMemo(() => {
     if (!configStore.config?.ticket_prize) return 0;
@@ -104,7 +106,9 @@ export default function LucyDraw() {
           <div className="flex items-center justify-between mt-[10px] text-[12px] text-[#FFE9B2]">
             <span>
               <span>Total Tickets</span>{" "}
-              <span className="text-white">{prize.tickets}</span>
+              <span className="text-white">
+                {userInfoStore?.prize?.tickets}
+              </span>
             </span>
             <button
               className="button underline"

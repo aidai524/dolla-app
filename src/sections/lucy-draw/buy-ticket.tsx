@@ -18,7 +18,7 @@ export default function BuyTicket({
   onClose: () => void;
 }) {
   const [ticket, setTicket] = useState(1);
-  const { set, prize } = useUserInfoStore();
+  const userInfoStore = useUserInfoStore();
   const toast = useToast();
   const { tokenBalance } = useTokenBalance({
     address: QUOTE_TOKEN.address,
@@ -33,13 +33,14 @@ export default function BuyTicket({
     isTicket: true,
     onTransferSuccess: () => {
       onClose();
-      set({
+      userInfoStore.set({
         prize: {
-          ...prize,
-          tickets: prize.tickets + ticket
+          ...userInfoStore.prize,
+          tickets: userInfoStore.prize.tickets + ticket
         }
       });
       toast.success({ title: "Buy ticket successfully" });
+      setTicket(1);
     }
   });
   return (
