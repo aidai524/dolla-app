@@ -24,6 +24,7 @@ export default function MarketInfo() {
           <div className="flex items-center gap-[8px]">
             <Avatar
               address={pool?.user}
+              email={pool?.user_info?.email}
               size={32}
               className="border border-[2px] border-white/40"
             />

@@ -5,7 +5,7 @@ import crypto from "crypto-browserify";
 export default function Avatar({
   size,
   src,
-  email = "amy100936@gmail.com",
+  email = "",
   className,
   address
 }: {
@@ -16,12 +16,13 @@ export default function Avatar({
   className?: string;
   address?: string;
 }) {
-  const hashedEmail = address
-    ? crypto
-        .createHash("sha256")
-        .update(address.trim().toLowerCase())
-        .digest("hex")
-    : "";
+  const hashedEmail =
+    email || address
+      ? crypto
+          .createHash("sha256")
+          .update((email || address)?.trim().toLowerCase())
+          .digest("hex")
+      : "";
 
   return (
     <img

@@ -38,6 +38,7 @@ const Dashboard = (props: any) => {
               size={60}
               className="shrink-0 rounded-[8px] border-[2px] border-[rgba(255,255,255,0.8)]"
               address={userInfo?.sol_user}
+              email={userInfo?.email}
             />
             <div className="flex flex-col gap-[14px]">
               <div className="font-[DelaGothicOne] text-[20px] flex items-center gap-[9px]">

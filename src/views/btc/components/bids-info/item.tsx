@@ -7,6 +7,7 @@ export default function Item({ data }: any) {
     <div className="w-[248px] h-[46px] mt-[10px] p-[8px] flex items-center rounded-[23px] border border-[#FFE9B2] bg-white/10 backdrop-blur-[10px] flex items-center justify-center">
       <Avatar
         address={data.user}
+        email={data.user_email}
         size={30}
         className="border border-[#131417] mr-[8px]"
       />

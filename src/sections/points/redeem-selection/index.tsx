@@ -58,7 +58,11 @@ export default function RedeemSelection({
           <div className="p-[20px]">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-[16px]">
-                <Avatar size={46} address={userInfo?.sol_user} />
+                <Avatar
+                  size={46}
+                  address={userInfo?.sol_user}
+                  email={userInfo?.email}
+                />
                 <div className="font-[DelaGothicOne] text-white flex items-center">
                   <div className="text-[20px]">
                     {userInfo?.name || formatAddress(userInfo?.sol_user)}
