@@ -9,7 +9,13 @@ import Bottoms from "./bottoms";
 import BuyTicket from "./buy-ticket";
 import useUserPrize from "@/hooks/use-user-prize";
 
-export default function LucyDraw() {
+export default function LucyDraw({
+  tokenBalance,
+  update
+}: {
+  tokenBalance: string;
+  update: () => void;
+}) {
   const userInfoStore = useUserInfoStore();
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [historyRound, setHistoryRound] = useState(0);
@@ -140,6 +146,8 @@ export default function LucyDraw() {
       <BuyTicket
         showBuyTicket={showBuyTicket}
         onClose={() => setShowBuyTicket(false)}
+        tokenBalance={tokenBalance}
+        update={update}
       />
     </div>
   );

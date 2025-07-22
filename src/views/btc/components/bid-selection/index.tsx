@@ -8,15 +8,15 @@ import BidBtn from "../bid-btn";
 import AutoBtn from "./auto-btn";
 import ProvablyFair from "@/sections/provably-fair";
 import { addThousandSeparator } from "@/utils/format/number";
-import { QUOTE_TOKEN } from "@/config/btc";
-import useTokenBalance from "@/hooks/solana/use-token-balance";
 import { useAuth } from "@/contexts/auth";
 
-export default function BidSelection() {
-  const { tokenBalance, update } = useTokenBalance({
-    address: QUOTE_TOKEN.address,
-    decimals: QUOTE_TOKEN.decimals
-  });
+export default function BidSelection({
+  tokenBalance,
+  update
+}: {
+  tokenBalance: string;
+  update: () => void;
+}) {
   const [showCashier, setShowCashier] = useState(false);
   const [showProvablyFair, setShowProvablyFair] = useState(false);
   const { bids, setBids, flipStatus, pool } = useBtcContext();
