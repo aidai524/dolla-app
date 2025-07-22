@@ -56,7 +56,7 @@ export default function Markets({ onClose }: { onClose: () => void }) {
                   { label: "ALL", key: 0 },
                   { label: "1 BTC", key: 1 },
                   { label: "0.1 BTC", key: 0.1 },
-                  { label: "0.01 BTC", key: 0.001 }
+                  { label: "0.01 BTC", key: 0.01 }
                 ].map((item: { label: string; key: number }) => (
                   <button
                     key={item.key}

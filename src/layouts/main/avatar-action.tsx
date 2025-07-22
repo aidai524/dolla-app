@@ -149,7 +149,7 @@ export default function AvatarAction() {
               } else if (item.key === "invite") {
                 return;
               } else if (item.key === "portfolio") {
-                navigate("/portfolio");
+                navigate("/portfolio/player");
                 return;
               } else if (item.key === "create-market") {
                 navigate("/btc/create");

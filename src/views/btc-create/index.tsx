@@ -1,17 +1,14 @@
 import clsx from "clsx";
 import { useMemo, useState } from "react";
-import { CopyBtn, ExitBtn, AddBtn } from "./action-btns";
-import Modal from "@/components/modal";
+
 import Recharge from "@/sections/cashier/panels/recharge";
 import PriceChart from "../nft-create/price-chart";
 import { useAuth } from "@/contexts/auth";
-import useCopy from "@/hooks/use-copy";
 import { BASE_TOKEN } from "@/config/btc";
 import useTokenBalance from "@/hooks/solana/use-token-balance";
 import { formatNumber } from "@/utils/format/number";
 import useTokenPrice from "@/hooks/use-token-price";
 import Loading from "@/components/icons/loading";
-import Button from "@/components/button";
 import useCreate from "@/hooks/solana/use-create";
 import { motion } from "framer-motion";
 import ButtonV2 from "@/components/button/v2";
@@ -20,9 +17,7 @@ import { formatAddress } from "@/utils/format/address";
 
 export default function BTCCreate() {
   const [amount, setAmount] = useState(1);
-  const [chargeModalOpen, setChargeModalOpen] = useState(false);
-  const { address, logout } = useAuth();
-  const { onCopy } = useCopy();
+  const { address } = useAuth();
   const { tokenBalance, isLoading, update } = useTokenBalance(BASE_TOKEN);
 
   const { prices } = useTokenPrice(BASE_TOKEN);
@@ -73,18 +68,20 @@ export default function BTCCreate() {
                     onClick={() => setAmount(item)}
                     initial={{ width: "25%" }}
                     animate={{
-                      width: isActive ? "calc(25% + 34px)" : "calc(25% - 11.33px)",
+                      width: isActive
+                        ? "calc(25% + 34px)"
+                        : "calc(25% - 11.33px)",
                       height: isActive ? 97 : 78,
                       borderColor: isActive ? "#FFE9B2" : "transparent",
-                      backgroundColor: isActive ? "rgba(255, 255, 255, 0.1)" : "#2B2C2F",
+                      backgroundColor: isActive
+                        ? "rgba(255, 255, 255, 0.1)"
+                        : "#2B2C2F"
                     }}
                     style={{
-                      fontSize: isActive ? 20 : 16,
+                      fontSize: isActive ? 20 : 16
                     }}
                   >
-                    <div className="font-[DelaGothicOne]">
-                      {item} BTC
-                    </div>
+                    <div className="font-[DelaGothicOne]">{item} BTC</div>
                     <div className="text-[#BBACA6] text-[14px]">
                       ~${formatNumber(item * pricePerBTC, 0, true)}
                     </div>
@@ -109,10 +106,11 @@ export default function BTCCreate() {
             <div className="w-full grid grid-cols-3 gap-[10px] mt-[11px]">
               <div className="rounded-[10px] border border-[#2B2C2F] h-[93px] flex flex-col justify-center items-center gap-[10px]">
                 <div className="flex justify-center items-center gap-[7px]">
-                  <div className="font-[DelaGothicOne]">
-                    Top Sale
-                  </div>
-                  <img src="/profile/icon-share.svg" className="w-[9px] h-[9px] shrink-0 object-center object-contain" />
+                  <div className="font-[DelaGothicOne]">Top Sale</div>
+                  <img
+                    src="/profile/icon-share.svg"
+                    className="w-[9px] h-[9px] shrink-0 object-center object-contain"
+                  />
                 </div>
                 <div className="font-[DelaGothicOne] text-[20px]">
                   {formatNumber(2325, 2, true, { prefix: "$" })}
@@ -123,9 +121,7 @@ export default function BTCCreate() {
               </div>
               <div className="rounded-[10px] border border-[#2B2C2F] h-[93px] flex flex-col justify-center items-center gap-[10px]">
                 <div className="flex justify-center items-center gap-[7px]">
-                  <div className="font-[DelaGothicOne]">
-                    Avg. Profit
-                  </div>
+                  <div className="font-[DelaGothicOne]">Avg. Profit</div>
                 </div>
                 <div className="font-[DelaGothicOne] text-[20px]">
                   +{formatNumber(102, 2, true, { prefix: "$" })}
@@ -136,9 +132,7 @@ export default function BTCCreate() {
               </div>
               <div className="rounded-[10px] border border-[#2B2C2F] h-[93px] flex flex-col justify-center items-center gap-[10px]">
                 <div className="flex justify-center items-center gap-[7px]">
-                  <div className="font-[DelaGothicOne]">
-                    Live
-                  </div>
+                  <div className="font-[DelaGothicOne]">Live</div>
                 </div>
                 <div className="font-[DelaGothicOne] text-[20px]">
                   {formatNumber(23, 0, true)}
@@ -155,14 +149,12 @@ export default function BTCCreate() {
                   { value: 48, label: "5" },
                   { value: 25, label: "10" },
                   { value: 15, label: "15" },
-                  { value: 12, label: "20" },
+                  { value: 12, label: "20" }
                 ]}
                 formatLabel={(record: any) => {
                   return (
                     <div className="flex flex-col items-center justify-center gap-[5px]">
-                      <div className="text-[#BBACA6]">
-                        Cash out timing
-                      </div>
+                      <div className="text-[#BBACA6]">Cash out timing</div>
                       <div className="font-[DelaGothicOne] text-[20px]">
                         in {record.label} days
                       </div>
@@ -179,19 +171,21 @@ export default function BTCCreate() {
                   { value: 49, amount: 1, bids: "520" },
                   { value: 21, amount: 0.1, bids: "3562" },
                   { value: 17, amount: 0.01, bids: "12345" },
-                  { value: 13, amount: 0.001, bids: "67894" },
+                  { value: 13, amount: 0.001, bids: "67894" }
                 ]}
                 formatLabel={(record: any) => {
                   return (
                     <div className="flex flex-col items-center justify-center gap-[5px]">
-                      <div className="text-[16px]">
-                        {record.amount} BTC
-                      </div>
+                      <div className="text-[16px]">{record.amount} BTC</div>
                       <div className="text-[#BBACA6] mt-[4px]">
                         Bids overmarket
                       </div>
                       <div className="font-[DelaGothicOne] text-[20px] mt-[1px]">
-                        {formatNumber(record.bids, 2, true, { isShort: true, isShortUppercase: true })} Bids
+                        {formatNumber(record.bids, 2, true, {
+                          isShort: true,
+                          isShortUppercase: true
+                        })}{" "}
+                        Bids
                       </div>
                       <div className="text-[16px] mt-[6px] text-[#BBACA6]">
                         {record.value}%
@@ -211,9 +205,7 @@ export default function BTCCreate() {
           <div className="text-[#BBACA6]">Account</div>
           <div className="w-full rounded-[16px] border border-[#6A5D3A] bg-[#35302B] mt-[10px]">
             <div className="w-full rounded-t-[16px] bg-black/20 p-[18px_15px]">
-              <div className="">
-                {formatAddress(address)}
-              </div>
+              <div className="">{formatAddress(address)}</div>
               <div className="text-center text-[#BBACA6] mt-[17px]">
                 Balance
               </div>
@@ -226,9 +218,7 @@ export default function BTCCreate() {
               </div>
             </div>
             <div className="w-full p-[30px_15px]">
-              <div className="text-center font-[700] text-[16px]">
-                Recharge
-              </div>
+              <div className="text-center font-[700] text-[16px]">Recharge</div>
               <Recharge
                 token={BASE_TOKEN}
                 className="mt-[7px]"

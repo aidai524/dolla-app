@@ -43,8 +43,8 @@ export default function useCreate({
       toast.fail({ title: "Please connect your wallet" });
       return;
     }
-
     const payer = wallets[0];
+    let toastId = toast.loading({ title: "Creating market..." });
     try {
       setCreating(true);
       const state = getState(program);
@@ -128,6 +128,10 @@ export default function useCreate({
       const poolId = nextOrderId.toNumber();
 
       onCreateSuccess?.(poolId);
+      toast.dismiss(toastId);
+      toast.success({
+        title: "Market created successfully"
+      });
 
       const slot = await provider.connection.getSlot();
       reportHash({
@@ -138,6 +142,10 @@ export default function useCreate({
       });
     } catch (error) {
       console.error("Create error:", error);
+      toast.dismiss(toastId);
+      toast.fail({
+        title: "Create market failed"
+      });
       throw error;
     } finally {
       setCreating(false);
