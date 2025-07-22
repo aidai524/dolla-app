@@ -81,7 +81,7 @@ const StatisticsPlayer = (props: any) => {
           </div>
           <ButtonV2
             onClick={() => {
-              navigate(`btc/create`);
+              navigate(`/btc/create`);
             }}
             type="default"
           >
