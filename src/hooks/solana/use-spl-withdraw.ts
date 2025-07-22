@@ -13,7 +13,7 @@ export default function useSplWithdraw({ token, amount, targetAddress }: { token
     const { wallets } = useSolanaWallets();
 
     const withdraw = async () => {
-        const res = await getAssociatedTokenAddress(token.address, targetAddress, provider);
+        const res = await getAssociatedTokenAddress(new PublicKey(token.address), new PublicKey(targetAddress), provider);
         if (!res) {
             return;
         }
