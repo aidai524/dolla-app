@@ -1,8 +1,8 @@
 import { addThousandSeparator } from "@/utils/format/number";
 import ResultBg from "./bg";
 import Modal from "@/components/modal";
-import { CoinIcon } from "@/layouts/main/icons";
 import { useMemo } from "react";
+import PointIcon from "@/components/icons/point-icon";
 
 const Config = {
   0: {
@@ -76,7 +76,7 @@ export default function Result({ points, tickets, onClose }: any) {
             <div className="flex items-center gap-[50px] pt-[18px] pb-[30px]">
               {points > 0 && (
                 <div className="flex items-center gap-[8px]">
-                  <CoinIcon />
+                  <PointIcon />
                   <span
                     className="text-[#FFEF43] text-[20px] font-bold font-[AlfaSlabOne]"
                     style={{
