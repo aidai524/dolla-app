@@ -1,7 +1,6 @@
 import { useSendTransaction, useSolanaWallets } from '@privy-io/react-auth/solana';
 import { getAssociatedTokenAddress } from "./helpers";
 import useProgram from "./use-program";
-import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { PublicKey, Transaction } from "@solana/web3.js";
 import { createTransferInstruction } from "@solana/spl-token";
 import { useState } from "react";
@@ -14,7 +13,12 @@ export default function useSplWithdraw({ token, amount, targetAddress }: { token
     const { wallets } = useSolanaWallets();
 
     const withdraw = async () => {
-        const { address, instruction, account: tokenAccount } = await getAssociatedTokenAddress(token.address, targetAddress, provider);
+        const res = await getAssociatedTokenAddress(token.address, targetAddress, provider);
+        if (!res) {
+            return;
+        }
+
+        const { address, instruction, account: tokenAccount }  = res;
         const payer = wallets[0];
 
         console.log(payer);

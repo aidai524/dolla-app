@@ -11,8 +11,14 @@ import { useAuth } from "@/contexts/auth";
 import useTokenBalance from "@/hooks/solana/use-token-balance";
 
 const TOKNES = [
+  // {
+  //   address: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+  //   decimals: 6,
+  //   icon: "/currency/usdc.png",
+  //   symbol: "USDC"
+  // },
   {
-    address: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+    address: "ADo4M7ZEZwDKNP1k8dic26TBrftX6mix9sGMntkq6Tp4",
     decimals: 6,
     icon: "/currency/usdc.png",
     symbol: "USDC"
@@ -64,7 +70,7 @@ export default function WithdrawSolana() {
                 setSelectedItem(item);
               }}
               balance={
-                selectedItem.symbol === "USDC" ? usdcBalance : btcBalance
+                item.symbol === "USDC" ? usdcBalance : btcBalance
               }
             />
           );
