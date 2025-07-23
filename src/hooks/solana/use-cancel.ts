@@ -111,10 +111,7 @@ export default function useCancel({
       batchTx.feePayer = new PublicKey(import.meta.env.VITE_SOLANA_OPERATOR);
       // Get the latest blockhash
       batchTx.recentBlockhash = "11111111111111111111111111111111";
-      const simulationResult = await provider.connection.simulateTransaction(
-        batchTx
-      );
-      console.log("cancel:", simulationResult);
+
       // const signedTx = await signTransaction({
       //   transaction: tx,
       //   connection: provider.connection

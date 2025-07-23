@@ -41,7 +41,7 @@ export default function Winner({
           </div>
           <div
             className={clsx(
-              "relative z-[3] cursor-pointer perspective-[1000px] w-[310px] h-[310px]"
+              "relative z-[3] cursor-pointer perspective-[1000px] w-[310px] h-[310px] rounded-full shadow-[0px_0px_30px_6px_rgba(250,252,129,0.30)]"
             )}
           >
             <motion.div
