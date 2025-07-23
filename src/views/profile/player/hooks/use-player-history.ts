@@ -34,6 +34,7 @@ export default function usePlayerHistory() {
         item.accumulative_bids = item.pool_info?.accumulative_bids;
         item.anchor_price = item.pool_info?.anchor_price;
         item.value = item.pool_info?.value;
+        item.is_claim = item.pool_info?.is_claim;
       });
 
       setJoinedPoolListData((prev: any) =>

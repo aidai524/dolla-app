@@ -5,6 +5,8 @@ import Empty from "@/components/empty";
 import MarketStatus, { EMarketStatus } from "../../ components/market-status";
 import Loading from "@/components/icons/loading";
 import useClaimSlash from "@/hooks/solana/use-claim-slash";
+import { formatNumber } from "@/utils/format/number";
+import Big from "big.js";
 
 const PlayerMarkets = (props: any) => {
   const { className, orders, loading, updatePoolsData } = props;
@@ -71,20 +73,39 @@ const MarketItem = (props: any) => {
             <div className="flex items-center justify-end gap-[7px]">
               {
                 order.status === EMarketStatus.Cancelled && (
-                  <ButtonV2
-                    type="default"
-                    className="!h-[24px] !rounded-[12px] !px-[10px] !text-[#BBACA6]"
-                    loading={claiming}
-                    disabled={claiming}
-                    onClick={() => {
-                      onClaim(order.id);
-                    }}
-                  >
-                    Claim
-                  </ButtonV2>
+                  order.is_claim ? (
+                    <ButtonV2
+                      type="default"
+                      className="!h-[24px] !rounded-[12px] !px-[10px] !text-[#BBACA6]"
+                      disabled={true}
+                    >
+                      Claimed
+                    </ButtonV2>
+                  ) : (
+                    <ButtonV2
+                      type="default"
+                      className="!h-[24px] !rounded-[12px] !px-[10px] !text-[#BBACA6]"
+                      loading={claiming}
+                      disabled={claiming}
+                      onClick={() => {
+                        onClaim(order.pool_id);
+                      }}
+                    >
+                      Claim
+                    </ButtonV2>
+                  )
                 )
               }
-              <div className="">$200</div>
+              <div className="">
+                {
+                  formatNumber(
+                    Big(order.purchase_amount || 0).div(10 ** (order.purchase_token_info?.decimals || 6)).times(order.purchase_token_price?.last_price),
+                    2,
+                    true,
+                    { isShort: true, isShortUppercase: true, prefix: "$" }
+                  )
+                }
+              </div>
             </div>
           </div>
         </div>

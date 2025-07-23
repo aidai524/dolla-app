@@ -79,7 +79,7 @@ export default function Player() {
       },
       {
         root: null,
-        rootMargin: "100px",
+        rootMargin: "200px",
         threshold: 0.1
       }
     );
@@ -148,11 +148,13 @@ export default function Player() {
                 />
                 <div
                   ref={marketsBottomRef}
-                  className="h-[20px] flex justify-center items-center"
+                  className="h-[40px] flex justify-center items-center"
                 >
-                  {joinedPoolListLoading && joinedPoolListData.length > 0 && (
-                    <LoadingMore />
-                  )}
+                  {
+                    joinedPoolListData?.length > 0 && (
+                      <LoadingMore loading={joinedPoolListLoading} hasMore={joinedPoolListHasNextPage} />
+                    )
+                  }
                 </div>
               </SwitchPanel>
             )}
