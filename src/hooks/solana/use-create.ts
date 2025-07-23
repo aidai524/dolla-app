@@ -9,7 +9,8 @@ import {
   getNextOrderId,
   getPool,
   getAccountsInfo,
-  getWrapToSolIx
+  getWrapToSolIx,
+  wrapTxWithBugetFee
 } from "./helpers";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -21,8 +22,7 @@ import { sendSolanaTransaction } from "@/utils/transaction/send-solana-transacti
 import {
   PublicKey,
   Transaction,
-  TransactionInstruction,
-  ComputeBudgetProgram
+  TransactionInstruction
 } from "@solana/web3.js";
 
 export default function useCreate({
@@ -110,20 +110,14 @@ export default function useCreate({
         tx.add(poolBaseAccount.instruction);
       }
 
-      const priorityFeeInstruction = ComputeBudgetProgram.setComputeUnitPrice({
-        microLamports: 5000
-      });
-
-      const computeUnitLimitInstruction =
-        ComputeBudgetProgram.setComputeUnitLimit({
-          units: 200000
-        });
-      tx.add(priorityFeeInstruction, computeUnitLimitInstruction, createIx);
       tx.feePayer = new PublicKey(import.meta.env.VITE_SOLANA_OPERATOR);
 
-      // Get the latest blockhash
-
       tx.recentBlockhash = "11111111111111111111111111111111";
+
+      const txs = await wrapTxWithBugetFee(tx);
+
+      tx.add(...txs);
+      tx.add(createIx);
 
       const result = await sendSolanaTransaction(tx, "createPool");
 

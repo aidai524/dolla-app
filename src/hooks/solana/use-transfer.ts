@@ -4,7 +4,7 @@ import useToast from "@/hooks/use-toast";
 import reportHash from "@/utils/report-hash";
 import * as anchor from "@coral-xyz/anchor";
 import useProgram from "./use-program";
-import { getState, getAccountsInfo } from "./helpers";
+import { getState, getAccountsInfo, wrapTxWithBugetFee } from "./helpers";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   TOKEN_PROGRAM_ID
@@ -13,8 +13,7 @@ import { useSolanaWallets } from "@privy-io/react-auth";
 import {
   PublicKey,
   Transaction,
-  TransactionInstruction,
-  ComputeBudgetProgram
+  TransactionInstruction
 } from "@solana/web3.js";
 import { sendSolanaTransaction } from "@/utils/transaction/send-solana-transaction";
 
@@ -99,20 +98,14 @@ export default function useTransfer({
         batchTx.add(operatorPaidAccount.instruction);
       }
 
-      const priorityFeeInstruction = ComputeBudgetProgram.setComputeUnitPrice({
-        microLamports: 5000
-      });
-
-      const computeUnitLimitInstruction =
-        ComputeBudgetProgram.setComputeUnitLimit({
-          units: 200000
-        });
-
-      batchTx.add(priorityFeeInstruction, computeUnitLimitInstruction, tx);
-
       batchTx.feePayer = new PublicKey(import.meta.env.VITE_SOLANA_OPERATOR);
       // Get the latest blockhash
       batchTx.recentBlockhash = "11111111111111111111111111111111";
+
+      const txs = await wrapTxWithBugetFee(batchTx);
+
+      batchTx.add(...txs);
+      batchTx.add(tx);
 
       const result = await sendSolanaTransaction(batchTx, "transferHelper");
       console.log("receipt:", result);

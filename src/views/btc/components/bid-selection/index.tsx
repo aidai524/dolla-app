@@ -7,7 +7,7 @@ import { useBtcContext } from "../../context";
 import BidBtn from "../bid-btn";
 import AutoBtn from "./auto-btn";
 import ProvablyFair from "@/sections/provably-fair";
-import { addThousandSeparator } from "@/utils/format/number";
+import { formatNumber } from "@/utils/format/number";
 import { useAuth } from "@/contexts/auth";
 
 export default function BidSelection({
@@ -48,7 +48,7 @@ export default function BidSelection({
         <div className="flex items-center justify-between relative z-[2] mt-[26px] w-[80%] mx-auto">
           <div className="text-white text-[16px]">BALANCE</div>
           <div className="text-white text-[20px] flex items-center gap-[10px]">
-            <span>${addThousandSeparator(tokenBalance || "0")}</span>
+            <span>${formatNumber(tokenBalance || "0", 2, true)}</span>
             {address && <AddBtn onClick={() => setShowCashier(true)} />}
           </div>
         </div>

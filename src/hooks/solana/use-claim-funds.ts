@@ -74,10 +74,6 @@ export default function useClaimFunds({
       // Get the latest blockhash
       batchTx.recentBlockhash = "11111111111111111111111111111111";
 
-      const simulationResult = await provider.connection.simulateTransaction(
-        batchTx
-      );
-      console.log("claimFunds:", simulationResult);
       // const signedTx = await signTransaction({
       //   transaction: tx,
       //   connection: provider.connection

@@ -9,7 +9,8 @@ import {
   setupQueue,
   getBidGasFee,
   getWrapToSolIx,
-  getAccountsInfo
+  getAccountsInfo,
+  wrapTxWithBugetFee
 } from "./helpers";
 import * as anchor from "@coral-xyz/anchor";
 import { useSolanaWallets } from "@privy-io/react-auth";
@@ -21,8 +22,7 @@ import {
 import {
   PublicKey,
   Transaction,
-  TransactionInstruction,
-  ComputeBudgetProgram
+  TransactionInstruction
 } from "@solana/web3.js";
 import { Randomness } from "@switchboard-xyz/on-demand";
 import { sendSolanaTransaction } from "@/utils/transaction/send-solana-transaction";
@@ -111,7 +111,7 @@ export default function useBid(
         systemProgram: anchor.web3.SystemProgram.programId
       };
 
-      const bidIx: TransactionInstruction = await program.methods
+      const bidTx: TransactionInstruction = await program.methods
         .bid(times)
         // @ts-ignore
         .accounts(bidAccounts)
@@ -142,21 +142,13 @@ export default function useBid(
         tx.add(randomnessCreateIx[i]);
       }
 
-      const priorityFeeInstruction = ComputeBudgetProgram.setComputeUnitPrice({
-        microLamports: 5000
-      });
-
-      const computeUnitLimitInstruction =
-        ComputeBudgetProgram.setComputeUnitLimit({
-          units: 200000
-        });
-
-      tx.add(priorityFeeInstruction, computeUnitLimitInstruction, bidIx);
       tx.feePayer = new PublicKey(import.meta.env.VITE_SOLANA_OPERATOR);
-
-      // Get the latest blockhash
-      // const { blockhash } = await provider.connection.getLatestBlockhash();
       tx.recentBlockhash = "11111111111111111111111111111111";
+
+      const txs = await wrapTxWithBugetFee(tx);
+
+      tx.add(...txs);
+      tx.add(bidTx);
 
       // const simulationResult = await provider.connection.simulateTransaction(
       //   tx
@@ -168,7 +160,6 @@ export default function useBid(
       //   connection: provider.connection
       // });
       console.timeEnd("prepare tx");
-      console.log("tx", tx);
 
       const result = await sendSolanaTransaction(tx, "bid");
       toast.dismiss(toastId);

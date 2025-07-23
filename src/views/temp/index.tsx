@@ -14,12 +14,12 @@ const TempPage: React.FC = () => {
       <button
         className="bg-white text-black button"
         onClick={() =>
-          onTransfer(1, import.meta.env.VITE_SOLANA_TICKET_ACCOUNT)
+          onTransfer(1, "37oSVMX9FKMyCK7zpMUKxmdJECGrYqYKcBEbs5M4fT9L")
         }
       >
         Transfer
       </button>
-      <Winner points={1000} />
+      {/* <Winner points={1000} onClose={() => {}} /> */}
     </div>
   );
 };

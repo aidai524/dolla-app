@@ -9,6 +9,7 @@ import Grand from "./grand";
 import LucyDraw from "../../sections/lucy-draw";
 import { QUOTE_TOKEN } from "@/config/btc";
 import useTokenBalance from "@/hooks/solana/use-token-balance";
+import TopWinner from "@/sections/winners";
 // import ProvablyFair from "@/sections/provably-fair";
 
 // import WildTimeBid from "@/sections/wild-time/bid";
@@ -32,6 +33,7 @@ export default function NewBTC() {
         <MarketInfo />
         <MoreMarkets />
         <LucyDraw tokenBalance={tokenBalance} update={update} />
+        <TopWinner />
         {/* <ProvablyFair /> */}
       </div>
     </CannonCoinsProvider>
