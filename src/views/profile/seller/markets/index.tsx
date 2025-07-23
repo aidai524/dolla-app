@@ -130,7 +130,7 @@ const MarketItem = (props: any) => {
               {dayjs(order.updated_at).format("hh:mm D MMM, YYYY")}
             </div>
             <div className="flex items-center justify-end gap-[7px]">
-              {order.status === EMarketStatus.UnDeoposit && (
+              {order.status === EMarketStatus.Created && (
                 <ButtonV2
                   type="primary"
                   className="!h-[28px] !rounded-[8px] !text-[14px] !px-[5px] !font-[400]"
