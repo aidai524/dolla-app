@@ -4,9 +4,11 @@ import { useEffect, useState, useMemo } from "react";
 import { TOKEN } from "@/config/btc";
 import { PURCHASE_TOKEN } from "@/config";
 import useTokenBalance from "./evm/use-token-balance";
+import Big from "big.js";
 
 export default function useUserWinner() {
   const [nfts, setNfts] = useState<any[]>([]);
+  const [btcs, setBtcs] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const { userInfo } = useAuth();
   // const { tokenBalance } = useTokenBalance(TOKEN);
@@ -17,6 +19,7 @@ export default function useUserWinner() {
       setLoading(true);
       const res = await axiosInstance.get("/api/v1/user/winning");
       const _nfts: any = [];
+      const _btcs: any = [];
 
       // if (Number(tokenBalance) > 0) {
       //   _nfts.push({
@@ -27,15 +30,14 @@ export default function useUserWinner() {
       //     type: "coin"
       //   });
       // }
-
-      res.data.data
-        .filter(
-          (item: any) =>
-            item.token.toLocaleLowerCase() !==
-              PURCHASE_TOKEN.address.toLocaleLowerCase() &&
-            item.token.toLocaleLowerCase() !== TOKEN.address.toLocaleLowerCase()
-        )
-        .forEach((item: any) => {
+      const _data = res.data.data || [];
+      _data.forEach((item: any) => {
+        // nfts
+        if (
+          item.token.toLocaleLowerCase() !==
+          PURCHASE_TOKEN.address.toLocaleLowerCase() &&
+          item.token.toLocaleLowerCase() !== TOKEN.address.toLocaleLowerCase()
+        ) {
           _nfts.push({
             label: "NFT Prize",
             address: item.token,
@@ -43,9 +45,33 @@ export default function useUserWinner() {
             type: "nft",
             tokenId: item.token_id
           });
-        });
+        }
+        // btc
+        if (item.token_info?.symbol === "BTC") {
+          _btcs.push(item);
+        }
+      });
+
+      // Moved to the above 👆
+      // res.data.data
+      //   .filter(
+      //     (item: any) =>
+      //       item.token.toLocaleLowerCase() !==
+      //         PURCHASE_TOKEN.address.toLocaleLowerCase() &&
+      //       item.token.toLocaleLowerCase() !== TOKEN.address.toLocaleLowerCase()
+      //   )
+      //   .forEach((item: any) => {
+      //     _nfts.push({
+      //       label: "NFT Prize",
+      //       address: item.token,
+      //       icon: item.icon,
+      //       type: "nft",
+      //       tokenId: item.token_id
+      //     });
+      //   });
 
       setNfts(_nfts);
+      setBtcs(_btcs);
     } catch (err) {
     } finally {
       setLoading(false);
@@ -68,5 +94,19 @@ export default function useUserWinner() {
     };
   }, [coinBalance]);
 
-  return { coinItem, nfts, loading };
+  const [totalBtcAmount] = useMemo(() => {
+    return [
+      btcs.reduce((acc, item) => {
+        return Big(acc).plus(item.token_amount);
+      }, 0)
+    ];
+  }, [btcs]);
+
+  return {
+    coinItem,
+    nfts,
+    loading,
+    btcs,
+    totalBtcAmount,
+  };
 }

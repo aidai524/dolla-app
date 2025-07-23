@@ -5,13 +5,20 @@ import { useMemo, useState } from "react";
 import useBid from "@/hooks/solana/use-bid";
 import { useAuth } from "@/contexts/auth";
 
-export default function BidBtn({ tokenBalance }: { tokenBalance: string }) {
+export default function BidBtn({
+  tokenBalance,
+  onBidSuccess
+}: {
+  tokenBalance: string;
+  onBidSuccess: () => void;
+}) {
   const { setFlipStatus, flipStatus, setBidResult, bids, onReset, pool } =
     useBtcContext();
   const [isHovered, setIsHovered] = useState(false);
   const { userInfo } = useAuth();
-  const { onBid, bidding } = useBid(
-    pool.pool_id,
+
+  const { onBid } = useBid(
+    pool?.pool_id,
     (result) => {
       console.log("complete success");
       setFlipStatus(4);
@@ -20,6 +27,7 @@ export default function BidBtn({ tokenBalance }: { tokenBalance: string }) {
     () => {
       console.log("bid success");
       setFlipStatus(2);
+      onBidSuccess();
     },
     () => {
       console.log("bid fail");
@@ -30,6 +38,9 @@ export default function BidBtn({ tokenBalance }: { tokenBalance: string }) {
   );
 
   const disabled = useMemo(() => {
+    if (pool?.status !== 1) {
+      return true;
+    }
     if (!userInfo?.user) {
       return true;
     }
@@ -40,7 +51,7 @@ export default function BidBtn({ tokenBalance }: { tokenBalance: string }) {
       return false;
     }
     return true;
-  }, [flipStatus, userInfo, tokenBalance, bids]);
+  }, [flipStatus, userInfo, tokenBalance, bids, pool]);
 
   return (
     <div

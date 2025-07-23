@@ -12,12 +12,15 @@ import {
   Keypair,
   PublicKey,
   SystemProgram,
-  LAMPORTS_PER_SOL
+  LAMPORTS_PER_SOL,
+  ComputeBudgetProgram
 } from "@solana/web3.js";
 import { createHash } from "crypto";
 import { Buffer } from "buffer";
 import * as sb from "@switchboard-xyz/on-demand";
 import axios from "axios";
+import { bs58 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
+import Big from "big.js";
 
 export function getState(program: anchor.Program) {
   const [globalBalPda, bump] = anchor.web3.PublicKey.findProgramAddressSync(
@@ -29,7 +32,6 @@ export function getState(program: anchor.Program) {
 
 export async function getNextOrderId(
   program: anchor.Program,
-  provider: anchor.AnchorProvider,
   statePda: anchor.web3.PublicKey
 ) {
   // const stateExist = await accountExists(statePda, provider.connection);
@@ -85,10 +87,7 @@ export async function getPool(
   return { pda: pda, bump: bump, pool: pool };
 }
 
-export async function getAccountsInfo(
-  pairs: string[][],
-  provider: any
-): Promise<any[]> {
+export async function getAccountsInfo(pairs: string[][]): Promise<any[]> {
   const accounts = pairs.map((pair) =>
     getAssociatedTokenAddressSync(
       new PublicKey(pair[0]),
@@ -110,7 +109,7 @@ export async function getAccountsInfo(
   });
 
   const accountsInfo = accounts.map((account, i) => {
-    if (response.data.result.value[i]) {
+    if (response.data?.result?.value[i]) {
       return {
         address: account.toString()
       };
@@ -303,4 +302,53 @@ export async function getTokenBalance(
   } catch (error) {
     return 0;
   }
+}
+
+export async function wrapTxWithBugetFee(transaction: any) {
+  const defaultPriorityFee = 300000;
+  const multiplier = 10;
+  let priorityFee = defaultPriorityFee;
+  if (import.meta.env.VITE_SOLANA_CLUSTER_NAME === "mainnet-beta") {
+    try {
+      const res = await fetch(import.meta.env.VITE_SOLANA_RPC_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          jsonrpc: "2.0",
+          id: "1",
+          method: "getPriorityFeeEstimate",
+          params: [
+            {
+              transaction: bs58.encode(
+                transaction.serialize({ verifySignatures: false })
+              ),
+              options: { priorityLevel: "High" }
+            }
+          ]
+        })
+      }).then((res) => res.json());
+
+      priorityFee = new Big(res?.result?.priorityFeeEstimate || 0)
+        .mul(multiplier)
+        .round(0)
+        .toNumber();
+
+      console.log("priorityFee:", priorityFee);
+
+      priorityFee = Math.min(
+        priorityFee ?? defaultPriorityFee,
+        defaultPriorityFee
+      );
+    } catch (error) {
+      console.error("get priority fee error:", error);
+    }
+  }
+  const priorityFeeInstruction = ComputeBudgetProgram.setComputeUnitPrice({
+    microLamports: priorityFee
+  });
+
+  const computeUnitLimitInstruction = ComputeBudgetProgram.setComputeUnitLimit({
+    units: 500000
+  });
+
+  return [priorityFeeInstruction, computeUnitLimitInstruction];
 }

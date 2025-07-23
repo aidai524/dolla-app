@@ -29,6 +29,7 @@ const useCountdown = (timestamp: number) => {
   const [secondsRemaining, setSecondsRemaining] = useState(() =>
     getSecondsRemainingToNow(timestamp)
   );
+
   const [isPaused, setIsPaused] = useState(false);
   const isWindowVisible = useIsWindowVisible();
 

@@ -1,3 +1,5 @@
-export const formatAddress = (address: string) => {
-  return address ? `${address.slice(0, 4)}...${address.slice(-4)}` : "-";
+export const formatAddress = (address: string, length = 4) => {
+  return address
+    ? `${address.slice(0, length)}...${address.slice(-length)}`
+    : "-";
 };

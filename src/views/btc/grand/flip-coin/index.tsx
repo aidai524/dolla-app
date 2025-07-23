@@ -69,6 +69,9 @@ const Coin = forwardRef<any, any>(
             Number(userInfoStore.prize.tickets) + Number(ticket === "0" ? 1 : 0)
         }
       });
+      if (notAuto) {
+        setFlipStatus(4);
+      }
       // Trigger callback after animation
       setTimeout(() => {
         setIsAnimating(false);
@@ -120,7 +123,6 @@ const Coin = forwardRef<any, any>(
             height: `${size}px`
           }}
           onClick={() => {
-            setFlipStatus(4);
             onFlip(false, true);
           }}
           ref={coinRef}
@@ -164,9 +166,9 @@ const Coin = forwardRef<any, any>(
         </div>
         {!!showTicket && (
           <motion.div
-            initial={{ y: 0, opacity: 1 }}
+            initial={{ y: showPoints ? 90 : 0, opacity: 1 }}
             animate={{
-              y: -120,
+              y: showPoints ? -30 : -120,
               opacity: 0
             }}
             transition={{

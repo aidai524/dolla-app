@@ -23,7 +23,8 @@ export default function useBidList() {
           limit: 10,
           // id: 755,
           pool_id: pool.pool_id,
-          offset: offset.current
+          offset: offset.current,
+          chain: pool.chain
         }
       });
 
@@ -67,7 +68,7 @@ export default function useBidList() {
   };
 
   const { run: loadData } = useDebounceFn(
-    (args: any = {}) => {
+    () => {
       if (!pool?.pool_id) {
         return;
       }

@@ -8,6 +8,8 @@ import {
 } from "react";
 import usePoolRecommend from "@/hooks/use-pool-recommend";
 import useBasicInfo from "@/hooks/solana/use-basic";
+import { useParams } from "react-router-dom";
+import usePoolInfo from "@/hooks/use-pool-info";
 
 export const CannonCoinsContext = createContext<any>({});
 
@@ -22,12 +24,11 @@ export const CannonCoinsProvider = ({
   const coinsRef = useRef<any>({});
   const flipedNumberRef = useRef(0);
   const [bidResult, setBidResult] = useState<any>(null);
+  const params = useParams();
+  const { onQueryPoolInfo } = usePoolInfo("solana");
+  const [pool, setPool] = useState<any>(null);
 
-  const { data, getPoolRecommend } = usePoolRecommend(0);
-  const [selectedMarket, setSelectedMarket] = useState<any>(null);
-  const pool = useMemo(() => {
-    return selectedMarket || data;
-  }, [selectedMarket, data]);
+  const { data, getPoolRecommend } = usePoolRecommend(0, !params?.poolId);
 
   useEffect(() => {
     if (flipStatus === 1 || flipStatus === 0) {
@@ -53,9 +54,45 @@ export const CannonCoinsProvider = ({
     }
   }, [flipStatus]);
 
+  const loopUpdatePool = async (_pool: any) => {
+    if (_pool?.status === 1) {
+      const res = await onQueryPoolInfo(_pool?.pool_id);
+      if (res) setPool(res);
+      window.poolTimer = setTimeout(loopUpdatePool, 10000);
+    } else {
+      clearTimeout(window.poolTimer);
+    }
+  };
+
+  useEffect(() => {
+    if (!params?.poolId) return;
+    const updatePool = async () => {
+      const res = await onQueryPoolInfo(Number(params.poolId));
+      if (res) {
+        setPool(res);
+        loopUpdatePool(res);
+      }
+    };
+    updatePool();
+  }, [params?.poolId]);
+
+  useEffect(() => {
+    if (data?.id) {
+      setPool(data);
+      loopUpdatePool(data);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    return () => {
+      clearTimeout(window.poolTimer);
+    };
+  }, []);
+
   return (
     <CannonCoinsContext.Provider
       value={{
+        isDetail: !!params?.poolId,
         flipStatus,
         pool,
         sbProgramRef,
@@ -64,6 +101,7 @@ export const CannonCoinsProvider = ({
         setFlipStatus,
         coinsRef,
         bidResult,
+        setSelectedMarket: setPool,
         setBidResult,
         flipComplete: (index: number, addNumber: boolean, notAuto = false) => {
           if (addNumber) flipedNumberRef.current++;

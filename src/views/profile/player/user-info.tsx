@@ -7,13 +7,12 @@ export default function UserInfo() {
 
   return (
     <div className="flex items-center gap-[20px]">
-      {userInfo?.icon && (
-        <Avatar
-          size={56}
-          className="rounded-[8px] border border-[2px] border-[#FFFFFFCC]"
-          src={userInfo.icon}
-        />
-      )}
+      <Avatar
+        size={56}
+        className="rounded-[8px] border border-[2px] border-[#FFFFFFCC]"
+        address={userInfo?.sol_user}
+        email={userInfo?.email}
+      />
       <div className="text-white">
         <div className="text-[20px]">{userInfo?.username}</div>
         <div className="text-[14px]">{formatAddress(userInfo?.user)}</div>

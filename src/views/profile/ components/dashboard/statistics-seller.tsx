@@ -5,7 +5,6 @@ import Badge from "../badge";
 import { formatNumber } from "@/utils/format/number";
 import Big from "big.js";
 import { useAuth } from "@/contexts/auth";
-import useClaim from "@/hooks/evm/use-claim";
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ClaimModal from "../claim/modal";
@@ -14,32 +13,32 @@ const StatisticsPlayer = (props: any) => {
   const { className } = props;
 
   const { onQueryUserInfo, userInfo } = useAuth();
-  const { claim, claiming } = useClaim(userInfo?.claim_pool, onQueryUserInfo);
   const navigate = useNavigate();
 
   const [claimModalOpen, setClaimModalOpen] = useState(false);
 
   const onSellTotalAmount = useMemo(() => {
     if (!userInfo?.on_sell) {
-      return 0;
+      return Big(0);
     }
-    return userInfo.on_sell.reduce((acc: any, item: any) => acc + item.token_amount, 0);
+    return userInfo
+      .on_sell
+      .filter((item: any) => item.token_info?.symbol === "BTC")
+      .reduce((acc: any, item: any) => Big(acc).plus(Big(item.token_amount || 0).div(10 ** (item.token_info?.decimals || 6))), 0);
   }, [userInfo]);
 
   return (
     <div className={clsx("flex justify-between items-center gap-[40px] pl-[13px] mt-[40px] pb-[16px]", className)}>
-      <div className="flex items-center gap-[50px]">
+      <div className="flex items-center gap-[10px] flex-1 justify-between">
         <LabelValue label="PnL" className="" valueClassName={clsx(Big(userInfo?.seller_profit || 0).lt(0) ? "text-[#FF399F]" : "text-[#57FF70]")}>
-          {Big(userInfo?.seller_profit || 0).lt(0) ? "-" : "+"}{formatNumber(Big(userInfo?.seller_profit || 0).abs(), 2, true, { prefix: "$", isShort: Big(userInfo?.seller_profit || 0).abs().gt(100000), isShortUppercase: true })}
+          {Big(userInfo?.seller_profit || 0).lt(0) ? "-" : "+"}{formatNumber(Big(userInfo?.seller_profit || 0).abs(), 2, true, { prefix: "$", isShort: true, isShortUppercase: true })}
         </LabelValue>
         <LabelValue label="Claimable" className="" valueClassName="flex items-center gap-[13px]">
           <div className="">
-            {formatNumber(Big(userInfo?.seller_profit || 0).gt(0) ? userInfo?.seller_profit : 0, 2, true, { prefix: "$", isShort: Big(userInfo?.seller_profit || 0).abs().gt(100000), isShortUppercase: true })}
+            {formatNumber(Big(userInfo?.seller_profit || 0).gt(0) ? userInfo?.seller_profit : 0, 2, true, { prefix: "$", isShort: true, isShortUppercase: true })}
           </div>
           <ButtonV2
             className=""
-            // disabled={claiming || Big(userInfo?.seller_profit || 0).lte(0)}
-            // loading={claiming}
             onClick={() => {
               setClaimModalOpen(true);
             }}
@@ -47,14 +46,13 @@ const StatisticsPlayer = (props: any) => {
             Claim
           </ButtonV2>
         </LabelValue>
-
       </div>
-      <div className="flex justify-end items-center gap-[35px]">
+      <div className="flex items-center gap-[10px] flex-2 justify-between">
         <LabelValue label="Created Market" className="" valueClassName="flex items-center gap-[13px]">
           <div className="">
             {formatNumber(userInfo?.created, 0, true, { isShort: true, isShortUppercase: true })}
           </div>
-          <div className="flex items-center gap-[8px] whitespace-nowrap">
+          <div className="flex items-center gap-[8px] whitespace-nowrap flex-wrap">
             <Badge
               className="h-[24px] !px-[10px] !text-[14px]"
               icon={(<div className="w-[7px] h-[7px] shrink-0 rounded-full bg-[#57FF70]" />)}
@@ -77,11 +75,11 @@ const StatisticsPlayer = (props: any) => {
         </LabelValue>
         <LabelValue label="On Sell" className="" valueClassName="flex items-center gap-[13px]">
           <div className="">
-            {formatNumber(onSellTotalAmount, 2, true, { isShort: true, isShortUppercase: true })} BTC
+            {formatNumber(onSellTotalAmount, 3, true, { isShort: true, isShortUppercase: true })} BTC
           </div>
           <ButtonV2
             onClick={() => {
-              navigate(`btc/create`);
+              navigate(`/btc/create`);
             }}
             type="default"
           >

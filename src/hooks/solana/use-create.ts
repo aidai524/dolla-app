@@ -9,7 +9,8 @@ import {
   getNextOrderId,
   getPool,
   getAccountsInfo,
-  getWrapToSolIx
+  getWrapToSolIx,
+  wrapTxWithBugetFee
 } from "./helpers";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -44,26 +45,23 @@ export default function useCreate({
       return;
     }
     const payer = wallets[0];
+    let toastId = toast.loading({ title: "Creating market..." });
     try {
       setCreating(true);
       const state = getState(program);
       let baseAmount = new anchor.BN(amount * 10 ** BASE_TOKEN.decimals);
       let expectedQuoteAmount = new anchor.BN(
-        anchorPrice * amount * 10 ** BASE_TOKEN.decimals
+        anchorPrice * amount * 10 ** QUOTE_TOKEN.decimals
       );
-
-      let nextOrderId = await getNextOrderId(program, provider, state.pda);
+      let nextOrderId = await getNextOrderId(program, state.pda);
       nextOrderId = new anchor.BN(nextOrderId);
       console.log("nextOrderId", nextOrderId.toNumber());
       const pool = await getPool(program, provider, state.pda, nextOrderId);
 
-      const [userBaseAccount, poolBaseAccount] = await getAccountsInfo(
-        [
-          [BASE_TOKEN.address, payer.address],
-          [BASE_TOKEN.address, pool.pda.toString()]
-        ],
-        provider
-      );
+      const [userBaseAccount, poolBaseAccount] = await getAccountsInfo([
+        [BASE_TOKEN.address, payer.address],
+        [BASE_TOKEN.address, pool.pda.toString()]
+      ]);
 
       // Ensure all accounts are properly defined
 
@@ -111,12 +109,15 @@ export default function useCreate({
       if (poolBaseAccount?.instruction) {
         tx.add(poolBaseAccount.instruction);
       }
-      tx.add(createIx);
+
       tx.feePayer = new PublicKey(import.meta.env.VITE_SOLANA_OPERATOR);
 
-      // Get the latest blockhash
-      const { blockhash } = await provider.connection.getLatestBlockhash();
-      tx.recentBlockhash = blockhash;
+      tx.recentBlockhash = "11111111111111111111111111111111";
+
+      const txs = await wrapTxWithBugetFee(tx);
+
+      tx.add(...txs);
+      tx.add(createIx);
 
       const result = await sendSolanaTransaction(tx, "createPool");
 
@@ -131,14 +132,24 @@ export default function useCreate({
       const poolId = nextOrderId.toNumber();
 
       onCreateSuccess?.(poolId);
+      toast.dismiss(toastId);
+      toast.success({
+        title: "Market created successfully"
+      });
+
+      const slot = await provider.connection.getSlot();
       reportHash({
         chain: "solana",
         user: payer.address,
         hash: result.data.data.hash,
-        block_number: blockhash
+        block_number: slot
       });
     } catch (error) {
       console.error("Create error:", error);
+      toast.dismiss(toastId);
+      toast.fail({
+        title: "Create market failed"
+      });
       throw error;
     } finally {
       setCreating(false);

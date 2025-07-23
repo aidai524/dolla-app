@@ -180,7 +180,7 @@ const SingleCoin = forwardRef<any, SingleCoinProps>(
       }
       // Enhanced ground collision detection with better penetration prevention
       const groundZ = -2;
-      const coinRadius = 1.0; // Coin radius for collision detection
+      // const coinRadius = 1.0; // Coin radius for collision detection
       const groundBuffer = 0.1; // Buffer zone above ground
 
       if (coin.position.z > groundZ + groundBuffer) return;

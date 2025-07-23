@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 export const usePoolDistributed = (data: any) => {
   const [distributed, setDistributed] = useState({
     1: 0,
+    5: 0,
     10: 0,
-    20: 0,
+    50: 0,
     100: 0
   });
   const [loading, setLoading] = useState(false);
@@ -18,8 +19,9 @@ export const usePoolDistributed = (data: any) => {
       );
       const _result = {
         1: 0,
+        5: 0,
         10: 0,
-        20: 0,
+        50: 0,
         100: 0
       };
       res.data.data.forEach((item: any) => {
@@ -27,8 +29,10 @@ export const usePoolDistributed = (data: any) => {
           _result[1] += item.number;
         } else if (item.bid === 10) {
           _result[10] += item.number;
-        } else if (item.bid === 20) {
-          _result[20] += item.number;
+        } else if (item.bid === 5) {
+          _result[5] += item.number;
+        } else if (item.bid === 50) {
+          _result[50] += item.number;
         } else if (item.bid === 100) {
           _result[100] += item.number;
         }

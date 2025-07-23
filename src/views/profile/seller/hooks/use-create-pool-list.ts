@@ -22,7 +22,8 @@ export default function useCreatePoolList() {
     setLoading(true);
     try {
       const response = await axiosInstance.get(
-        `/api/v1/user/create/pool/list?limit=${pageSize}&offset=${pageRef.current * pageSize
+        `/api/v1/user/create/pool/list?limit=${pageSize}&offset=${
+          pageRef.current * pageSize
         }`
       );
       const poolIds: number[] = [];
@@ -46,22 +47,30 @@ export default function useCreatePoolList() {
     }
   };
 
-  const { runAsync: getRecords, loading: recordsLoading, data: records } = useRequest(async () => {
-    if (!userInfo?.user) return [];
-    try {
-      const response = await axiosInstance.get(
-        `/api/v1/user/create/pool/list?limit=${recordsPageSize}&offset=${(recordsPageIndex - 1) * pageSize
-        }`
-      );
-      setRecordsPageHasNextPage(response.data.data.has_next_page);
-      return response.data.data.list || [];
-    } catch (err: any) {
-      console.log(err);
+  const {
+    runAsync: getRecords,
+    loading: recordsLoading,
+    data: records
+  } = useRequest(
+    async () => {
+      if (!userInfo?.user) return [];
+      try {
+        const response = await axiosInstance.get(
+          `/api/v1/user/create/pool/list?limit=${recordsPageSize}&offset=${
+            (recordsPageIndex - 1) * pageSize
+          }`
+        );
+        setRecordsPageHasNextPage(response.data.data.has_next_page);
+        return response.data.data.list || [];
+      } catch (err: any) {
+        console.log(err);
+      }
+      return [];
+    },
+    {
+      refreshDeps: [recordsPageIndex, recordsPageSize, userInfo]
     }
-    return [];
-  }, {
-    refreshDeps: [recordsPageIndex, recordsPageSize, userInfo]
-  });
+  );
 
   const updatePoolsData = async (poolId: number, data?: any) => {
     if (data) {
@@ -108,5 +117,6 @@ export default function useCreatePoolList() {
     onRecordsNextPage,
     recordsPageIndex,
     recordsPageHasNextPage,
+    getRecords
   };
 }

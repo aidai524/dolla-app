@@ -1,7 +1,8 @@
 import Big from "big.js";
 
 export const addThousandSeparator = (numberString: string) => {
-  const parts = numberString.split(".");
+  if (!numberString) return "0";
+  const parts = String(numberString).split(".");
   const integerPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   const decimalPart = parts[1] ? `.${parts[1]}` : "";
   return integerPart + decimalPart;
@@ -26,7 +27,6 @@ export const formatNumber = (
     round?: Big.RoundingMode;
   }
 ): any => {
-
   const {
     prefix = "",
     isLTIntegerZero,

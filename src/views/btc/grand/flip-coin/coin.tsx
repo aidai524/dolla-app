@@ -4,7 +4,7 @@ import "./coin.less";
 export default function Coin() {
   const [isFlipped, setIsFlipped] = useState(false);
 
-  const onFlip = (e: any) => {
+  const onFlip = () => {
     setIsFlipped(!isFlipped);
   };
 

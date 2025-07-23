@@ -6,12 +6,11 @@ import {
   getPool,
   getState,
   getBuyState,
-  loadSbProgram,
   setupQueue,
-  getAssociatedTokenAddress,
   getBidGasFee,
   getWrapToSolIx,
-  getAccountsInfo
+  getAccountsInfo,
+  wrapTxWithBugetFee
 } from "./helpers";
 import * as anchor from "@coral-xyz/anchor";
 import { useSolanaWallets } from "@privy-io/react-auth";
@@ -30,7 +29,6 @@ import { sendSolanaTransaction } from "@/utils/transaction/send-solana-transacti
 import axiosInstance from "@/libs/axios";
 import { useBtcContext } from "@/views/btc/context";
 import { useRandomnessStore } from "@/stores/use-randomness";
-import { useAuth } from "@/contexts/auth";
 
 export default function useBid(
   poolId: number,
@@ -45,7 +43,6 @@ export default function useBid(
   const poolInfoRef = useRef<any>(null);
   const { sbProgramRef } = useBtcContext();
   const randomnessStore: any = useRandomnessStore();
-  const { userInfo } = useAuth();
   const randomnessTimerRef = useRef<any>(null);
 
   const onBid = async (times: number) => {
@@ -114,7 +111,7 @@ export default function useBid(
         systemProgram: anchor.web3.SystemProgram.programId
       };
 
-      const bidIx: TransactionInstruction = await program.methods
+      const bidTx: TransactionInstruction = await program.methods
         .bid(times)
         // @ts-ignore
         .accounts(bidAccounts)
@@ -144,12 +141,14 @@ export default function useBid(
         console.log("randomnessCreateIx:" + randomnessCreateIx[i].programId);
         tx.add(randomnessCreateIx[i]);
       }
-      tx.add(bidIx);
-      tx.feePayer = new PublicKey(import.meta.env.VITE_SOLANA_OPERATOR);
 
-      // Get the latest blockhash
-      // const { blockhash } = await provider.connection.getLatestBlockhash();
+      tx.feePayer = new PublicKey(import.meta.env.VITE_SOLANA_OPERATOR);
       tx.recentBlockhash = "11111111111111111111111111111111";
+
+      const txs = await wrapTxWithBugetFee(tx);
+
+      tx.add(...txs);
+      tx.add(bidTx);
 
       // const simulationResult = await provider.connection.simulateTransaction(
       //   tx
@@ -161,7 +160,6 @@ export default function useBid(
       //   connection: provider.connection
       // });
       console.timeEnd("prepare tx");
-      console.log("tx", tx);
 
       const result = await sendSolanaTransaction(tx, "bid");
       toast.dismiss(toastId);
@@ -180,10 +178,12 @@ export default function useBid(
           bidResponse.data.data.bid !== null &&
           bidResponse.data.data.bid.status !== 0
         ) {
-          console.log("result", bidResponse.data.data);
           console.timeEnd("bid time");
           console.timeEnd("bid loop");
+          console.log("bidResponse", bidResponse.data.data);
+          // bidResponse.data.data.bid.isWinner === true
           onSuccess(bidResponse.data.data);
+
           return;
         }
         if (timer) {
@@ -196,13 +196,14 @@ export default function useBid(
       console.log("bidResponse", bidResponse);
       console.log("receipt:", result);
 
+      const slot = await provider.connection.getSlot();
       // Report hash for tracking
-      // reportHash({
-      //   chain: "solana",
-      //   user: payer.address,
-      //   hash: result.data.data.hash,
-      //   block_number: blockhash
-      // });
+      reportHash({
+        chain: "solana",
+        user: payer.address,
+        hash: result.data.data.hash,
+        block_number: slot
+      });
 
       // const pb = new PublicKey("7qKtiPPkK1ZYqVFujVJjsTuGSJNXAvVhLj41HxtQDsTG");
       // const userBaseAccount = await getAssociatedTokenAddress(
@@ -284,16 +285,13 @@ export default function useBid(
     const [buyerState, gasFee, accountsInfo] = await Promise.all([
       getBuyState(program, provider, pool.pda, new PublicKey(payer.address)),
       getBidGasFee(program, state.pda, QUOTE_TOKEN.address),
-      getAccountsInfo(
-        [
-          [QUOTE_TOKEN.address, payer.address],
-          [QUOTE_TOKEN.address, pool.pda.toString()],
-          [QUOTE_TOKEN.address, state.pda.toString()],
-          [QUOTE_TOKEN.address, payer.address],
-          [QUOTE_TOKEN.address, import.meta.env.VITE_SOLANA_OPERATOR]
-        ],
-        provider
-      )
+      getAccountsInfo([
+        [QUOTE_TOKEN.address, payer.address],
+        [QUOTE_TOKEN.address, pool.pda.toString()],
+        [QUOTE_TOKEN.address, state.pda.toString()],
+        [QUOTE_TOKEN.address, payer.address],
+        [QUOTE_TOKEN.address, import.meta.env.VITE_SOLANA_OPERATOR]
+      ])
     ]);
 
     const userQuoteAccount = accountsInfo[0];
@@ -365,9 +363,7 @@ export default function useBid(
     if (randomnessTimerRef.current) {
       clearTimeout(randomnessTimerRef.current);
     }
-    // randomnessTimerRef.current = setTimeout(() => {
-    //   getRandomnessAccount();
-    // }, expiredTime);
+
     return {
       randomnessAccount,
       randomnessCreateIx
@@ -379,12 +375,6 @@ export default function useBid(
       fetchPoolInfo();
     }
   }, [poolId, wallets]);
-
-  useEffect(() => {
-    if (userInfo?.user && sbProgramRef.current) {
-      getRandomnessAccount();
-    }
-  }, [userInfo, sbProgramRef.current]);
 
   return {
     bidding,

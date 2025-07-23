@@ -3,16 +3,19 @@ import { AnimatePresence, motion } from "framer-motion";
 import useBidList from "./use-bid-list";
 import { useDebounceFn } from "ahooks";
 import { useMemo, useRef, useState } from "react";
+import { useBtcContext } from "../../context";
 
 export default function BidsInfoWrapper() {
   const [refresher, setRefresher] = useState(0);
-
+  const { pool } = useBtcContext();
   return (
-    <BidsInfoInner
-      onRefresher={() => {
-        setRefresher(refresher + 1);
-      }}
-    />
+    pool?.status === 1 && (
+      <BidsInfoInner
+        onRefresher={() => {
+          setRefresher(refresher + 1);
+        }}
+      />
+    )
   );
 }
 
@@ -56,8 +59,8 @@ function BidsInfoInner({ onRefresher }: any) {
             ref={containerRef}
             onUpdate={run}
           >
-            {list.map((item) => (
-              <Item key={item.id} data={item} />
+            {list.map((item, index) => (
+              <Item key={index} data={item} />
             ))}
           </motion.div>
         )}

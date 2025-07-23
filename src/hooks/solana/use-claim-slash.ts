@@ -33,24 +33,23 @@ export default function useClaimSlash({
       return;
     }
     const payer = wallets[0];
+    let toastId = toast.loading({ title: "Claiming..." });
     try {
       setClaiming(true);
       const state = getState(program);
-
-      const pool = await getPool(program, provider, state.pda, orderId);
+      console.log("poolId:", orderId);
+      const poolIdBN = new anchor.BN(orderId);
+      const pool = await getPool(program, provider, state.pda, poolIdBN);
       const buyerState = await getBuyState(
         program,
         provider,
         pool.pda,
         new PublicKey(payer.address)
       );
-      const [userQuoteAccount, poolQuoteAccount] = await getAccountsInfo(
-        [
-          [QUOTE_TOKEN.address, payer.address],
-          [QUOTE_TOKEN.address, pool.pda.toString()]
-        ],
-        provider
-      );
+      const [userQuoteAccount, poolQuoteAccount] = await getAccountsInfo([
+        [QUOTE_TOKEN.address, payer.address],
+        [QUOTE_TOKEN.address, pool.pda.toString()]
+      ]);
 
       let claimSlashFundsAccounts = {
         dollaState: state.pda,
@@ -68,11 +67,17 @@ export default function useClaimSlash({
         .claimSlashFunds()
         .accounts(claimSlashFundsAccounts)
         .instruction();
-      const batchTx = new Transaction().add(tx);
+      const batchTx = new Transaction();
+      if (userQuoteAccount.instruction) {
+        batchTx.add(userQuoteAccount.instruction);
+      }
+      if (poolQuoteAccount.instruction) {
+        batchTx.add(poolQuoteAccount.instruction);
+      }
+      batchTx.add(tx);
       batchTx.feePayer = new PublicKey(import.meta.env.VITE_SOLANA_OPERATOR);
       // Get the latest blockhash
-      const { blockhash } = await provider.connection.getLatestBlockhash();
-      batchTx.recentBlockhash = blockhash;
+      batchTx.recentBlockhash = "11111111111111111111111111111111";
 
       // const signedTx = await signTransaction({
       //   transaction: tx,
@@ -86,16 +91,20 @@ export default function useClaimSlash({
       const result = await sendSolanaTransaction(batchTx, "claimSlashFunds");
       console.log("receipt:", result);
       // Report hash for tracking
+      const slot = await provider.connection.getSlot();
       reportHash({
         chain: "solana",
         user: payer.address,
         hash: result.data.data.hash,
-        block_number: blockhash
+        block_number: slot
       });
-
+      toast.dismiss(toastId);
+      toast.success({ title: "Claim successfully" });
       onClaimSuccess?.();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Create error:", error);
+      toast.dismiss(toastId);
+      toast.fail({ title: "Claim failed", text: error?.message });
       throw error;
     } finally {
       setClaiming(false);

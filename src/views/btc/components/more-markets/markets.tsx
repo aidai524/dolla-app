@@ -1,10 +1,10 @@
 import clsx from "clsx";
-import { useState } from "react";
 import { motion } from "framer-motion";
 import Market from "./market";
 import MoreMarketBtn from "./btn";
 import MarketLoading from "./market-loading";
 import usePoolList from "@/hooks/use-pool-list";
+import { useBtcContext } from "../../context";
 
 export default function Markets({ onClose }: { onClose: () => void }) {
   const {
@@ -21,6 +21,7 @@ export default function Markets({ onClose }: { onClose: () => void }) {
     setVolume,
     LIMIT
   } = usePoolList();
+  const { setSelectedMarket } = useBtcContext();
 
   return (
     <motion.div
@@ -55,7 +56,8 @@ export default function Markets({ onClose }: { onClose: () => void }) {
                   { label: "ALL", key: 0 },
                   { label: "1 BTC", key: 1 },
                   { label: "0.1 BTC", key: 0.1 },
-                  { label: "0.01 BTC", key: 0.001 }
+                  { label: "0.01 BTC", key: 0.01 },
+                  { label: "0.001 BTC", key: 0.001 }
                 ].map((item: { label: string; key: number }) => (
                   <button
                     key={item.key}
@@ -131,7 +133,14 @@ export default function Markets({ onClose }: { onClose: () => void }) {
           </div>
           <div className="flex items-center justify-center gap-[20px] py-[50px] px-[20px]">
             {poolList.map((item: any) => (
-              <Market key={item.id} data={item} />
+              <Market
+                key={item.id}
+                data={item}
+                onClick={() => {
+                  setSelectedMarket(item);
+                  onClose();
+                }}
+              />
             ))}
             {loading && (
               <>

@@ -1,8 +1,38 @@
 import useCountdown, { getTimePeriods, toTwo } from "@/hooks/use-count-down";
+import { useConfigStore } from "@/stores/use-config";
+import { useEffect, useMemo } from "react";
+import * as parser from "cron-parser";
 
-export default function Timer() {
-  const { secondsRemaining } = useCountdown(1752897600000);
+export default function Timer({
+  onTimeUp,
+  currentRound
+}: {
+  onTimeUp: () => void;
+  currentRound: number;
+}) {
+  const configStore = useConfigStore();
+
+  const time = useMemo(() => {
+    if (!configStore.config) return 0;
+    const interval = parser?.default.parse(
+      configStore.config?.ticket_job_time,
+      {
+        tz: "America/New_York"
+      }
+    );
+    const next = interval.next().getTime();
+
+    return next / 1000;
+  }, [configStore.config, currentRound]);
+
+  const { secondsRemaining } = useCountdown(time);
   const { hours, minutes, seconds } = getTimePeriods(secondsRemaining);
+
+  useEffect(() => {
+    if (secondsRemaining <= 0) {
+      onTimeUp();
+    }
+  }, [secondsRemaining]);
 
   return (
     <div className="w-[115px] h-[30px] text-center text-[14px] p-[6px] border border-[#6A5D3A] text-white flex items-center justify-between rounded-[16px] border border-[#FFE9B2] bg-[#00000033] font-semibold">
