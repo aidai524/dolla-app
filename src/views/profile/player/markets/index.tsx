@@ -7,7 +7,7 @@ import Loading from "@/components/icons/loading";
 import useClaimSlash from "@/hooks/solana/use-claim-slash";
 
 const PlayerMarkets = (props: any) => {
-  const { className, poolsData, orders, loading, updatePoolsData } = props;
+  const { className, orders, loading, updatePoolsData } = props;
 
   return (
     <div
@@ -22,14 +22,13 @@ const PlayerMarkets = (props: any) => {
           <Loading size={16} />
         </div>
       ) : orders?.length > 0 ? (
-        orders.map((item: any, index: number) => {
-          const order = poolsData[item];
+        orders.map((order: any, index: number) => {
           return (
             <div key={index} className="relative pt-[12px]">
               <MarketItem
                 order={order}
                 onClaimSuccess={() => {
-                  updatePoolsData(order, {
+                  updatePoolsData(order.id, {
                     is_claim: true
                   });
                 }}
@@ -68,19 +67,23 @@ const MarketItem = (props: any) => {
       footer={
         <div className="w-full px-[13px] bg-black/20 py-[17px] mt-[20px] relative z-[2] text-white text-center font-[SpaceGrotesk] text-[14px] font-normal leading-[100%]">
           <div className="flex justify-between items-center gap-[10px]">
-            <div className="text-[#BBACA6]">You bid / Refund</div>
+            <div className="text-[#BBACA6]">You bid{order.status === EMarketStatus.Cancelled ? " / Refund" : ""}</div>
             <div className="flex items-center justify-end gap-[7px]">
-              <ButtonV2
-                type="default"
-                className="!h-[24px] !rounded-[12px] !px-[10px] !text-[#BBACA6]"
-                loading={claiming}
-                disabled={claiming}
-                onClick={() => {
-                  onClaim(order.id);
-                }}
-              >
-                Claim
-              </ButtonV2>
+              {
+                order.status === EMarketStatus.Cancelled && (
+                  <ButtonV2
+                    type="default"
+                    className="!h-[24px] !rounded-[12px] !px-[10px] !text-[#BBACA6]"
+                    loading={claiming}
+                    disabled={claiming}
+                    onClick={() => {
+                      onClaim(order.id);
+                    }}
+                  >
+                    Claim
+                  </ButtonV2>
+                )
+              }
               <div className="">$200</div>
             </div>
           </div>
