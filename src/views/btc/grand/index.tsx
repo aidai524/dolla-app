@@ -28,7 +28,7 @@ export default function Grand({ className }: { className?: string }) {
         </>
       )}
       {pool?.status === 2 && <EndPanel data={pool} />}
-      {pool?.status === 3 && <Cancel />}
+      {pool?.status === 3 && <Cancel data={pool} />}
     </div>
   );
 }

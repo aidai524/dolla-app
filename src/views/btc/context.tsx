@@ -27,7 +27,6 @@ export const CannonCoinsProvider = ({
   const params = useParams();
   const { onQueryPoolInfo } = usePoolInfo("solana");
   const [pool, setPool] = useState<any>(null);
-  const [poolUpdated, setPoolUpdated] = useState(false);
 
   const { data, getPoolRecommend } = usePoolRecommend(0, !params?.poolId);
 
@@ -55,13 +54,23 @@ export const CannonCoinsProvider = ({
     }
   }, [flipStatus]);
 
+  const loopUpdatePool = async (_pool: any) => {
+    if (_pool?.status === 1) {
+      const res = await onQueryPoolInfo(_pool?.pool_id);
+      if (res) setPool(res);
+      window.poolTimer = setTimeout(loopUpdatePool, 10000);
+    } else {
+      clearTimeout(window.poolTimer);
+    }
+  };
+
   useEffect(() => {
     if (!params?.poolId) return;
     const updatePool = async () => {
       const res = await onQueryPoolInfo(Number(params.poolId));
       if (res) {
         setPool(res);
-        setPoolUpdated(true);
+        loopUpdatePool(res);
       }
     };
     updatePool();
@@ -70,25 +79,15 @@ export const CannonCoinsProvider = ({
   useEffect(() => {
     if (data?.id) {
       setPool(data);
-      setPoolUpdated(true);
+      loopUpdatePool(data);
     }
   }, [data]);
 
   useEffect(() => {
-    const loop = async () => {
-      if (pool?.status === 1) {
-        const res = await onQueryPoolInfo(pool?.pool_id);
-        if (res) setPool(res);
-        window.poolTimer = setTimeout(loop, 10000);
-      } else {
-        clearTimeout(window.poolTimer);
-      }
-    };
-    loop();
     return () => {
       clearTimeout(window.poolTimer);
     };
-  }, [poolUpdated]);
+  }, []);
 
   return (
     <CannonCoinsContext.Provider
